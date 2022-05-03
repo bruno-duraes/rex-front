@@ -1,0 +1,9 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+label {
+    font-size: small;
+    font-weight: bold;
+    color: rgb(70, 70, 70);
+}
