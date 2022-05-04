@@ -1,5 +1,6 @@
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
+import { InputNumber } from 'primereact/inputnumber';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { RadioButton } from 'primereact/radiobutton';
@@ -70,6 +71,11 @@ export function AddBudgetPage() {
     const [selectedPaymentCond, setSelectedPaymentCond] = useState(null)
     const [selectedCurrency, setSelectedCurrency] = useState(null)
     const [selectedPaymentType, setSelectedPaymentType] = useState(null)
+    const [freight, setFreight] = useState(null)
+    const [priceFreight, setPriceFreight] = useState(null)
+    const [minValue, setMinValue] = useState(null)
+    const [minValueDup, setMinValueDup] = useState(null)
+    const [budgetValidity, setBudgetValidity] = useState(null)
     return (
         <>
             <div className="grid">
@@ -215,14 +221,70 @@ export function AddBudgetPage() {
                 </div>
             </div>
             <div className='grid'>
-                <div className='col-2 flex flex-column'>
+                <div className='col-1 flex flex-column mr-3'>
                     <label>Frete</label>
                     <div className='mt-2 flex align-items-center '>
-                        <RadioButton id='cif' className='mr-1' name='frete' />
-                        <label htmlFor='cif' className='font-bold mr-2'>Cif</label>
-                        <RadioButton id='fob' className='mr-1 ml-2' name='frete' />
-                        <label htmlFor='fob' className='font-bold '>Fob</label>
+                        <RadioButton
+                            inputId='cif'
+                            className='mr-1'
+                            name='frete'
+                            value='Cif'
+                            checked={freight === 'Cif'}
+                            onChange={(e) => setFreight(e.value)}
+                        />
+                        <label htmlFor='cif' className='font-bold mr-2 cursor-pointer'>Cif</label>
+                        <RadioButton
+                            inputId='fob'
+                            className='mr-1 ml-2'
+                            name='frete'
+                            value='Fob'
+                            checked={freight === 'Fob'}
+                            onChange={(e) => setFreight(e.value)}
+                        />
+                        <label htmlFor='fob' className='font-bold cursor-pointer'>Fob</label>
                     </div>
+                </div>
+                <div className='col-2'>
+                    <label htmlFor='freightValue'>Valor do Frete</label>
+                    <InputNumber
+                        inputId='freightValue'
+                        value={priceFreight}
+                        onValueChange={(e) => setPriceFreight(e.value)}
+                        mode='currency'
+                        currency='USD'
+                        locale='en-US'
+                    />
+                </div>
+                <div className='col-2'>
+                    <label htmlFor='valorMinimo'>Valor Minimo</label>
+                    <InputNumber
+                        inputId='valorMinimo'
+                        value={minValue}
+                        onValueChange={(e) => setMinValue(e.value)}
+                        mode='currency'
+                        currency='USD'
+                        locale='en-US'
+                    />
+                </div>
+                <div className='col-2'>
+                    <label htmlFor='valorMinimoDuplicata'>Valor Minimo Duplicata</label>
+                    <InputNumber
+                        inputId='valorMinimoDuplicata'
+                        value={minValueDup}
+                        onValueChange={(e) => setMinValueDup(e.value)}
+                        mode='currency'
+                        currency='USD'
+                        locale='en-US'
+                    />
+                </div>
+                <div className='col-2'>
+                    <label htmlFor='budgetValidity'>Validade do Orçamento</label>
+                    <InputNumber
+                        inputId='budgetValidity'
+                        value={budgetValidity}
+                        onValueChange={(e) => setBudgetValidity(e.value)}
+                        suffix=' dias'
+                    />
                 </div>
             </div>
         </>
