@@ -7,3 +7,8 @@ label {
     font-weight: bold;
     color: rgb(70, 70, 70);
 }
+
+.p-button {
+    background-color: #006091;
+    border: none;
+}

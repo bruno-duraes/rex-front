@@ -3,12 +3,12 @@ import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
-import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import { InputNumber } from 'primereact/inputnumber';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { RadioButton } from 'primereact/radiobutton';
+import { Sidebar } from 'primereact/sidebar';
 import { useState } from 'react';
 import '../index.css';
 import { getMockItems } from '../services/getMockItems';
@@ -27,21 +27,32 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
     const [sequency, setSequency] = useState('');
     const [codProCli, setCodProCli] = useState('');
     const [selectedTransaction, setSelectedTransaction] = useState({ label: '90150 - Orçamento Indústria' });
+    const [note, setNote] = useState('');
+    const [depPadrao, setDepPadrao] = useState(false);
+    const [depCliente, setDepCliente] = useState(false);
 
     let items = getMockItems();
+    function resetModal() {
+        setFaixa(null);
+        setDepPadrao(false);
+        setDepCliente(false)
+        setDateDelivery(null);
+        setSelectedItemFinish(null);
+        setSelectedItem(null);
+        setQuantity(null);
+    }
     function addItem() {
-
         const item = {
             seq: budgetItems.length + 1,
-            codigo: selectedItem.codigo,
-            descricacao: selectedItem.descricacao,
+            codigo: selectedItem.codigoRex,
+            descricao: selectedItem.descricacao,
             quantidade: quantity,
             un: selectedItem.un,
             preco_bruto: selectedItem.preco_bruto,
             preco_final: selectedItem.preco_bruto,
-            tot_produto: quantity * faixa,
+            tot_produto: parseFloat(quantity * faixa),
             peso: selectedItem.peso_bruto,
-            media: selectedItem.peso_bruto * quantity,
+            media: parseFloat(selectedItem.peso_bruto * quantity),
             faixaSelecionada: faixa,
             acabamentoSelecionado: selectedItemFinish,
             data: date,
@@ -51,12 +62,15 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
             codProCli: codProCli,
             transação: selectedTransaction,
             itemSelecionado: selectedItem,
-
+            observacao: note,
+            depCliente: depCliente,
+            depPadrao: depPadrao,
         };
         let budgetItemsCopy = Array.from(budgetItems);
         budgetItemsCopy.push(item);
         setBudgetItems(budgetItemsCopy);
-        setVisible(false)
+        setVisible(false);
+        resetModal();
     }
     function searchItem(e) {
         let query = e.query;
@@ -70,17 +84,19 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
     }
     return (
         <>
-            <Dialog
-                maximizable
-                draggable={false}
-                resizable={false}
-                position='top'
-                header={<span className='text-700 text-base'>Inclusão do Produto no Orçamento/Pedido</span>}
+            <Sidebar
+                icons={
+                    <>
+                        <Button label='Adicionar Item' onClick={() => addItem()} className='p-button-raised p-button-success mr-3 font-semibold' />
+                        <Button label='Cancelar' onClick={() => setVisible(false)} className='p-button-raised p-button-secondary font-semibold' />
+                    </>
+                }
+                fullScreen
+                className='surface-100'
+                showCloseIcon={false}
                 visible={visible}
-                style={{ width: '95%' }}
-                footer={<Button onClick={() => addItem()} label='Adicionar Item' className='p-button-raised' />}
             >
-                <div style={{ border: 'solid 1px #999999', borderRadius: '3px' }} className='p-3 mb-3'>
+                <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='p-5 mb-3 bg-white'>
                     <div className='grid formgrid'>
                         <div className='field col-12 md:col-8'>
                             <label htmlFor='selectItem'>Item</label>
@@ -316,12 +332,18 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                         </div>
                         <div className='field col-12 lg:col-6'>
                             <label>Observação</label>
-                            <InputTextarea className='w-full' rows={4} autoResize value />
+                            <InputTextarea
+                                className='w-full'
+                                rows={4}
+                                autoResize
+                                value={note}
+                                onChange={e => setNote(e.value)}
+                            />
                         </div>
                     </div>
                 </div>
 
-                <div style={{ border: 'solid 1px #999999', borderRadius: '3px' }} className='p-3 mb-3'>
+                <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='p-5 mb-3 bg-white'>
                     <div className='grid'>
                         <div className='field col'>
                             <label>Descrição</label>
@@ -425,13 +447,19 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                         </div>
                     </div>
                 </div>
-                <div style={{ border: 'solid 1px #999999', borderRadius: '3px' }} className='p-3 mb-3'>
+
+                <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='p-5 mb-3 bg-white'>
                     <div className='grid'>
                         <div className='col-6 lg:col-12'>
                             <div className='grid flex align-items-center'>
                                 <div className='flex flex-row col-12 lg:col-2 w-10rem'>
                                     <label htmlFor='itemDepPadrao'>Dep Padrão: 004</label>
-                                    <Checkbox id='itemDepPadrao' className='ml-2' />
+                                    <Checkbox
+                                        id='itemDepPadrao'
+                                        className='ml-2'
+                                        checked={depPadrao}
+                                        onChange={e => setDepPadrao(e.checked)}
+                                    />
                                 </div>
                                 <div className='field col-12 lg:col-2'>
                                     <label htmlFor='estoquePadrao'>Em Estoque</label>
@@ -503,8 +531,13 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                         <div className='col-6 lg:col-12'>
                             <div className='grid flex align-items-center'>
                                 <div className='col-12 lg:col-2 w-10rem'>
-                                    <label htmlFor='depPadrao'>Dep Cliente: 573</label>
-                                    <Checkbox id='depPadrao' className='ml-2' />
+                                    <label htmlFor='depCliente'>Dep Cliente: 573</label>
+                                    <Checkbox
+                                        id='depCliente'
+                                        className='ml-2'
+                                        checked={depCliente}
+                                        onChange={e => setDepCliente(e.checked)}
+                                    />
                                 </div>
                                 <div className='field col-12 lg:col-2'>
                                     <label htmlFor='estoqueCliente'>Em Estoque</label>
@@ -575,9 +608,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                         </div>
                     </div>
                 </div>
+
                 <DataTable
                     tableStyle={{ background: 'blue' }}
-                    header={<span className='text-700 text-sm'>Produtos do Orçamento/Pedido</span>}
+                    header={<span className='text-700 text-sm'>Saldos dos Acabamentos do Produto</span>}
                     emptyMessage='Nenhum Produto Selecionado'
                     showGridlines
                     selectionMode='single'
@@ -594,7 +628,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                     <Column headerClassName='text-700 text-sm' field='total_ordens' header='Total Ordens' />
                     <Column headerClassName='text-700 text-sm' field='estoque_sc' header='Estoque SC' />
                 </DataTable>
-            </Dialog>
+            </Sidebar>
         </>
     )
 }

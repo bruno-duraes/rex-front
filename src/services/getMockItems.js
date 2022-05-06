@@ -16,6 +16,8 @@ export function getMockItems() {
             embalagem: 'Caixa de Papelão N° 60',
             estoquePadrao: 975,
             estoqueCliente: 0,
+            derivacao: 'Derivacao 01',
+            class_fiscal: 'Classificação Fiscal X',
             acabamentos: [
                 {
                     ref: 1123,
@@ -55,6 +57,8 @@ export function getMockItems() {
             embalagem: 'Caixa de Papelão N° 48',
             estoquePadrao: 56,
             estoqueCliente: 12,
+            derivacao: 'Derivacao 02',
+            class_fiscal: 'Classificação Fiscal Y',
             acabamentos: [
                 {
                     ref: 41123,
@@ -94,6 +98,8 @@ export function getMockItems() {
             embalagem: 'Caixa de Papelão N° 50',
             estoquePadrao: 0,
             estoqueCliente: 36,
+            derivacao: 'Derivacao 01',
+            class_fiscal: 'Classificação Fiscal Z',
             acabamentos: [
                 {
                     ref: 21123,

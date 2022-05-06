@@ -87,22 +87,33 @@ export function AddBudgetPage() {
     const [checkMantemSaldo, setCheckMantemSaldo] = useState(null)
     const [checkAceitaParcial, setCheckAceitaParcial] = useState(null)
     const [modalVisible, setModalVisible] = useState(false);
+    const [emissao, setEmissao] = useState(new Date());
     const [products, setProducts] = useState([])
     return (
         <>
             <Modal visible={modalVisible} setVisible={setModalVisible} budgetItems={products} setBudgetItems={setProducts} />
+            <div className='grid'>
+                <div className='col-10'></div>
+                <div className='col-12 lg:col-2 flex justify-content-end'>
+                    <Button
+                        label='Salvar'
+                        className='p-button-success w-full font-normal font-semibold'
+                    />
+                </div>
+            </div>
             <div className="grid">
                 <div className='field col-12 md:col-2 mb-2'>
                     < label htmlFor='emissao' > Emissão</label >
-                    <Datepicker id='emissao' />
+                    <Datepicker id='emissao' initialDate={emissao} onChange={(e) => setEmissao(e.value)} />
                 </div >
             </div >
             <div className='grid mb-2'>
                 <div className="field col">
-                    <label htmlFor='budgetNum'>Usuário <RequiredFlag /></label>
+                    <label htmlFor='budgetNum'>Usuário</label>
+                    <RequiredFlag />
                     <Dropdown
                         id='budgetNum'
-                        className='w-full'
+                        className='w-full p-inputtext-sm'
                         filter
                         value={selectedUser}
                         options={users}
@@ -112,10 +123,11 @@ export function AddBudgetPage() {
                     />
                 </div>
                 <div className="field col-12 md:col-8">
-                    <label htmlFor='cliente'>Cliente</label>
+                    <label htmlFor='cliente'>Cliente </label>
+                    <RequiredFlag />
                     <Dropdown
                         id='cliente'
-                        className='w-full'
+                        className='w-full p-inputtext-sm'
                         filter value={selectedClient}
                         options={clients}
                         optionLabel={'name'}
@@ -139,17 +151,18 @@ export function AddBudgetPage() {
             <div className='grid'>
                 <div className='field col-12 md:col-2 flex flex-column'>
                     <label htmlFor='numPed'>N° Ped/Oc Cli</label>
-                    <InputText id='numPed' />
+                    <InputText id='numPed' className='p-inputtext-sm' />
                 </div>
                 <div className='field col-12 md:col-2 flex flex-column'>
                     <label htmlFor='entrega'>Entrega</label>
                     <Datepicker id='entrega' />
                 </div>
-                <div className='field col flex flex-column'>
+                <div className='field col'>
                     <label htmlFor='representante'>Representante</label>
+                    <RequiredFlag />
                     <Dropdown
                         id='representante'
-                        className='w-full'
+                        className='w-full p-inputtext-sm'
                         filter value={selectedRep}
                         options={representatives}
                         optionLabel={'name'}
@@ -163,7 +176,7 @@ export function AddBudgetPage() {
                     <label htmlFor='transacao'>Transação</label>
                     <Dropdown
                         id='transacao'
-                        className='w-full'
+                        className='w-full p-inputtext-sm'
                         filter value={selectedTrasaction}
                         options={transactions}
                         optionLabel={'name'}
@@ -175,7 +188,7 @@ export function AddBudgetPage() {
                     <label htmlFor='transportador'>Transportador</label>
                     <Dropdown
                         id='transportador'
-                        className='w-full'
+                        className='w-full p-inputtext-sm'
                         filter value={selectedConvenyor}
                         options={convenyors}
                         optionLabel={'name'}
@@ -187,7 +200,7 @@ export function AddBudgetPage() {
                     <label htmlFor='redespacho'>Redespacho</label>
                     <Dropdown
                         id='redespacho'
-                        className='w-full'
+                        className='w-full p-inputtext-sm'
                         filter value={selectedReDispatch}
                         options={reDispatches}
                         optionLabel={'name'}
@@ -201,7 +214,7 @@ export function AddBudgetPage() {
                     <label htmlFor='condPagto'>Condição do Pagamento</label>
                     <Dropdown
                         id='condPagto'
-                        className='w-full'
+                        className='w-full p-inputtext-sm'
                         filter value={selectedPaymentCond}
                         options={paymentConditions}
                         optionLabel={'name'}
@@ -213,7 +226,7 @@ export function AddBudgetPage() {
                     <label htmlFor='moeda'>Moeda</label>
                     <Dropdown
                         id='moeda'
-                        className='w-full'
+                        className='w-full p-inputtext-sm'
                         value={selectedCurrency}
                         options={currencies}
                         optionLabel={'name'}
@@ -225,7 +238,7 @@ export function AddBudgetPage() {
                     <label htmlFor='tipoPagto'>Tipo de Pagamento</label>
                     <Dropdown
                         id='tipoPagto'
-                        className='w-full'
+                        className='w-full p-inputtext-sm'
                         value={selectedPaymentType}
                         options={paymentTypes}
                         optionLabel={'name'}
@@ -263,11 +276,12 @@ export function AddBudgetPage() {
                     <InputNumber
                         size={1}
                         inputId='freightValue'
+                        inputClassName='p-inputtext-sm'
                         value={priceFreight}
                         onValueChange={(e) => setPriceFreight(e.value)}
-                        mode='currency'
-                        currency='USD'
-                        locale='en-US'
+                        mode='decimal'
+                        maxFractionDigits={2}
+                        minFractionDigits={2}
                     />
                 </div>
                 <div className='field col-12 md:col-2 flex flex-column'>
@@ -275,6 +289,7 @@ export function AddBudgetPage() {
                     <InputNumber
                         size={1}
                         inputId='valorMinimo'
+                        inputClassName='p-inputtext-sm'
                         value={minValue}
                         onValueChange={(e) => setMinValue(e.value)}
                         mode='currency'
@@ -286,6 +301,7 @@ export function AddBudgetPage() {
                     <label htmlFor='valorMinimoDuplicata'>Valor Minimo Duplicata</label>
                     <InputNumber
                         size={1}
+                        inputClassName='p-inputtext-sm'
                         inputId='valorMinimoDuplicata'
                         value={minValueDup}
                         onValueChange={(e) => setMinValueDup(e.value)}
@@ -298,6 +314,7 @@ export function AddBudgetPage() {
                     <label htmlFor='validadeOrcamento'>Validade do Orçamento</label>
                     <InputNumber
                         size={1}
+                        inputClassName='p-inputtext-sm'
                         inputId='validadeOrcamento'
                         value={budgetValidity}
                         onValueChange={(e) => setBudgetValidity(e.value)}
@@ -347,23 +364,29 @@ export function AddBudgetPage() {
             <div className='w-full'>
                 <Button className='w-full' label='Adicionar Item' onClick={() => setModalVisible(true)} />
             </div>
-            <div className='card p-2'>
-                <DataTable header='Produtos do Orçamento/Pedido' value={products} responsiveLayout="stack" breakpoint="960px" >
-                    <Column field='operacao' header='Operação'></Column>
-                    <Column field='seq' header='Seq'></Column>
-                    <Column field='cod' header='Cod'></Column>
-                    <Column field='descricao' header='Descrição'></Column>
-                    <Column field='quantia' header='Quantia'></Column>
-                    <Column field='un' header='UN'></Column>
-                    <Column field='preco_bruto' header='Preço Bruto'></Column>
-                    <Column field='preco_final' header='Preço Final'></Column>
-                    <Column field='tot_produto' header='Tot Produto'></Column>
-                    <Column field='peso' header='Peso'></Column>
-                    <Column field='media' header='Média'></Column>
-                    <Column field='apro_ger' header='Apro. Ger'></Column>
-                    <Column field='apro_dir' header='Apro. Dir'></Column>
+            <div className='mt-3'>
+                <DataTable
+                    header={<span className='text-700 text-sm'>Produtos do Orçamento/Pedido</span>}
+                    value={products}
+                    responsiveLayout="stack"
+                    showGridlines
+                    className='relative'
+                >
+                    <Column headerClassName='text-700 text-sm' field='seq' header='Seq'></Column>
+                    <Column headerClassName='text-700 text-sm' field='codigo' header='Cod'></Column>
+                    <Column headerClassName='text-700 text-sm' field='descricao' header='Descrição'></Column>
+                    <Column headerClassName='text-700 text-sm' field='quantidade' header='Quantia'></Column>
+                    <Column headerClassName='text-700 text-sm' field='un' header='UN'></Column>
+                    <Column headerClassName='text-700 text-sm' field='preco_bruto' header='Preço Bruto'></Column>
+                    <Column headerClassName='text-700 text-sm' field='preco_final' header='Preço Final'></Column>
+                    <Column headerClassName='text-700 text-sm' field='tot_produto' header='Tot Produto'></Column>
+                    <Column headerClassName='text-700 text-sm' field='peso' header='Peso'></Column>
+                    <Column headerClassName='text-700 text-sm' field='media' header='Média'></Column>
+                    <Column headerClassName='text-700 text-sm' field='apro_ger' header='Apro. Ger'></Column>
+                    <Column headerClassName='text-700 text-sm' field='apro_dir' header='Apro. Dir'></Column>
                 </DataTable>
             </div>
+
         </>
     )
 }
