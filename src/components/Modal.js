@@ -1,6 +1,8 @@
 import { AutoComplete } from 'primereact/autocomplete';
 import { Button } from 'primereact/button';
-import { Card } from 'primereact/card';
+import { Checkbox } from 'primereact/checkbox';
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import { InputNumber } from 'primereact/inputnumber';
@@ -9,55 +11,53 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { RadioButton } from 'primereact/radiobutton';
 import { useState } from 'react';
 import '../index.css';
+import { getMockItems } from '../services/getMockItems';
 import { Datepicker } from './Datepicker';
 
-export function Modal() {
+export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
     const [selectedItem, setSelectedItem] = useState(null);
     const [filteredItems, setFilteredItems] = useState(null);
     const [quantity, setQuantity] = useState(null);
     const [faixa, setFaixa] = useState(null);
     const [faixaSol, setFaixaSol] = useState(null);
-    let items = [
-        {
-            label: 'Item X',
-            un: 'UN',
-            preco_bruto: 17.78,
-            faixa_1: 17.56,
-            faixa_2: 17.90,
-            faixa_3: 18.01,
-            faixa_4: 18.15,
-            peso_bruto: 12.87,
-            descricacao: 'Produto X',
-            codigoRex: '123-X',
-            codigoSap: 'S-321-X'
-        },
-        {
-            label: 'Item Y',
-            un: 'LT',
-            preco_bruto: 25.00,
-            faixa_1: 26.00,
-            faixa_2: 26.25,
-            faixa_3: 25.89,
-            faixa_4: 26.78,
-            peso_bruto: 7.45,
-            descricacao: 'Produto Y',
-            codigoRex: '123-Y',
-            codigoSap: 'S-321-Y'
-        },
-        {
-            label: 'Item Z',
-            un: 'CX',
-            preco_bruto: 10.75,
-            faixa_1: 11.00,
-            faixa_2: 12.05,
-            faixa_3: 11.87,
-            faixa_4: 11.25,
-            peso_bruto: 0.15,
-            descricacao: 'Produto Z',
-            codigoRex: '123-Z',
-            codigoSap: 'S-321-Z'
-        },
-    ]
+    const [selectedItemFinish, setSelectedItemFinish] = useState(null);
+    const [date, setDate] = useState(new Date());
+    const [dateDelivery, setDateDelivery] = useState(null);
+    const [pedidoOrdem, setPedidoOrdem] = useState('');
+    const [sequency, setSequency] = useState('');
+    const [codProCli, setCodProCli] = useState('');
+    const [selectedTransaction, setSelectedTransaction] = useState({ label: '90150 - Orçamento Indústria' });
+
+    let items = getMockItems();
+    function addItem() {
+
+        const item = {
+            seq: budgetItems.length + 1,
+            codigo: selectedItem.codigo,
+            descricacao: selectedItem.descricacao,
+            quantidade: quantity,
+            un: selectedItem.un,
+            preco_bruto: selectedItem.preco_bruto,
+            preco_final: selectedItem.preco_bruto,
+            tot_produto: quantity * faixa,
+            peso: selectedItem.peso_bruto,
+            media: selectedItem.peso_bruto * quantity,
+            faixaSelecionada: faixa,
+            acabamentoSelecionado: selectedItemFinish,
+            data: date,
+            enetrega: dateDelivery,
+            pedidoOrdem: pedidoOrdem,
+            sequencia: sequency,
+            codProCli: codProCli,
+            transação: selectedTransaction,
+            itemSelecionado: selectedItem,
+
+        };
+        let budgetItemsCopy = Array.from(budgetItems);
+        budgetItemsCopy.push(item);
+        setBudgetItems(budgetItemsCopy);
+        setVisible(false)
+    }
     function searchItem(e) {
         let query = e.query;
         let _filteredItems = [];
@@ -75,13 +75,12 @@ export function Modal() {
                 draggable={false}
                 resizable={false}
                 position='top'
-                header='Inclusão do Produto no Orçamento/Pedido'
-                contentClassName='surface-200'
-                visible={true}
+                header={<span className='text-700 text-base'>Inclusão do Produto no Orçamento/Pedido</span>}
+                visible={visible}
                 style={{ width: '95%' }}
-                footer={<Button onClick={() => console.log(faixa)} label='Adicionar Item' className='p-button-raised' />}
+                footer={<Button onClick={() => addItem()} label='Adicionar Item' className='p-button-raised' />}
             >
-                <Card title='Selecione o Item'>
+                <div style={{ border: 'solid 1px #999999', borderRadius: '3px' }} className='p-3 mb-3'>
                     <div className='grid formgrid'>
                         <div className='field col-12 md:col-8'>
                             <label htmlFor='selectItem'>Item</label>
@@ -280,23 +279,23 @@ export function Modal() {
                         </div>
                         <div className='field col-6 lg:col-2'>
                             <label>Data</label>
-                            <Datepicker initialDate={new Date()} />
+                            <Datepicker initialDate={date} onChange={e => setDate(e.value)} />
                         </div>
                         <div className='field col-6 lg:col-2'>
                             <label>Entrega</label>
-                            <Datepicker />
+                            <Datepicker initialDate={dateDelivery} onChange={e => setDateDelivery(e.value)} />
                         </div>
                         <div className='field col-6 lg:col-2'>
                             <label>Pedido/Ordem</label>
-                            <InputText className='w-full p-inputtext-sm' />
+                            <InputText className='w-full p-inputtext-sm' value={pedidoOrdem} onChange={e => setPedidoOrdem(e.value)} />
                         </div>
                         <div className='field col-6 lg:col-2'>
                             <label>Sequencia</label>
-                            <InputText className='w-full p-inputtext-sm' />
+                            <InputText className='w-full p-inputtext-sm' value={sequency} onChange={e => setSequency(e.value)} />
                         </div>
                         <div className='field col-6 lg:col-2'>
                             <label>Cod Pro Cli</label>
-                            <InputText className='w-full p-inputtext-sm' />
+                            <InputText className='w-full p-inputtext-sm' value={codProCli} onChange={e => setCodProCli(e.value)} />
                         </div>
                     </div>
                     <div className='grid'>
@@ -309,20 +308,22 @@ export function Modal() {
                                     { label: 'Tipo 2' },
                                     { label: '90150 - Orçamento Indústria' }
                                 ]}
-                                value={{ label: '90150 - Orçamento Indústria' }}
+                                value={selectedTransaction}
                                 disabled
                                 className='w-full p-inputtext-sm'
+                                onchange={e => setSelectedTransaction(e.value)}
                             />
                         </div>
                         <div className='field col-12 lg:col-6'>
                             <label>Observação</label>
-                            <InputTextarea className='w-full' rows={4} autoResize />
+                            <InputTextarea className='w-full' rows={4} autoResize value />
                         </div>
                     </div>
-                </Card>
-                <Card title='Detalhes' className='mt-5'>
+                </div>
+
+                <div style={{ border: 'solid 1px #999999', borderRadius: '3px' }} className='p-3 mb-3'>
                     <div className='grid'>
-                        <div className='field col-12 lg:col-6'>
+                        <div className='field col'>
                             <label>Descrição</label>
                             <InputText
                                 readOnly
@@ -330,7 +331,9 @@ export function Modal() {
                                 value={selectedItem && selectedItem.descricacao ? selectedItem.descricacao : ''}
                             />
                         </div>
-                        <div className='field col-12 lg:col-3'>
+                    </div>
+                    <div className='grid'>
+                        <div className='field col-12 lg:col-2'>
                             <label>Cód REX</label>
                             <InputText
                                 readOnly
@@ -338,7 +341,7 @@ export function Modal() {
                                 value={selectedItem && selectedItem.codigoRex ? selectedItem.codigoRex : ''}
                             />
                         </div>
-                        <div className='field col-12 lg:col-3'>
+                        <div className='field col-12 lg:col-2'>
                             <label>Cód Sapiens</label>
                             <InputText
                                 readOnly
@@ -346,9 +349,7 @@ export function Modal() {
                                 value={selectedItem && selectedItem.codigoSap ? selectedItem.codigoSap : ''}
                             />
                         </div>
-                    </div>
-                    <div className='grid'>
-                        <div className='field col'>
+                        <div className='field col-12 lg:col-2'>
                             <label>Peso</label>
                             <InputNumber
                                 readOnly
@@ -360,8 +361,239 @@ export function Modal() {
                                 value={selectedItem && selectedItem.peso_bruto ? selectedItem.peso_bruto : ''}
                             />
                         </div>
+                        <div className='field col-12 lg:col-2'>
+                            <label>Preço</label>
+                            <InputNumber
+                                readOnly
+                                className='w-full p-inputtext-sm'
+                                inputClassName='w-full'
+                                mode='currency'
+                                currency='BRL'
+                                value={selectedItem && selectedItem.preco_bruto ? selectedItem.preco_bruto : ''}
+                            />
+                        </div>
+                        <div className='field col-12 lg:col-2'>
+                            <label htmlFor='itemUnidade'>Unidade</label>
+                            <InputText
+                                id='itemUnidade'
+                                readOnly
+                                className='w-full p-inputtext-sm'
+                                value={selectedItem && selectedItem.un ? selectedItem.un : ''}
+                            />
+                        </div>
+                        <div className='field col-12 lg:col-2'>
+                            <label htmlFor='itemQtiaEmbalada'>Qtia Embalada</label>
+                            <InputNumber
+                                inputId='itemQtiaEmbalada'
+                                readOnly
+                                className='w-full p-inputtext-sm'
+                                inputClassName='w-full'
+                                mode='decimal'
+                                maxFractionDigits={2}
+                                minFractionDigits={2}
+                                value={selectedItem && selectedItem.qtia_embalada ? selectedItem.qtia_embalada : ''}
+                            />
+                        </div>
                     </div>
-                </Card>
+                    <div className='grid'>
+                        <div className='field col-12 lg:col-4'>
+                            <label htmlFor='itemDerivacao'>Derivação</label>
+                            <InputText
+                                readOnly
+                                id='itemDerivacao'
+                                className='w-full p-inputtext-sm'
+                                value={selectedItem && selectedItem.derivacao ? selectedItem.derivacao : ''}
+                            />
+                        </div>
+                        <div className='field col-12 lg:col-4'>
+                            <label htmlFor='itemEmbalagem'>Embalagem</label>
+                            <InputText
+                                readOnly
+                                id='itemEmbalagem'
+                                className='w-full p-inputtext-sm'
+                                value={selectedItem && selectedItem.embalagem ? selectedItem.embalagem : ''}
+                            />
+                        </div>
+                        <div className='field col-12 lg:col-4'>
+                            <label htmlFor='itemClassFiscal'>Classificação Fiscal</label>
+                            <InputText
+                                readOnly
+                                id='itemClassFiscal'
+                                className='w-full p-inputtext-sm'
+                                value={selectedItem && selectedItem.class_fiscal ? selectedItem.class_fiscal : ''}
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div style={{ border: 'solid 1px #999999', borderRadius: '3px' }} className='p-3 mb-3'>
+                    <div className='grid'>
+                        <div className='col-6 lg:col-12'>
+                            <div className='grid flex align-items-center'>
+                                <div className='flex flex-row col-12 lg:col-2 w-10rem'>
+                                    <label htmlFor='itemDepPadrao'>Dep Padrão: 004</label>
+                                    <Checkbox id='itemDepPadrao' className='ml-2' />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label htmlFor='estoquePadrao'>Em Estoque</label>
+                                    <InputNumber
+                                        inputId='estoquePadrao'
+                                        className='w-full'
+                                        inputClassName='w-full p-inputtext-sm'
+                                        mode='decimal'
+                                        maxFractionDigits={2}
+                                        minFractionDigits={2}
+                                        readOnly
+                                        value={selectedItem && selectedItem.estoquePadrao ? selectedItem.estoquePadrao : 0}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label htmlFor='resPedidosPadrao'>Res. Pedidos</label>
+                                    <InputNumber
+                                        className='w-full'
+                                        inputId='resPedidosPadrao'
+                                        inputClassName='w-full p-inputtext-sm'
+                                        mode='decimal'
+                                        maxFractionDigits={2}
+                                        minFractionDigits={2}
+                                        readOnly
+                                        value={0}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label htmlFor='resPreFaturaPadrao'>Res. Pré-Fatura</label>
+                                    <InputNumber
+                                        className='w-full'
+                                        inputId='resPreFaturaPadrao'
+                                        inputClassName='w-full p-inputtext-sm'
+                                        mode='decimal'
+                                        maxFractionDigits={2}
+                                        minFractionDigits={2}
+                                        readOnly
+                                        value={0}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label htmlFor='totalEmOpPadrao'>Total em OP</label>
+                                    <InputNumber
+                                        className='w-full'
+                                        inputId='totalEmOpPadrao'
+                                        inputClassName='w-full p-inputtext-sm'
+                                        mode='decimal'
+                                        maxFractionDigits={2}
+                                        minFractionDigits={2}
+                                        readOnly
+                                        value={0}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label htmlFor='saldoPadrao'>Saldo</label>
+                                    <InputNumber
+                                        className='w-full'
+                                        inputId='saldoPadrao'
+                                        inputClassName='w-full p-inputtext-sm'
+                                        mode='decimal'
+                                        maxFractionDigits={2}
+                                        minFractionDigits={2}
+                                        readOnly
+                                        value={0}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div className='col-6 lg:col-12'>
+                            <div className='grid flex align-items-center'>
+                                <div className='col-12 lg:col-2 w-10rem'>
+                                    <label htmlFor='depPadrao'>Dep Cliente: 573</label>
+                                    <Checkbox id='depPadrao' className='ml-2' />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label htmlFor='estoqueCliente'>Em Estoque</label>
+                                    <InputNumber
+                                        inputId='estoqueCliente'
+                                        className='w-full'
+                                        inputClassName='w-full p-inputtext-sm'
+                                        mode='decimal'
+                                        maxFractionDigits={2}
+                                        minFractionDigits={2}
+                                        readOnly
+                                        value={selectedItem && selectedItem.estoqueCliente ? selectedItem.estoqueCliente : 0}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label htmlFor='resPedidosCliente'>Res. Pedidos</label>
+                                    <InputNumber
+                                        className='w-full'
+                                        inputId='resPedidosCliente'
+                                        inputClassName='w-full p-inputtext-sm'
+                                        mode='decimal'
+                                        maxFractionDigits={2}
+                                        minFractionDigits={2}
+                                        readOnly
+                                        value={0}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label htmlFor='resPreFaturaCliente'>Res. Pré-Fatura</label>
+                                    <InputNumber
+                                        className='w-full'
+                                        inputId='resPreFaturaCliente'
+                                        inputClassName='w-full p-inputtext-sm'
+                                        mode='decimal'
+                                        maxFractionDigits={2}
+                                        minFractionDigits={2}
+                                        readOnly
+                                        value={0}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label htmlFor='totalEmOpCliente'>Total em OP</label>
+                                    <InputNumber
+                                        className='w-full'
+                                        inputId='totalEmOpCliente'
+                                        inputClassName='w-full p-inputtext-sm'
+                                        mode='decimal'
+                                        maxFractionDigits={2}
+                                        minFractionDigits={2}
+                                        readOnly
+                                        value={0}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label htmlFor='saldoCliente'>Saldo</label>
+                                    <InputNumber
+                                        className='w-full'
+                                        inputId='saldoCliente'
+                                        inputClassName='w-full p-inputtext-sm'
+                                        mode='decimal'
+                                        maxFractionDigits={2}
+                                        minFractionDigits={2}
+                                        readOnly
+                                        value={0}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <DataTable
+                    tableStyle={{ background: 'blue' }}
+                    header={<span className='text-700 text-sm'>Produtos do Orçamento/Pedido</span>}
+                    emptyMessage='Nenhum Produto Selecionado'
+                    showGridlines
+                    selectionMode='single'
+                    selection={selectedItemFinish}
+                    onSelectionChange={e => setSelectedItemFinish(e.value)}
+                    value={selectedItem && selectedItem.acabamentos ? selectedItem.acabamentos : null}
+                    responsiveLayout='stack' >
+                    <Column headerClassName='text-700 text-sm' field='ref' header='Ref' />
+                    <Column headerClassName='text-700 text-sm' field='acabamento' header='Acabamento' />
+                    <Column headerClassName='text-700 text-sm' field='total_disponivel' header='Total Disponível' />
+                    <Column headerClassName='text-700 text-sm' field='estoque_terc' header='Estoque Terceiros' />
+                    <Column headerClassName='text-700 text-sm' field='total_pedidos' header='Total Pedidos' />
+                    <Column headerClassName='text-700 text-sm' field='total_prefaturas' header='Total Pré-Faturas' />
+                    <Column headerClassName='text-700 text-sm' field='total_ordens' header='Total Ordens' />
+                    <Column headerClassName='text-700 text-sm' field='estoque_sc' header='Estoque SC' />
+                </DataTable>
             </Dialog>
         </>
     )

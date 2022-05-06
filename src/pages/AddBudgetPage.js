@@ -67,6 +67,7 @@ export function AddBudgetPage() {
         { name: '10 - Dupli' },
 
     ];
+
     const [selectedUser, setSelectedUser] = useState(null);
     const [selectedClient, setSelectedClient] = useState(null)
     const [selectedRep, setSelectedRep] = useState(null)
@@ -85,26 +86,11 @@ export function AddBudgetPage() {
     const [checkEmitePPAP, setCheckEmitePPAP] = useState(null)
     const [checkMantemSaldo, setCheckMantemSaldo] = useState(null)
     const [checkAceitaParcial, setCheckAceitaParcial] = useState(null)
-    const [products, setProducts] = useState([
-        {
-            operacao: null,
-            seq: 1,
-            cod: 1,
-            descricao: `PF FR PL C/PO G2 RI 1/4" -20UNC X 3/4" [PO]Cod Rex: 1 Cod Sap: 51010210826010-01`,
-            quantia: 7.0,
-            un: 'CT',
-            preco_bruto: 26.20,
-            preco_final: 32.07,
-            tot_produto: 224.49,
-            peso: 7.00,
-            media: 32.07,
-            apro_ger: null,
-            apro_dir: null
-        }
-    ])
+    const [modalVisible, setModalVisible] = useState(false);
+    const [products, setProducts] = useState([])
     return (
         <>
-            <Modal />
+            <Modal visible={modalVisible} setVisible={setModalVisible} budgetItems={products} setBudgetItems={setProducts} />
             <div className="grid">
                 <div className='field col-12 md:col-2 mb-2'>
                     < label htmlFor='emissao' > Emissão</label >
@@ -117,7 +103,8 @@ export function AddBudgetPage() {
                     <Dropdown
                         id='budgetNum'
                         className='w-full'
-                        filter value={selectedUser}
+                        filter
+                        value={selectedUser}
                         options={users}
                         optionLabel={'name'}
                         filterBy='name'
@@ -358,7 +345,7 @@ export function AddBudgetPage() {
             </div>
             <Divider icon={'fa-solid fa-cart-plus'} label='Items do Pedido' />
             <div className='w-full'>
-                <Button className='w-full' label='Adicionar Item' />
+                <Button className='w-full' label='Adicionar Item' onClick={() => setModalVisible(true)} />
             </div>
             <div className='card p-2'>
                 <DataTable header='Produtos do Orçamento/Pedido' value={products} responsiveLayout="stack" breakpoint="960px" >
