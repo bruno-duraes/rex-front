@@ -48,19 +48,19 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
             descricao: selectedItem.descricacao,
             quantidade: quantity,
             un: selectedItem.un,
-            preco_bruto: selectedItem.preco_bruto,
-            preco_final: selectedItem.preco_bruto,
-            tot_produto: parseFloat(quantity * faixa),
+            precoBruto: selectedItem.preco_bruto,
+            precoFinal: selectedItem.preco_bruto,
+            totalProduto: parseFloat(quantity * faixa),
             peso: selectedItem.peso_bruto,
             media: parseFloat(selectedItem.peso_bruto * quantity),
             faixaSelecionada: faixa,
             acabamentoSelecionado: selectedItemFinish,
             data: date,
-            enetrega: dateDelivery,
+            entrega: dateDelivery,
             pedidoOrdem: pedidoOrdem,
             sequencia: sequency,
             codProCli: codProCli,
-            transação: selectedTransaction,
+            transação: selectedTransaction.label,
             itemSelecionado: selectedItem,
             observacao: note,
             depCliente: depCliente,
@@ -184,7 +184,6 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                                         className='ml-2 w-full'
                                         inputClassName='w-full cursor-pointer p-inputtext-sm'
                                         value={selectedItem && selectedItem.faixa_2 ? selectedItem.faixa_2 : null}
-                                        htmlFor='faixa2'
                                         mode='currency'
                                         currency='BRL'
                                         readOnly

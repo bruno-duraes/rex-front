@@ -1,13 +1,16 @@
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AddBudgetPage } from "./pages/AddBudgetPage";
 import { ConsultPage } from "./pages/ConsultPage";
+import { RenderContext } from "./providers/renderContext";
 
 export function App() {
-    const addBudgetPage = { name: 'AddBudgetPage', render: <AddBudgetPage /> }
-    const consultPage = { name: 'ConsultPage', render: <ConsultPage /> }
-    const [renderState, setRenderState] = useState(consultPage);
+    const { render, setRender } = useContext(RenderContext);
+    const [renderState, setRenderState] = useState(render);
+    useEffect(() => {
+        setRenderState(render)
+    }, [render]);
     function renderButtonBar() {
         if (renderState.name == 'ConsultPage') {
             return (
@@ -21,7 +24,7 @@ export function App() {
                                 background: 'none',
                                 border: '2px solid white'
                             }}
-                            onClick={() => setRenderState(addBudgetPage)}
+                            onClick={() => setRender({ name: 'AddBudgetPage', render: <AddBudgetPage /> })}
                         />
                     </div>
                 </>
@@ -37,7 +40,7 @@ export function App() {
                             background: 'none',
                             border: '2px solid white'
                         }}
-                        onClick={() => setRenderState(consultPage)}
+                        onClick={() => setRender({ name: 'ConsultPage', render: <ConsultPage /> })}
                     />
                 </div>
             )

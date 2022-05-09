@@ -69,26 +69,76 @@ export function AddBudgetPage() {
     ];
 
     const [selectedUser, setSelectedUser] = useState(null);
-    const [selectedClient, setSelectedClient] = useState(null)
-    const [selectedRep, setSelectedRep] = useState(null)
-    const [selectedTrasaction, setSelectedTransactions] = useState(null)
-    const [selectedConvenyor, setSelectedConvenyor] = useState(null)
-    const [selectedReDispatch, setSelectedReDispatch] = useState(null)
-    const [selectedPaymentCond, setSelectedPaymentCond] = useState(null)
-    const [selectedCurrency, setSelectedCurrency] = useState(null)
-    const [selectedPaymentType, setSelectedPaymentType] = useState(null)
-    const [freight, setFreight] = useState(null)
-    const [priceFreight, setPriceFreight] = useState(null)
-    const [minValue, setMinValue] = useState(null)
-    const [minValueDup, setMinValueDup] = useState(null)
-    const [budgetValidity, setBudgetValidity] = useState(null)
-    const [checkEmiteCert, setCheckEmiteCert] = useState(null)
-    const [checkEmitePPAP, setCheckEmitePPAP] = useState(null)
-    const [checkMantemSaldo, setCheckMantemSaldo] = useState(null)
-    const [checkAceitaParcial, setCheckAceitaParcial] = useState(null)
+    const [selectedClient, setSelectedClient] = useState(null);
+    const [selectedRep, setSelectedRep] = useState(null);
+    const [selectedTrasaction, setSelectedTransactions] = useState(null);
+    const [selectedConvenyor, setSelectedConvenyor] = useState(null);
+    const [selectedReDispatch, setSelectedReDispatch] = useState(null);
+    const [selectedPaymentCond, setSelectedPaymentCond] = useState(null);
+    const [selectedCurrency, setSelectedCurrency] = useState(null);
+    const [selectedPaymentType, setSelectedPaymentType] = useState(null);
+    const [freight, setFreight] = useState(null);
+    const [priceFreight, setPriceFreight] = useState(null);
+    const [minValue, setMinValue] = useState(null);
+    const [minValueDup, setMinValueDup] = useState(null);
+    const [budgetValidity, setBudgetValidity] = useState(null);
+    const [checkEmiteCert, setCheckEmiteCert] = useState(false);
+    const [checkEmitePPAP, setCheckEmitePPAP] = useState(false);
+    const [checkMantemSaldo, setCheckMantemSaldo] = useState(false);
+    const [checkAceitaParcial, setCheckAceitaParcial] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [emissao, setEmissao] = useState(new Date());
-    const [products, setProducts] = useState([])
+    const [entrega, setEntrega] = useState(null);
+    const [products, setProducts] = useState([]);
+    const [obsCliente, setObsCliente] = useState('');
+    const [nPed_OcCli, setNPed_OcCli] = useState(null);
+
+    function saveOrder() {
+        function validProp(p) {
+            return p ? p.name : ''
+        }
+        let valorTotal = priceFreight;
+        for (const [i, { totalProduto }] of products.entries()) {
+            valorTotal += totalProduto;
+        }
+        let order = {
+            numero: Math.floor(Math.random() * (9999 - 1000)) + 1000,
+            emissao: emissao ? emissao.toLocaleDateString() : '',
+            usuario: validProp(selectedUser),
+            cliente: validProp(selectedClient),
+            obsCliente: obsCliente,
+            nPed_OcCli: nPed_OcCli,
+            entrega: entrega ? entrega.toLocaleDateString() : '',
+            representante: validProp(selectedRep),
+            transacao: validProp(selectedTrasaction),
+            transportador: validProp(selectedConvenyor),
+            redespacho: validProp(selectedReDispatch),
+            condPagamento: validProp(selectedPaymentCond),
+            moeda: validProp(selectedCurrency),
+            tipoPagto: validProp(selectedPaymentType),
+            frete: freight,
+            valorFrete: priceFreight,
+            valorMin: minValue,
+            valorMinDuplicata: minValueDup,
+            validadeOrcamento: budgetValidity,
+            emiteCertificado: checkEmiteCert,
+            emitePAPP: checkEmitePPAP,
+            mantemSaldo: checkMantemSaldo,
+            aceitaParcial: checkAceitaParcial,
+            valorTotal: valorTotal,
+            itens: products
+        }
+        let orders = JSON.parse(localStorage.getItem('orders'));
+        if (!orders) {
+            localStorage.setItem('orders', JSON.stringify([order]));
+            alert('Pedido Gravado com Sucesso!');
+        } else {
+            orders.push(order);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            alert('Pedido Gravado com Sucesso!');
+        }
+    }
+
     return (
         <>
             <Modal visible={modalVisible} setVisible={setModalVisible} budgetItems={products} setBudgetItems={setProducts} />
@@ -97,6 +147,7 @@ export function AddBudgetPage() {
                 <div className='col-12 lg:col-2 flex justify-content-end'>
                     <Button
                         label='Salvar'
+                        onClick={() => saveOrder()}
                         className='p-button-success w-full font-normal font-semibold'
                     />
                 </div>
@@ -128,7 +179,8 @@ export function AddBudgetPage() {
                     <Dropdown
                         id='cliente'
                         className='w-full p-inputtext-sm'
-                        filter value={selectedClient}
+                        filter
+                        value={selectedClient}
                         options={clients}
                         optionLabel={'name'}
                         filterBy='name'
@@ -139,7 +191,14 @@ export function AddBudgetPage() {
             <div className='grid '>
                 <div className='field col-12 md:col'>
                     <label htmlFor='obsCliente'>Observação do Cliente</label>
-                    <InputTextarea id='obsCliente' className='w-full' rows={4} autoResize />
+                    <InputTextarea
+                        id='obsCliente'
+                        className='w-full'
+                        rows={4}
+                        autoResize
+                        value={obsCliente}
+                        onChange={e => setObsCliente(e.value)}
+                    />
                 </div>
             </div>
             <div className='grid mb-2'>
@@ -151,11 +210,16 @@ export function AddBudgetPage() {
             <div className='grid'>
                 <div className='field col-12 md:col-2 flex flex-column'>
                     <label htmlFor='numPed'>N° Ped/Oc Cli</label>
-                    <InputText id='numPed' className='p-inputtext-sm' />
+                    <InputText
+                        id='numPed'
+                        className='p-inputtext-sm'
+                        value={nPed_OcCli}
+                        onChange={e => setNPed_OcCli(e.value)}
+                    />
                 </div>
                 <div className='field col-12 md:col-2 flex flex-column'>
                     <label htmlFor='entrega'>Entrega</label>
-                    <Datepicker id='entrega' />
+                    <Datepicker id='entrega' value={entrega} onChange={e => setEntrega(e.value)} />
                 </div>
                 <div className='field col'>
                     <label htmlFor='representante'>Representante</label>
@@ -362,7 +426,11 @@ export function AddBudgetPage() {
             </div>
             <Divider icon={'fa-solid fa-cart-plus'} label='Items do Pedido' />
             <div className='w-full'>
-                <Button className='w-full' label='Adicionar Item' onClick={() => setModalVisible(true)} />
+                <Button
+                    className='w-full'
+                    label={<span className='font-semibold'>Adicionar Item</span>}
+                    onClick={() => setModalVisible(true)}
+                />
             </div>
             <div className='mt-3'>
                 <DataTable
@@ -377,13 +445,26 @@ export function AddBudgetPage() {
                     <Column headerClassName='text-700 text-sm' field='descricao' header='Descrição'></Column>
                     <Column headerClassName='text-700 text-sm' field='quantidade' header='Quantia'></Column>
                     <Column headerClassName='text-700 text-sm' field='un' header='UN'></Column>
-                    <Column headerClassName='text-700 text-sm' field='preco_bruto' header='Preço Bruto'></Column>
-                    <Column headerClassName='text-700 text-sm' field='preco_final' header='Preço Final'></Column>
-                    <Column headerClassName='text-700 text-sm' field='tot_produto' header='Tot Produto'></Column>
+                    <Column headerClassName='text-700 text-sm' field='precoBruto' header='Preço Bruto'></Column>
+                    <Column headerClassName='text-700 text-sm' field='precoFinal' header='Preço Final'></Column>
+                    <Column headerClassName='text-700 text-sm' field='totalProduto' header='Tot Produto'></Column>
                     <Column headerClassName='text-700 text-sm' field='peso' header='Peso'></Column>
                     <Column headerClassName='text-700 text-sm' field='media' header='Média'></Column>
                     <Column headerClassName='text-700 text-sm' field='apro_ger' header='Apro. Ger'></Column>
                     <Column headerClassName='text-700 text-sm' field='apro_dir' header='Apro. Dir'></Column>
+                    <Column
+                        body={(_, r) => (
+                            <i
+                                className='pi pi-ban font-bold cursor-pointer'
+                                onClick={() => {
+                                    let productsCopy = Array.from(products);
+                                    productsCopy.splice(r.rowIndex, 1);
+                                    setProducts(productsCopy);
+                                }}
+                                style={{ color: '#bf2e2e' }}
+                            ></i>
+                        )}
+                    ></Column>
                 </DataTable>
             </div>
 
