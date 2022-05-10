@@ -27,7 +27,7 @@ export function ConsultPage() {
                 <i
                     className='pi pi-eye mr-3 font-medium text-xl cursor-pointer'
                     style={{ color: '#337597' }}
-                    onClick={() => setRender({ name: 'ViewPage', render: <ViewPage /> })}
+                    onClick={() => setRender({ name: 'ViewPage', render: <ViewPage data={rowData} /> })}
                 ></i>
                 <i
                     className='pi pi-ban font-medium text-xl cursor-pointer'
