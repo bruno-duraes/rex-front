@@ -1,17 +1,22 @@
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
 import { Column } from 'primereact/column';
+import { ConfirmPopup } from 'primereact/confirmpopup';
 import { DataTable } from 'primereact/datatable';
 import { Dropdown } from 'primereact/dropdown';
 import { InputNumber } from 'primereact/inputnumber';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { RadioButton } from 'primereact/radiobutton';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Datepicker } from '../components/Datepicker';
 import { Divider } from '../components/Divider';
 import { Modal } from '../components/Modal';
+import { ModalEditItem } from '../components/ModalEditItem';
 import { RequiredFlag } from '../components/RequiredFlag';
+import { RenderContext } from '../providers/renderContext';
+import { dateISOLocale } from '../utils/dateISOLocale';
+import { ConsultPage } from './ConsultPage';
 
 export function AddBudgetPage() {
     const users = [
@@ -92,6 +97,10 @@ export function AddBudgetPage() {
     const [products, setProducts] = useState([]);
     const [obsCliente, setObsCliente] = useState('');
     const [nPed_OcCli, setNPed_OcCli] = useState(null);
+    const [editItem, setEditItem] = useState(null);
+    const [editItemVisible, setEditItemVisible] = useState(false);
+
+    const { setRender } = useContext(RenderContext);
 
     function saveOrder() {
         function validProp(p) {
@@ -99,16 +108,17 @@ export function AddBudgetPage() {
         }
         let valorTotal = priceFreight;
         for (const [i, { totalProduto }] of products.entries()) {
-            valorTotal += totalProduto;
+            valorTotal = parseFloat(valorTotal) + parseFloat(totalProduto);
         }
+
         let order = {
             numero: Math.floor(Math.random() * (9999 - 1000)) + 1000,
-            emissao: emissao ? emissao.toLocaleDateString() : '',
+            emissao: emissao ? dateISOLocale(emissao) : null,
             usuario: validProp(selectedUser),
             cliente: validProp(selectedClient),
             obsCliente: obsCliente,
             nPed_OcCli: nPed_OcCli,
-            entrega: entrega ? entrega.toLocaleDateString() : '',
+            entrega: entrega ? dateISOLocale(entrega) : null,
             representante: validProp(selectedRep),
             transacao: validProp(selectedTrasaction),
             transportador: validProp(selectedConvenyor),
@@ -141,13 +151,24 @@ export function AddBudgetPage() {
 
     return (
         <>
+            <ModalEditItem
+                index={editItem && editItem.index ? editItem.index : null}
+                item={editItem && editItem.item ? editItem.item : null}
+                visible={editItemVisible}
+                setVisible={setEditItemVisible}
+                changeItems={setProducts}
+                budgetItems={products}
+            />
             <Modal visible={modalVisible} setVisible={setModalVisible} budgetItems={products} setBudgetItems={setProducts} />
             <div className='grid'>
                 <div className='col-10'></div>
                 <div className='col-12 lg:col-2 flex justify-content-end'>
                     <Button
                         label='Salvar'
-                        onClick={() => saveOrder()}
+                        onClick={() => {
+                            saveOrder();
+                            setRender({ name: 'ConsultPage', render: <ConsultPage /> });
+                        }}
                         className='p-button-success w-full font-normal font-semibold'
                     />
                 </div>
@@ -197,7 +218,7 @@ export function AddBudgetPage() {
                         rows={4}
                         autoResize
                         value={obsCliente}
-                        onChange={e => setObsCliente(e.value)}
+                        onChange={e => setObsCliente(e.target.value)}
                     />
                 </div>
             </div>
@@ -214,12 +235,12 @@ export function AddBudgetPage() {
                         id='numPed'
                         className='p-inputtext-sm'
                         value={nPed_OcCli}
-                        onChange={e => setNPed_OcCli(e.value)}
+                        onChange={e => setNPed_OcCli(e.target.value)}
                     />
                 </div>
                 <div className='field col-12 md:col-2 flex flex-column'>
-                    <label htmlFor='entrega'>Entrega</label>
-                    <Datepicker id='entrega' value={entrega} onChange={e => setEntrega(e.value)} />
+                    <label htmlFor='entrega'>Entrega<RequiredFlag /></label>
+                    <Datepicker id='entrega' initialDate={entrega} onChange={e => setEntrega(e.value)} />
                 </div>
                 <div className='field col'>
                     <label htmlFor='representante'>Representante</label>
@@ -238,6 +259,7 @@ export function AddBudgetPage() {
             <div className='grid'>
                 <div className='field col-12 md:col-4'>
                     <label htmlFor='transacao'>Transação</label>
+                    <RequiredFlag />
                     <Dropdown
                         id='transacao'
                         className='w-full p-inputtext-sm'
@@ -250,6 +272,7 @@ export function AddBudgetPage() {
                 </div>
                 <div className='field col-12 md:col-4'>
                     <label htmlFor='transportador'>Transportador</label>
+                    <RequiredFlag />
                     <Dropdown
                         id='transportador'
                         className='w-full p-inputtext-sm'
@@ -356,9 +379,9 @@ export function AddBudgetPage() {
                         inputClassName='p-inputtext-sm'
                         value={minValue}
                         onValueChange={(e) => setMinValue(e.value)}
-                        mode='currency'
-                        currency='USD'
-                        locale='en-US'
+                        mode='decimal'
+                        minFractionDigits={2}
+                        maxFractionDigits={2}
                     />
                 </div>
                 <div className='field col-12 md:col-2 flex flex-column' >
@@ -369,9 +392,9 @@ export function AddBudgetPage() {
                         inputId='valorMinimoDuplicata'
                         value={minValueDup}
                         onValueChange={(e) => setMinValueDup(e.value)}
-                        mode='currency'
-                        currency='USD'
-                        locale='en-US'
+                        mode='decimal'
+                        minFractionDigits={2}
+                        maxFractionDigits={2}
                     />
                 </div>
                 <div className='field col-12 md:col-2 flex flex-column'>
@@ -427,7 +450,7 @@ export function AddBudgetPage() {
             <Divider icon={'fa-solid fa-cart-plus'} label='Items do Pedido' />
             <div className='w-full'>
                 <Button
-                    className='w-full'
+                    className='w-full p-button-raised'
                     label={<span className='font-semibold'>Adicionar Item</span>}
                     onClick={() => setModalVisible(true)}
                 />
@@ -437,10 +460,10 @@ export function AddBudgetPage() {
                     header={<span className='text-700 text-sm'>Produtos do Orçamento/Pedido</span>}
                     value={products}
                     responsiveLayout="stack"
-                    showGridlines
+                    // showGridlines
                     className='relative'
                 >
-                    <Column headerClassName='text-700 text-sm' field='seq' header='Seq'></Column>
+                    <Column headerClassName='text-700 text-sm' body={(_, { rowIndex }) => rowIndex + 1} header='Seq'></Column>
                     <Column headerClassName='text-700 text-sm' field='codigo' header='Cod'></Column>
                     <Column headerClassName='text-700 text-sm' field='descricao' header='Descrição'></Column>
                     <Column headerClassName='text-700 text-sm' field='quantidade' header='Quantia'></Column>
@@ -453,20 +476,51 @@ export function AddBudgetPage() {
                     <Column headerClassName='text-700 text-sm' field='apro_ger' header='Apro. Ger'></Column>
                     <Column headerClassName='text-700 text-sm' field='apro_dir' header='Apro. Dir'></Column>
                     <Column
-                        body={(_, r) => (
-                            <i
-                                className='pi pi-ban font-bold cursor-pointer'
-                                onClick={() => {
-                                    let productsCopy = Array.from(products);
-                                    productsCopy.splice(r.rowIndex, 1);
-                                    setProducts(productsCopy);
-                                }}
-                                style={{ color: '#bf2e2e' }}
-                            ></i>
-                        )}
+                        body={(item, r) => {
+                            const [popupRemoveItem, setPopupRemoveItem] = useState(false);
+                            return (
+                                <>
+                                    <ConfirmPopup
+                                        onHide={() => setPopupRemoveItem(false)}
+                                        target={document.getElementById(`remove-item-${r.rowIndex}`)}
+                                        visible={popupRemoveItem}
+                                        acceptLabel='Sim'
+                                        rejectLabel='Não'
+                                        acceptClassName='p-button-danger p-button-raised'
+                                        rejectClassName='p-button-raised p-button-outlined'
+                                        icon='pi pi-exclamation-triangle'
+                                        message={<span className='font-semibold'>Deseja remover esse item?</span>}
+                                        accept={() => {
+                                            let productsCopy = Array.from(products);
+                                            productsCopy.splice(r.rowIndex, 1);
+                                            setProducts(productsCopy);
+                                            setPopupRemoveItem(false)
+                                        }}
+                                        reject={() => setPopupRemoveItem(false)}
+                                    />
+                                    <div className='flex justify-content-center align-items-center'>
+                                        <i
+                                            id={`remove-item-${r.rowIndex}`}
+                                            className='fa-solid fa-pen-to-square mr-2 font-bold cursor-pointer text-xl'
+                                            onClick={() => {
+                                                setEditItem({ item: item, index: r.rowIndex });
+                                                setEditItemVisible(true);
+                                            }}
+                                            style={{ color: '#006991' }}
+                                        ></i>
+                                        <i
+                                            id={`remove-item-${r.rowIndex}`}
+                                            className='pi pi-ban font-bold cursor-pointer text-xl'
+                                            onClick={() => setPopupRemoveItem(true)}
+                                            style={{ color: '#bf2e2e' }}
+                                        ></i>
+                                    </div>
+                                </>
+                            )
+                        }}
                     ></Column>
                 </DataTable>
-            </div>
+            </div >
 
         </>
     )

@@ -12,7 +12,9 @@ import { Sidebar } from 'primereact/sidebar';
 import { useState } from 'react';
 import '../index.css';
 import { getMockItems } from '../services/getMockItems';
+import { dateISOLocale } from '../utils/dateISOLocale';
 import { Datepicker } from './Datepicker';
+import { RequiredFlag } from './RequiredFlag';
 
 export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
     const [selectedItem, setSelectedItem] = useState(null);
@@ -43,28 +45,27 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
     }
     function addItem() {
         const item = {
-            seq: budgetItems.length + 1,
             codigo: selectedItem.codigoRex,
             descricao: selectedItem.descricacao,
             quantidade: quantity,
             un: selectedItem.un,
             precoBruto: selectedItem.preco_bruto,
             precoFinal: selectedItem.preco_bruto,
-            totalProduto: parseFloat(quantity * faixa),
+            totalProduto: (quantity * faixa).toFixed(2),
             peso: selectedItem.peso_bruto,
-            media: parseFloat(selectedItem.peso_bruto * quantity),
+            media: (selectedItem.peso_bruto * quantity).toFixed(2),
             faixaSelecionada: faixa,
             acabamentoSelecionado: selectedItemFinish,
-            data: date,
-            entrega: dateDelivery,
+            data: dateISOLocale(date),
+            entrega: dateDelivery ? dateISOLocale(dateDelivery) : null,
             pedidoOrdem: pedidoOrdem,
             sequencia: sequency,
             codProCli: codProCli,
-            transação: selectedTransaction.label,
-            itemSelecionado: selectedItem,
+            transacao: selectedTransaction.label,
             observacao: note,
             depCliente: depCliente,
             depPadrao: depPadrao,
+            itemSelecionado: selectedItem
         };
         let budgetItemsCopy = Array.from(budgetItems);
         budgetItemsCopy.push(item);
@@ -92,6 +93,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                     </>
                 }
                 fullScreen
+                blockScroll
                 className='surface-100'
                 showCloseIcon={false}
                 visible={visible}
@@ -100,6 +102,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                     <div className='grid formgrid'>
                         <div className='field col-12 md:col-8'>
                             <label htmlFor='selectItem'>Item</label>
+                            <RequiredFlag />
                             <AutoComplete
                                 value={selectedItem}
                                 suggestions={filteredItems}
@@ -113,6 +116,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                         </div>
                         <div className='field col-3 md:col-1'>
                             <label htmlFor='itemQuantia'>Quantia</label>
+                            <RequiredFlag />
                             <InputNumber
                                 inputId='itemQuantia'
                                 className='w-full'
@@ -302,15 +306,15 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                         </div>
                         <div className='field col-6 lg:col-2'>
                             <label>Pedido/Ordem</label>
-                            <InputText className='w-full p-inputtext-sm' value={pedidoOrdem} onChange={e => setPedidoOrdem(e.value)} />
+                            <InputText className='w-full p-inputtext-sm' value={pedidoOrdem} onChange={e => setPedidoOrdem(e.target.value)} />
                         </div>
                         <div className='field col-6 lg:col-2'>
                             <label>Sequencia</label>
-                            <InputText className='w-full p-inputtext-sm' value={sequency} onChange={e => setSequency(e.value)} />
+                            <InputText className='w-full p-inputtext-sm' value={sequency} onChange={e => setSequency(e.target.value)} />
                         </div>
                         <div className='field col-6 lg:col-2'>
                             <label>Cod Pro Cli</label>
-                            <InputText className='w-full p-inputtext-sm' value={codProCli} onChange={e => setCodProCli(e.value)} />
+                            <InputText className='w-full p-inputtext-sm' value={codProCli} onChange={e => setCodProCli(e.target.value)} />
                         </div>
                     </div>
                     <div className='grid'>
@@ -336,7 +340,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                                 rows={4}
                                 autoResize
                                 value={note}
-                                onChange={e => setNote(e.value)}
+                                onChange={e => setNote(e.target.value)}
                             />
                         </div>
                     </div>
