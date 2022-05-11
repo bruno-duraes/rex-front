@@ -99,7 +99,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                 visible={visible}
             >
                 <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='p-5 mb-3 bg-white'>
-                    <div className='grid formgrid'>
+                    <div className='grid'>
                         <div className='field col-12 md:col-8'>
                             <label htmlFor='selectItem'>Item</label>
                             <RequiredFlag />

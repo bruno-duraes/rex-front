@@ -8,6 +8,6 @@ function multiplyItems(arr, n) {
 
 export function getMockOrders() {
     let orders = JSON.parse(localStorage.getItem('orders'));
-    let mock = multiplyItems(orders, 12)
-    return mock
+    // let mock = multiplyItems(orders, 12)
+    return orders
 }

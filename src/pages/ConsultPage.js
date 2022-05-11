@@ -22,27 +22,29 @@ export function ConsultPage() {
         { icon: 'pi pi-circle-fill ml-2', value: 'Pedidos', color: '#4fd54f' },
         { icon: 'pi pi-circle-fill ml-2', value: 'Orçamentos', color: '#d54f4f' }
     ];
+
     useEffect(() => {
         let status = statusFilter ? statusFilter.toLocaleLowerCase() : null;
         if (status == 'pedidos') {
-            setOrcamentos(getMockOrders());
-            let filtered = orcamentos.filter(p => p.status)
+            let filtered = orders.filter(p => p.status)
             setOrcamentos(filtered);
         } else if (status == 'orçamentos') {
-            setOrcamentos(getMockOrders());
-            let filtered = orcamentos.filter(p => !p.status)
+            let filtered = orders.filter(p => !p.status)
             setOrcamentos(filtered);
         } else {
             setOrcamentos(getMockOrders())
         }
     }, [statusFilter]);
+
     useEffect(() => {
-        if (selectedUser) {
+        if (selectedUser && selectedUser.name !== 'Todos') {
             let filtered = orders.filter(({ usuario }) => usuario == selectedUser.name)
-            console.log(filtered)
             setOrcamentos(filtered);
+        } else {
+            setOrcamentos(orders);
         }
     }, [selectedUser])
+
     function statusTemplate(rowData, { rowIndex }) {
         if (rowData.status == true) {
             return (
@@ -65,7 +67,7 @@ export function ConsultPage() {
                     }}></i>
             )
         }
-    }
+    };
     function operationsTemplate(rowData, r) {
         const [popupVisible, setPopupVisible] = useState(false)
         const [popupEditVisible, setPopupEditVisible] = useState(false)
@@ -124,10 +126,11 @@ export function ConsultPage() {
                 ></i>
             </div>
         )
-    }
+    };
     return (
         <>
             <DataTable
+                resizableColumns
                 header={
                     <div className='grid'>
                         <div className='col-12'>
@@ -156,6 +159,7 @@ export function ConsultPage() {
                                 onChange={(e) => setSelectedUser(e.value)}
                                 optionLabel='name'
                                 options={[
+                                    { name: 'Todos' },
                                     { name: 'User 01' },
                                     { name: 'User 02' },
                                     { name: 'User 03' },
@@ -175,7 +179,6 @@ export function ConsultPage() {
                 emptyMessage={'Nenhum pedido Encontrado'}
             >
                 <Column
-                    filterHeader='Filtro por Status'
                     bodyClassName='w-1rem text-center'
                     headerClassName='text-700 text-sm'
                     body={statusTemplate}
@@ -184,6 +187,7 @@ export function ConsultPage() {
                 <Column
                     sortable
                     filter
+                    filte
                     headerClassName='text-700 text-sm'
                     bodyClassName='w-2rem'
                     field='numero'
@@ -202,7 +206,7 @@ export function ConsultPage() {
                     sortable
                     alignHeader='center'
                     headerClassName='text-700 text-sm'
-                    body={({ entrega }) => new Date(entrega).toLocaleDateString()}
+                    body={({ emissao }) => new Date(emissao).toLocaleDateString()}
                     header='Data'
                     dataType='date'
                 />

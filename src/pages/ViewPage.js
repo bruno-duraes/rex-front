@@ -330,7 +330,7 @@ export function ViewPage({ data, index }) {
             <div className='grid formgrid'>
                 <div className='field col-12 md:col-1 flex flex-column mr-3'>
                     <label>Frete</label>
-                    <div className='mt-2 flex align-items-center '>
+                    <div className='flex align-items-center '>
                         <RadioButton
                             inputId='cif'
                             className='mr-1'
@@ -402,7 +402,7 @@ export function ViewPage({ data, index }) {
                     />
                 </div>
             </div>
-            <div className='grid flex flex-wrap '>
+            <div className='grid flex flex-wrap mt-2 '>
                 <div className='col-12 md:col-2'>
                     <Checkbox
                         inputId='emiteCert'
@@ -453,7 +453,7 @@ export function ViewPage({ data, index }) {
                     header={<span className='text-700 text-sm'>Produtos do Orçamento/Pedido</span>}
                     value={products}
                     responsiveLayout="stack"
-                    // showGridlines
+                    showGridlines
                     className='relative'
                 >
                     <Column headerClassName='text-700 text-sm' body={(_, { rowIndex }) => rowIndex + 1} header='Seq'></Column>
@@ -469,6 +469,8 @@ export function ViewPage({ data, index }) {
                     <Column headerClassName='text-700 text-sm' field='apro_ger' header='Apro. Ger'></Column>
                     <Column headerClassName='text-700 text-sm' field='apro_dir' header='Apro. Dir'></Column>
                     <Column
+                        headerClassName='text-700 text-sm'
+                        header='Operações'
                         body={(item, r) => {
                             const [popupRemoveItem, setPopupRemoveItem] = useState(false);
                             return (

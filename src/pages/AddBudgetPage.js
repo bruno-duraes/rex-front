@@ -80,7 +80,7 @@ export function AddBudgetPage() {
     const [selectedConvenyor, setSelectedConvenyor] = useState(null);
     const [selectedReDispatch, setSelectedReDispatch] = useState(null);
     const [selectedPaymentCond, setSelectedPaymentCond] = useState(null);
-    const [selectedCurrency, setSelectedCurrency] = useState(null);
+    const [selectedCurrency, setSelectedCurrency] = useState({ name: '1 - Real | R$' });
     const [selectedPaymentType, setSelectedPaymentType] = useState(null);
     const [freight, setFreight] = useState(null);
     const [priceFreight, setPriceFreight] = useState(null);
@@ -159,12 +159,19 @@ export function AddBudgetPage() {
                 changeItems={setProducts}
                 budgetItems={products}
             />
-            <Modal visible={modalVisible} setVisible={setModalVisible} budgetItems={products} setBudgetItems={setProducts} />
+            <Modal
+                visible={modalVisible}
+                setVisible={setModalVisible}
+                budgetItems={products}
+                setBudgetItems={setProducts}
+            />
+
             <div className='grid'>
                 <div className='col-10'></div>
                 <div className='col-12 lg:col-2 flex justify-content-end'>
                     <Button
                         label='Salvar'
+                        type='submit'
                         onClick={() => {
                             saveOrder();
                             setRender({ name: 'ConsultPage', render: <ConsultPage /> });
@@ -176,10 +183,10 @@ export function AddBudgetPage() {
             <div className="grid">
                 <div className='field col-12 md:col-2 mb-2'>
                     < label htmlFor='emissao' > Emissão</label >
-                    <Datepicker id='emissao' initialDate={emissao} onChange={(e) => setEmissao(e.value)} />
+                    <Datepicker id='emissao' readonly={true} initialDate={emissao} onChange={(e) => setEmissao(e.value)} />
                 </div >
             </div >
-            <div className='grid mb-2'>
+            <div className='grid'>
                 <div className="field col">
                     <label htmlFor='budgetNum'>Usuário</label>
                     <RequiredFlag />
@@ -215,7 +222,7 @@ export function AddBudgetPage() {
                     <InputTextarea
                         id='obsCliente'
                         className='w-full'
-                        rows={4}
+                        rows={2}
                         autoResize
                         value={obsCliente}
                         onChange={e => setObsCliente(e.target.value)}
@@ -337,7 +344,7 @@ export function AddBudgetPage() {
             <div className='grid formgrid'>
                 <div className='field col-12 md:col-1 flex flex-column mr-3'>
                     <label>Frete</label>
-                    <div className='mt-2 flex align-items-center '>
+                    <div className='flex align-items-center '>
                         <RadioButton
                             inputId='cif'
                             className='mr-1'
@@ -409,7 +416,7 @@ export function AddBudgetPage() {
                     />
                 </div>
             </div>
-            <div className='grid flex flex-wrap '>
+            <div className='grid flex flex-wrap mt-2'>
                 <div className='col-12 md:col-2'>
                     <Checkbox
                         inputId='emiteCert'
@@ -457,10 +464,11 @@ export function AddBudgetPage() {
             </div>
             <div className='mt-3'>
                 <DataTable
+                    resizableColumns
                     header={<span className='text-700 text-sm'>Produtos do Orçamento/Pedido</span>}
                     value={products}
                     responsiveLayout="stack"
-                    // showGridlines
+                    showGridlines
                     className='relative'
                 >
                     <Column headerClassName='text-700 text-sm' body={(_, { rowIndex }) => rowIndex + 1} header='Seq'></Column>
@@ -476,6 +484,8 @@ export function AddBudgetPage() {
                     <Column headerClassName='text-700 text-sm' field='apro_ger' header='Apro. Ger'></Column>
                     <Column headerClassName='text-700 text-sm' field='apro_dir' header='Apro. Dir'></Column>
                     <Column
+                        headerClassName='text-700 text-sm'
+                        header='Operações'
                         body={(item, r) => {
                             const [popupRemoveItem, setPopupRemoveItem] = useState(false);
                             return (

@@ -19,7 +19,7 @@ export function App() {
                         <Button
                             label={<label className="text-white cursor-pointer">Novo Pedido</label>}
                             icon='pi pi-plus'
-                            className="p-button-raised flex align-items-center"
+                            className="p-button-raised flex align-items-center btn"
                             style={{
                                 background: 'none',
                                 border: '2px solid white'
@@ -33,7 +33,7 @@ export function App() {
             return (
                 <div className="mr-2">
                     <Button
-                        label={<label className="text-white cursor-pointer">Voltar</label>}
+                        label={<label className="text-white cursor-pointer btn">Voltar</label>}
                         icon='pi pi-arrow-left'
                         className="p-button-raised flex align-items-center"
                         style={{
