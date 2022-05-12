@@ -1,3 +1,4 @@
+import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { ConfirmPopup } from 'primereact/confirmpopup';
 import { DataTable } from 'primereact/datatable';
@@ -9,14 +10,25 @@ import { getMockOrders } from '../services/getMockOrders';
 import { ViewPage } from './ViewPage';
 
 export function ConsultPage() {
-    let orders = getMockOrders()
+    let orders = getMockOrders()/*.map(p => (
+        {
+            status: p.status,
+            numero: p.numero,
+            pedCliente: p.pedCliente,
+            data: new Date(p.emissao).toLocaleDateString(),
+            valor: p.valorTotal,
+            cliente: p.cliente,
+            representante: p.representante,
+            usuario: p.usuario
+        }
+    ));*/
 
-    const [orcamentos, setOrcamentos] = useState(orders)
+    const [orcamentos, setOrcamentos] = useState(orders);
     const [filters, setFilters] = useState(null)
     const [loading, setLoading] = useState(true)
     const { setRender } = useContext(RenderContext);
     const [statusFilter, setStatusFilter] = useState('Todos');
-    const [selectedUser, setSelectedUser] = useState();
+    const [selectedUser, setSelectedUser] = useState({ name: 'Todos' });
     const options = [
         { icon: 'pi pi-circle ml-2', value: 'Todos', color: '#FFFF' },
         { icon: 'pi pi-circle-fill ml-2', value: 'Pedidos', color: '#4fd54f' },
@@ -32,7 +44,7 @@ export function ConsultPage() {
             let filtered = orders.filter(p => !p.status)
             setOrcamentos(filtered);
         } else {
-            setOrcamentos(getMockOrders())
+            setOrcamentos(orders)
         }
     }, [statusFilter]);
 
@@ -127,54 +139,60 @@ export function ConsultPage() {
             </div>
         )
     };
+
     return (
         <>
             <DataTable
-                resizableColumns
                 header={
-                    <div className='grid'>
-                        <div className='col-12'>
-                            <span className='text-700 w-full'>Orçamentos/Pedidos</span>
+                    <>
+                        <div className='grid'>
+                            <div className='col-12'>
+                                <span className='text-700 w-full'>Orçamentos/Pedidos</span>
+                            </div>
                         </div>
-                        <div className='col-12'>
-                            <SelectButton
-                                options={options}
-                                value={statusFilter}
-                                onChange={e => setStatusFilter(e.value)}
-                                itemTemplate={(opt) => (
-                                    <div className='flex align-items-center'>
-                                        <label className='text-white cursor-pointer'>{opt.value}</label>
-                                        <i className={opt.icon} style={{ color: opt.color }}></i>
-                                    </div>
-                                )}
-                            />
+                        <div className='grid align-items-center justify-content-between'>
+                            <div className='pt-3'>
+                                <SelectButton
+                                    options={options}
+                                    value={statusFilter}
+                                    onChange={e => setStatusFilter(e.value)}
+                                    itemTemplate={(opt) => (
+                                        <div className='flex align-items-center'>
+                                            <label className='text-white cursor-pointer'>{opt.value}</label>
+                                            <i className={opt.icon} style={{ color: opt.color }}></i>
+                                        </div>
+                                    )}
+                                />
+                            </div>
+                            <div className='field w-20rem'>
+                                <label>Usuário</label>
+                                <Dropdown
+                                    className='w-full'
+                                    filter
+                                    filterBy='name'
+                                    value={selectedUser}
+                                    onChange={(e) => setSelectedUser(e.value)}
+                                    optionLabel='name'
+                                    options={[
+                                        { name: 'Todos' },
+                                        { name: 'User 01' },
+                                        { name: 'User 02' },
+                                        { name: 'User 03' },
+                                    ]} />
+                            </div>
                         </div>
-                        <div className='field col-12 lg:col-3'>
-                            <label>Usuário</label>
-                            <Dropdown
-                                className='w-full'
-                                filter
-                                filterBy='name'
-                                value={selectedUser}
-                                onChange={(e) => setSelectedUser(e.value)}
-                                optionLabel='name'
-                                options={[
-                                    { name: 'Todos' },
-                                    { name: 'User 01' },
-                                    { name: 'User 02' },
-                                    { name: 'User 03' },
-                                ]} />
+                        <div className='grid flex align-items-center '>
+                            <Button icon="pi pi-filter-slash" label="Clear" className="mt-3 p-button-outlined btn-outlined" />
                         </div>
-                    </div>
+                    </>
                 }
                 value={orcamentos}
                 paginator
                 rows={10}
                 filters={filters}
                 showGridlines
-                loading={false}
                 responsiveLayout='scroll'
-                globalFilterFields={[]}
+                removableSort
                 filterDisplay='menu'
                 emptyMessage={'Nenhum pedido Encontrado'}
             >
@@ -189,7 +207,7 @@ export function ConsultPage() {
                     filter
                     filte
                     headerClassName='text-700 text-sm'
-                    bodyClassName='w-2rem'
+                    className='text-center'
                     field='numero'
                     header='Numero'
                 />
@@ -197,23 +215,25 @@ export function ConsultPage() {
                     sortable
                     filter
                     headerClassName='text-700 text-sm'
-                    bodyClassName='w-8rem'
                     field='pedCliente'
                     header='Ped Cliente'
                 />
                 <Column
                     filter
                     sortable
-                    alignHeader='center'
                     headerClassName='text-700 text-sm'
+                    className='text-center'
+                    field='emissao'
                     body={({ emissao }) => new Date(emissao).toLocaleDateString()}
                     header='Data'
                     dataType='date'
                 />
                 <Column
-                    filter
-                    sortable
                     headerClassName='text-700 text-sm'
+                    body={(({ valorTotal }) => valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))}
+                    bodyClassName='text-center'
+                    sortable
+                    filter
                     field='valorTotal'
                     header='Valor'
                     dataType='numeric'
@@ -222,6 +242,7 @@ export function ConsultPage() {
                     sortable
                     filter
                     headerClassName='text-700 text-sm'
+                    bodyStyle={{ wordBreak: 'break-all' }}
                     field='cliente'
                     header='Cliente'
                 />
@@ -229,6 +250,7 @@ export function ConsultPage() {
                     filter
                     sortable
                     headerClassName='text-700 text-sm'
+                    bodyStyle={{ wordBreak: 'break-all' }}
                     field='representante'
                     header='Representante'
                 />

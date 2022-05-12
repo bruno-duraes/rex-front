@@ -103,11 +103,13 @@ export function ViewPage({ data, index }) {
         function validProp(p) {
             return p ? p.name : ''
         }
-        let valorTotal = priceFreight;
+        let valorTotal = 0;
+        if (priceFreight > 0) {
+            valorTotal = priceFreight;
+        }
         for (const [i, { totalProduto }] of products.entries()) {
             valorTotal = parseFloat(valorTotal) + parseFloat(totalProduto);
         }
-
         let order = {
             numero: data.numero,
             emissao: emissao ? dateISOLocale(emissao) : null,
