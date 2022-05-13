@@ -9,11 +9,12 @@ import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { RadioButton } from 'primereact/radiobutton';
 import { Sidebar } from 'primereact/sidebar';
-import { useState } from 'react';
-import '../index.css';
+import { Toast } from 'primereact/toast';
+import { useRef, useState } from 'react';
 import { getMockItems } from '../services/getMockItems';
 import { dateISOLocale } from '../utils/dateISOLocale';
 import { Datepicker } from './Datepicker';
+import { RequiredFlag } from './RequiredFlag';
 
 export function ModalEditItem({ item, budgetItems, changeItems, index, visible, setVisible }) {
     if (item) {
@@ -32,8 +33,9 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
         const [note, setNote] = useState(item.observacao ? item.observacao : '');
         const [depPadrao, setDepPadrao] = useState(item.depPadrao);
         const [depCliente, setDepCliente] = useState(item.depCliente);
+        let [validation] = useState({ item: '', quantia: '' });
         let items = getMockItems();
-        console.log(item)
+        const toast = useRef(null);
         function resetModal() {
             setFaixa(null);
             setDepPadrao(false);
@@ -43,6 +45,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
             setSelectedItem(null);
             setQuantity(null);
         }
+
         function saveChanges() {
             let item = {
                 codigo: selectedItem.codigoRex,
@@ -66,6 +69,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                 depCliente: depCliente,
                 depPadrao: depPadrao,
             };
+
             let budgetItemsCopy = Array.from(budgetItems);
             budgetItemsCopy.splice(index, 1, item);
             changeItems(budgetItemsCopy);
@@ -84,6 +88,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
         }
         return (
             <>
+                <Toast ref={toast} />
                 <Sidebar
                     icons={
                         <>
@@ -101,6 +106,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                         <div className='grid '>
                             <div className='field col-12 md:col-8'>
                                 <label htmlFor='selectItem'>Item</label>
+                                <RequiredFlag />
                                 <AutoComplete
                                     value={selectedItem}
                                     suggestions={filteredItems}
@@ -109,14 +115,15 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     onChange={e => setSelectedItem(e.value)}
                                     id='selectItem'
                                     className='w-full'
-                                    inputClassName='w-full p-inputtext-sm'
+                                    inputClassName={`w-full p-inputtext-sm ${validation.item}`}
                                 />
                             </div>
                             <div className='field col-3 md:col-1'>
                                 <label htmlFor='itemQuantia'>Quantia</label>
+                                <RequiredFlag />
                                 <InputNumber
                                     inputId='itemQuantia'
-                                    className='w-full'
+                                    className={`w-full ${validation.quantia}`}
                                     inputClassName='w-full p-inputtext-sm'
                                     mode='decimal'
                                     minFractionDigits={2}

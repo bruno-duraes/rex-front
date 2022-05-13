@@ -1,4 +1,3 @@
-import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { ConfirmPopup } from 'primereact/confirmpopup';
 import { DataTable } from 'primereact/datatable';
@@ -181,9 +180,9 @@ export function ConsultPage() {
                                     ]} />
                             </div>
                         </div>
-                        <div className='grid flex align-items-center '>
+                        {/* <div className='grid flex align-items-center '>
                             <Button icon="pi pi-filter-slash" label="Clear" className="mt-3 p-button-outlined btn-outlined" />
-                        </div>
+                        </div> */}
                     </>
                 }
                 value={orcamentos}

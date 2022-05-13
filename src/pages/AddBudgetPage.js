@@ -70,7 +70,6 @@ export function AddBudgetPage() {
         { name: '7 - Deb c/c' },
         { name: '8 - DDA' },
         { name: '10 - Dupli' },
-
     ];
 
     const [selectedUser, setSelectedUser] = useState(null);
