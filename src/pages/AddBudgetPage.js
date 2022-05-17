@@ -8,7 +8,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { RadioButton } from 'primereact/radiobutton';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Datepicker } from '../components/Datepicker';
 import { Divider } from '../components/Divider';
 import { Modal } from '../components/Modal';
@@ -72,7 +72,7 @@ export function AddBudgetPage() {
         { name: '10 - Dupli' },
     ];
 
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUser, setSelectedUser] = useState({ name: 'User 01' });
     const [selectedClient, setSelectedClient] = useState(null);
     const [selectedRep, setSelectedRep] = useState(null);
     const [selectedTrasaction, setSelectedTransactions] = useState(null);
@@ -98,9 +98,18 @@ export function AddBudgetPage() {
     const [nPed_OcCli, setNPed_OcCli] = useState(null);
     const [editItem, setEditItem] = useState(null);
     const [editItemVisible, setEditItemVisible] = useState(false);
+    const [tableTotal, setTableTotal] = useState('0,00');
+    const { setRender, globalToast } = useContext(RenderContext);
 
-    const { setRender } = useContext(RenderContext);
-
+    useEffect(() => {
+        if (products.length > 0) {
+            let v = 0;
+            for (const [i, { totalProduto }] of products.entries()) {
+                v += parseFloat(totalProduto);
+            }
+            setTableTotal(v);
+        }
+    }, [products])
     function saveOrder() {
         function validProp(p) {
             return p ? p.name : ''
@@ -144,11 +153,11 @@ export function AddBudgetPage() {
         let orders = JSON.parse(localStorage.getItem('orders'));
         if (!orders) {
             localStorage.setItem('orders', JSON.stringify([order]));
-            alert('Pedido Gravado com Sucesso!');
+            globalToast.current.show({ severity: 'success', summary: 'Pedido Criado Com Sucesso!', detail: `Pedido N°${order.numero}`, life: 6000 });
         } else {
             orders.push(order);
             localStorage.setItem('orders', JSON.stringify(orders));
-            alert('Pedido Gravado com Sucesso!');
+            globalToast.current.show({ severity: 'success', summary: 'Pedido Criado Com Sucesso!', detail: `Pedido N°${order.numero}`, life: 6000 });
         }
     }
 
@@ -161,12 +170,16 @@ export function AddBudgetPage() {
                 setVisible={setEditItemVisible}
                 changeItems={setProducts}
                 budgetItems={products}
+                clientName={selectedClient ? selectedClient.name : undefined}
+                deadline={entrega ? entrega : null}
             />
             <Modal
                 visible={modalVisible}
                 setVisible={setModalVisible}
                 budgetItems={products}
                 setBudgetItems={setProducts}
+                clientName={selectedClient ? selectedClient.name : undefined}
+                deadline={entrega ? entrega : null}
             />
 
             <div className='grid'>
@@ -468,7 +481,12 @@ export function AddBudgetPage() {
             <div className='mt-3'>
                 <DataTable
                     resizableColumns
-                    header={<span className='text-700 text-sm'>Produtos do Orçamento/Pedido</span>}
+                    header={
+                        <div className='flex justify-content-between text-700 text-sm'>
+                            <span>Produtos do Orçamento/Pedido</span>
+                            <span>Total dos Produtos: {tableTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                        </div>
+                    }
                     value={products}
                     responsiveLayout="stack"
                     showGridlines
@@ -479,9 +497,9 @@ export function AddBudgetPage() {
                     <Column headerClassName='text-700 text-sm' field='descricao' header='Descrição'></Column>
                     <Column headerClassName='text-700 text-sm' field='quantidade' header='Quantia'></Column>
                     <Column headerClassName='text-700 text-sm' field='un' header='UN'></Column>
-                    <Column headerClassName='text-700 text-sm' field='precoBruto' header='Preço Bruto'></Column>
-                    <Column headerClassName='text-700 text-sm' field='precoFinal' header='Preço Final'></Column>
-                    <Column headerClassName='text-700 text-sm' field='totalProduto' header='Tot Produto'></Column>
+                    <Column headerClassName='text-700 text-sm' field='precoBruto' header='Preço Bruto' body={({ precoBruto }) => precoBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
+                    <Column headerClassName='text-700 text-sm' field='precoFinal' header='Preço Final' body={({ precoFinal }) => precoFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
+                    <Column headerClassName='text-700 text-sm' field='totalProduto' body={({ totalProduto }) => parseFloat(totalProduto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} header='Tot Produto'></Column>
                     <Column headerClassName='text-700 text-sm' field='peso' header='Peso'></Column>
                     <Column headerClassName='text-700 text-sm' field='media' header='Média'></Column>
                     <Column headerClassName='text-700 text-sm' field='apro_ger' header='Apro. Ger'></Column>

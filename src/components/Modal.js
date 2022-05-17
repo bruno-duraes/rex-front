@@ -16,7 +16,8 @@ import { dateISOLocale } from '../utils/dateISOLocale';
 import { Datepicker } from './Datepicker';
 import { RequiredFlag } from './RequiredFlag';
 
-export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
+export function Modal({ budgetItems, setBudgetItems, visible, setVisible, clientName, deadline }) {
+    console.log(new Date(deadline))
     const [selectedItem, setSelectedItem] = useState(null);
     const [filteredItems, setFilteredItems] = useState(null);
     const [quantity, setQuantity] = useState(null);
@@ -24,7 +25,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
     const [faixaSol, setFaixaSol] = useState(null);
     const [selectedItemFinish, setSelectedItemFinish] = useState(null);
     const [date, setDate] = useState(new Date());
-    const [dateDelivery, setDateDelivery] = useState(null);
+    const [dateDelivery, setDateDelivery] = useState(deadline);
     const [pedidoOrdem, setPedidoOrdem] = useState('');
     const [sequency, setSequency] = useState('');
     const [codProCli, setCodProCli] = useState('');
@@ -32,121 +33,117 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
     const [note, setNote] = useState('');
     const [depPadrao, setDepPadrao] = useState(false);
     const [depCliente, setDepCliente] = useState(false);
+    const [lastProduct, setLastProduct] = useState('');
+    const [filterCod, setFilterCod] = useState('codigoRex');
     const toast = useRef(null);
     const item = useRef(null);
     const [validation, setValidation] = useState({ item: '', quantia: '' });
 
     let items = getMockItems();
+
     function resetModal() {
         setFaixa(null);
         setDepPadrao(false);
         setDepCliente(false)
-        setDateDelivery(null);
+        // setDateDelivery(null);
         setSelectedItemFinish(null);
         setSelectedItem(null);
         setQuantity(null);
     }
-    let validations = [
-        { name: 'Item', value: selectedItem, state: validation.item },
-        { name: 'Quantia', value: quantity, state: validation.quantia }
-    ]
-    function validForm(arr = [{ name, value, state }], message) {
-        let errors = arr.filter(({ value }) => !value);
-        if (errors && errors.length > 0) {
-            for (const [i, p] of arr.entries()) {
-                let validationCopy = new Object(validation);
-                message.current.show({ severety: 'success', summary: 'Erro', detail: `${p.name} é um campo obrigatório.` })
-                return false;
-            }
-        } else {
-            return true;
-        }
-    }
     function addItem() {
-        if (!validForm(validations, toast)) {
-            console.log(validation)
-        } else {
-            const item = {
-                codigo: selectedItem.codigoRex,
-                descricao: selectedItem.descricacao,
-                quantidade: quantity,
-                un: selectedItem.un,
-                precoBruto: selectedItem.preco_bruto,
-                precoFinal: selectedItem.preco_bruto,
-                totalProduto: (quantity * faixa).toFixed(2),
-                peso: selectedItem.peso_bruto,
-                media: (selectedItem.peso_bruto * quantity).toFixed(2),
-                faixaSelecionada: faixa,
-                acabamentoSelecionado: selectedItemFinish,
-                data: dateISOLocale(date),
-                entrega: dateDelivery ? dateISOLocale(dateDelivery) : null,
-                pedidoOrdem: pedidoOrdem,
-                sequencia: sequency,
-                codProCli: codProCli,
-                transacao: selectedTransaction.label,
-                observacao: note,
-                depCliente: depCliente,
-                depPadrao: depPadrao,
-                itemSelecionado: selectedItem
-            };
-            let budgetItemsCopy = Array.from(budgetItems);
-            budgetItemsCopy.push(item);
-            setBudgetItems(budgetItemsCopy);
-            setVisible(false);
-            resetModal();
-        }
+        const item = {
+            codigo: selectedItem.codigoRex,
+            descricao: selectedItem.descricacao,
+            quantidade: quantity,
+            un: selectedItem.un,
+            precoBruto: selectedItem.preco_bruto,
+            precoFinal: selectedItem.preco_bruto,
+            totalProduto: (quantity * faixa).toFixed(2),
+            peso: selectedItem.peso_bruto,
+            media: (selectedItem.peso_bruto * quantity).toFixed(2),
+            faixaSelecionada: faixa,
+            acabamentoSelecionado: selectedItemFinish,
+            data: dateISOLocale(date),
+            entrega: dateDelivery ? dateISOLocale(dateDelivery) : null,
+            pedidoOrdem: pedidoOrdem,
+            sequencia: sequency,
+            codProCli: codProCli,
+            transacao: selectedTransaction.label,
+            observacao: note,
+            depCliente: depCliente,
+            depPadrao: depPadrao,
+            itemSelecionado: selectedItem
+        };
+        let budgetItemsCopy = Array.from(budgetItems);
+        budgetItemsCopy.push(item);
+        setBudgetItems(budgetItemsCopy);
+        setLastProduct(selectedItem.codigoRex);
+        toast.current.show({ severity: 'success', summary: 'Produto Adicionado!', detail: `Código do Produto N°${selectedItem.codigoRex}`, life: 5000 });
+        // setVisible(false);
+        resetModal();
     }
     function searchItem(e) {
         let query = e.query;
         let _filteredItems = [];
-        for (const [i, p] of items.entries()) {
-            if (p.label.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
-                _filteredItems.push(p);
+        if (filterCod == 'codigoRex') {
+            for (const [i, p] of items.entries()) {
+                if (p.codigoRex.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+                    _filteredItems.push(p);
+                }
+            }
+        } else if (filterCod == 'codigoCliente') {
+            for (const [i, p] of items.entries()) {
+                if (p.codigoCliente.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+                    _filteredItems.push(p);
+                }
             }
         }
         setFilteredItems(_filteredItems);
     }
     return (
         <>
-            <Toast ref={toast} />
+            <Toast ref={toast} position='bottom-right' />
             <Sidebar
-
-                icons={
-                    <div className='w-full'>
-                        <div className='grid'>
-                            <div className='col-12 lg:col-3 flex justify-content-center align-items-center'>
-                                <RadioButton
-                                    id='codigo-rex'
-                                    className='mr-1 cursor-pointer'
-                                />
-                                <label className='cursor-pointer' htmlFor='codigo-rex'>Código Rex</label>
-                                <RadioButton
-                                    id='codigo-cliente'
-                                    className='ml-2 mr-1'
-                                />
-                                <label className='cursor-pointer' htmlFor='codigo-cliente'>Cliente</label>
-                            </div>
-                            <div className='col-12 lg:col-5 flex align-items-center'>
-                                <div className='flex flex-column'>
-                                    <span className='font-medium mb-1 text-sm'>Nome do Cliente: Cliente 003</span>
-                                    <span className='font-semibold text-sm'>Ultimo Produto Incluído: 000</span>
-                                </div>
-                            </div>
-                            <div className='col-6 lg:col-2'>
-                                <Button label='Adicionar Item' onClick={() => addItem()} className='w-full p-button-raised p-button-success font-semibold' />
-                            </div>
-                            <div className='col-6 lg:w-9rem'>
-                                <Button label='Cancelar' onClick={() => setVisible(false)} className='w-full p-button-raised p-button-secondary font-semibold' />
-                            </div>
-                        </div>
-                    </div>
-                }
                 fullScreen
                 blockScroll
                 className='surface-100'
                 showCloseIcon={false}
                 visible={visible}
             >
+                <div className='grid mt-1'>
+                    <div className='col-12 lg:col-3 flex justify-content-center align-items-center'>
+                        <RadioButton
+                            inputId='codigo-rex'
+                            name='filter-cod'
+                            value={'codigoRex'}
+                            onChange={e => setFilterCod(e.value)}
+                            checked={filterCod == 'codigoRex'}
+                            className='mr-1 cursor-pointer'
+                        />
+                        <label className='cursor-pointer' htmlFor='codigo-rex'>Código Rex</label>
+                        <RadioButton
+                            name='filter-code'
+                            value={'codigoCliente'}
+                            onChange={e => setFilterCod(e.value)}
+                            checked={filterCod == 'codigoCliente'}
+                            inputId='codigo-cliente'
+                            className='ml-2 mr-1'
+                        />
+                        <label className='cursor-pointer' htmlFor='codigo-cliente'>Cliente</label>
+                    </div>
+                    <div className='col-12 lg:col-5 flex align-items-center'>
+                        <div className='flex flex-column'>
+                            <span className='font-medium mb-1 text-sm'>Cliente: {clientName}</span>
+                            <span className='font-semibold text-sm'>Ultimo Produto Incluído: {lastProduct}</span>
+                        </div>
+                    </div>
+                    <div className='col-6 lg:col-2'>
+                        <Button label='Adicionar Item' onClick={() => addItem()} className='w-full p-button-raised p-button-success font-semibold' />
+                    </div>
+                    <div className='col-6 lg:w-9rem'>
+                        <Button label='Cancelar' onClick={() => setVisible(false)} className='w-full p-button-raised p-button-secondary font-semibold' />
+                    </div>
+                </div>
                 <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 bg-white'>
                     <div className='grid'>
                         <div className='field col-6 lg:col-1'>
@@ -157,7 +154,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                                 value={selectedItem}
                                 suggestions={filteredItems}
                                 completeMethod={searchItem}
-                                field='label'
+                                field={filterCod == 'codigoRex' ? 'codigoRex' : filterCod == 'codigoCliente' ? 'codigoCliente' : undefined}
                                 onChange={e => setSelectedItem(e.value)}
                                 id='selectItem'
                                 className='w-full'
@@ -205,7 +202,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                                 <RadioButton
                                     className='mr-1'
                                     name='faixa'
-                                    id='faixa1'
+                                    inputId='faixa1'
                                     value={selectedItem && selectedItem.faixa_1 ? selectedItem.faixa_1 : 0}
                                     onChange={e => setFaixa(e.value)}
                                     checked={faixa && faixa === (selectedItem.faixa_1 ? selectedItem.faixa_1 : null)}
@@ -228,7 +225,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                                 <RadioButton
                                     className='mr-1'
                                     name='faixa'
-                                    id='faixa2'
+                                    inputId='faixa2'
                                     value={selectedItem && selectedItem.faixa_2 ? selectedItem.faixa_2 : 0}
                                     onChange={e => setFaixa(e.value)}
                                     checked={faixa && faixa === (selectedItem.faixa_2 ? selectedItem.faixa_2 : 0)}
@@ -333,7 +330,8 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
                             <InputNumber
                                 className='w-full'
                                 inputClassName='w-full p-inputtext-sm'
-                                value={12302.17}
+                                readOnly
+                                value={selectedItem && selectedItem.ultimoPreco ? selectedItem.ultimoPreco : null}
                                 mode='decimal'
                                 maxFractionDigits={2}
                                 minFractionDigits={2}
@@ -405,105 +403,111 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible }) {
 
                 <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 my-2 bg-white'>
                     <div className='grid'>
-                        <div className='field col'>
-                            <label>Descrição</label>
-                            <InputText
-                                readOnly
-                                className='w-full p-inputtext-sm'
-                                value={selectedItem && selectedItem.descricacao ? selectedItem.descricacao : ''}
-                            />
+                        <div className='col-12 lg:col-10'>
+                            <div className='grid'>
+                                <div className='field col-12'>
+                                    <label>Descrição</label>
+                                    <InputText
+                                        readOnly
+                                        className='w-full p-inputtext-sm'
+                                        value={selectedItem && selectedItem.descricacao ? selectedItem.descricacao : ''}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label>Cód REX</label>
+                                    <InputText
+                                        readOnly
+                                        className='w-full p-inputtext-sm'
+                                        value={selectedItem && selectedItem.codigoRex ? selectedItem.codigoRex : ''}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label>Cód Sapiens</label>
+                                    <InputText
+                                        readOnly
+                                        className='w-full p-inputtext-sm'
+                                        value={selectedItem && selectedItem.codigoSap ? selectedItem.codigoSap : ''}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label>Peso</label>
+                                    <InputNumber
+                                        readOnly
+                                        className='w-full p-inputtext-sm'
+                                        inputClassName='w-full'
+                                        mode='decimal'
+                                        maxFractionDigits={2}
+                                        minFractionDigits={2}
+                                        value={selectedItem && selectedItem.peso_bruto ? selectedItem.peso_bruto : ''}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label>Preço</label>
+                                    <InputNumber
+                                        readOnly
+                                        className='w-full p-inputtext-sm'
+                                        inputClassName='w-full'
+                                        mode='currency'
+                                        currency='BRL'
+                                        value={selectedItem && selectedItem.preco_bruto ? selectedItem.preco_bruto : ''}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label htmlFor='itemUnidade'>Unidade</label>
+                                    <InputText
+                                        id='itemUnidade'
+                                        readOnly
+                                        className='w-full p-inputtext-sm'
+                                        value={selectedItem && selectedItem.un ? selectedItem.un : ''}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-2'>
+                                    <label htmlFor='itemQtiaEmbalada'>Qtia Embalada</label>
+                                    <InputNumber
+                                        inputId='itemQtiaEmbalada'
+                                        readOnly
+                                        className='w-full p-inputtext-sm'
+                                        inputClassName='w-full'
+                                        mode='decimal'
+                                        maxFractionDigits={2}
+                                        minFractionDigits={2}
+                                        value={selectedItem && selectedItem.qtia_embalada ? selectedItem.qtia_embalada : ''}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-4'>
+                                    <label htmlFor='itemDerivacao'>Derivação</label>
+                                    <InputText
+                                        readOnly
+                                        id='itemDerivacao'
+                                        className='w-full p-inputtext-sm'
+                                        value={selectedItem && selectedItem.derivacao ? selectedItem.derivacao : ''}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-4'>
+                                    <label htmlFor='itemEmbalagem'>Embalagem</label>
+                                    <InputText
+                                        readOnly
+                                        id='itemEmbalagem'
+                                        className='w-full p-inputtext-sm'
+                                        value={selectedItem && selectedItem.embalagem ? selectedItem.embalagem : ''}
+                                    />
+                                </div>
+                                <div className='field col-12 lg:col-4'>
+                                    <label htmlFor='itemClassFiscal'>Classificação Fiscal</label>
+                                    <InputText
+                                        readOnly
+                                        id='itemClassFiscal'
+                                        className='w-full p-inputtext-sm'
+                                        value={selectedItem && selectedItem.class_fiscal ? selectedItem.class_fiscal : ''}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div className='grid'>
-                        <div className='field col-12 lg:col-2'>
-                            <label>Cód REX</label>
-                            <InputText
-                                readOnly
-                                className='w-full p-inputtext-sm'
-                                value={selectedItem && selectedItem.codigoRex ? selectedItem.codigoRex : ''}
-                            />
-                        </div>
-                        <div className='field col-12 lg:col-2'>
-                            <label>Cód Sapiens</label>
-                            <InputText
-                                readOnly
-                                className='w-full p-inputtext-sm'
-                                value={selectedItem && selectedItem.codigoSap ? selectedItem.codigoSap : ''}
-                            />
-                        </div>
-                        <div className='field col-12 lg:col-2'>
-                            <label>Peso</label>
-                            <InputNumber
-                                readOnly
-                                className='w-full p-inputtext-sm'
-                                inputClassName='w-full'
-                                mode='decimal'
-                                maxFractionDigits={2}
-                                minFractionDigits={2}
-                                value={selectedItem && selectedItem.peso_bruto ? selectedItem.peso_bruto : ''}
-                            />
-                        </div>
-                        <div className='field col-12 lg:col-2'>
-                            <label>Preço</label>
-                            <InputNumber
-                                readOnly
-                                className='w-full p-inputtext-sm'
-                                inputClassName='w-full'
-                                mode='currency'
-                                currency='BRL'
-                                value={selectedItem && selectedItem.preco_bruto ? selectedItem.preco_bruto : ''}
-                            />
-                        </div>
-                        <div className='field col-12 lg:col-2'>
-                            <label htmlFor='itemUnidade'>Unidade</label>
-                            <InputText
-                                id='itemUnidade'
-                                readOnly
-                                className='w-full p-inputtext-sm'
-                                value={selectedItem && selectedItem.un ? selectedItem.un : ''}
-                            />
-                        </div>
-                        <div className='field col-12 lg:col-2'>
-                            <label htmlFor='itemQtiaEmbalada'>Qtia Embalada</label>
-                            <InputNumber
-                                inputId='itemQtiaEmbalada'
-                                readOnly
-                                className='w-full p-inputtext-sm'
-                                inputClassName='w-full'
-                                mode='decimal'
-                                maxFractionDigits={2}
-                                minFractionDigits={2}
-                                value={selectedItem && selectedItem.qtia_embalada ? selectedItem.qtia_embalada : ''}
-                            />
-                        </div>
-                    </div>
-                    <div className='grid'>
-                        <div className='field col-12 lg:col-4'>
-                            <label htmlFor='itemDerivacao'>Derivação</label>
-                            <InputText
-                                readOnly
-                                id='itemDerivacao'
-                                className='w-full p-inputtext-sm'
-                                value={selectedItem && selectedItem.derivacao ? selectedItem.derivacao : ''}
-                            />
-                        </div>
-                        <div className='field col-12 lg:col-4'>
-                            <label htmlFor='itemEmbalagem'>Embalagem</label>
-                            <InputText
-                                readOnly
-                                id='itemEmbalagem'
-                                className='w-full p-inputtext-sm'
-                                value={selectedItem && selectedItem.embalagem ? selectedItem.embalagem : ''}
-                            />
-                        </div>
-                        <div className='field col-12 lg:col-4'>
-                            <label htmlFor='itemClassFiscal'>Classificação Fiscal</label>
-                            <InputText
-                                readOnly
-                                id='itemClassFiscal'
-                                className='w-full p-inputtext-sm'
-                                value={selectedItem && selectedItem.class_fiscal ? selectedItem.class_fiscal : ''}
-                            />
+                        <div className='col-12 lg:col-2 flex align-items-center justify-content-center'>
+                            <span
+                                className={`font-semibold text-8xl ${selectedItem ? (selectedItem.curva == 'A' ? 'text-blue-500' : selectedItem.curva == 'B' ? 'text-green-500' : selectedItem.curva == 'C' ? 'text-pink-500' : null) : null}`}>
+                                {selectedItem && selectedItem.curva ? selectedItem.curva : ''}
+                            </span>
                         </div>
                     </div>
                 </div>

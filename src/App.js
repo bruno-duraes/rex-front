@@ -1,12 +1,13 @@
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
+import { Toast } from "primereact/toast";
 import { useContext, useEffect, useState } from "react";
 import { AddBudgetPage } from "./pages/AddBudgetPage";
 import { ConsultPage } from "./pages/ConsultPage";
 import { RenderContext } from "./providers/renderContext";
 
 export function App() {
-    const { render, setRender } = useContext(RenderContext);
+    const { render, setRender, globalToast } = useContext(RenderContext);
     const [renderState, setRenderState] = useState(render);
     useEffect(() => {
         setRenderState(render)
@@ -49,6 +50,7 @@ export function App() {
 
     return (
         <>
+            <Toast ref={globalToast} />
             <div className="flex p-2 w-ful" style={{ background: '#337597' }} >
                 {renderButtonBar()}
             </div>

@@ -16,7 +16,7 @@ import { dateISOLocale } from '../utils/dateISOLocale';
 import { Datepicker } from './Datepicker';
 import { RequiredFlag } from './RequiredFlag';
 
-export function ModalEditItem({ item, budgetItems, changeItems, index, visible, setVisible }) {
+export function ModalEditItem({ item, budgetItems, changeItems, index, visible, setVisible, clientName }) {
     if (item) {
         const [selectedItem, setSelectedItem] = useState(item.itemSelecionado);
         const [filteredItems, setFilteredItems] = useState(null);
@@ -73,6 +73,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
             let budgetItemsCopy = Array.from(budgetItems);
             budgetItemsCopy.splice(index, 1, item);
             changeItems(budgetItemsCopy);
+            toast.current.show({ severity: 'success', summary: 'Alterações Salvas!', detail: `Código do Produto N°${selectedItem.codigoRex}`, life: 5000 });
             setVisible(false);
             resetModal();
         }
@@ -88,43 +89,52 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
         }
         return (
             <>
-                <Toast ref={toast} />
+                <Toast ref={toast} position='bottom-right' />
                 <Sidebar
-                    icons={
-                        <>
-                            <Button label='Salvar Alterações' onClick={() => saveChanges()} className='p-button-raised p-button-info mr-3 font-semibold' />
-                            <Button label='Cancelar' onClick={() => setVisible(false)} className='p-button-raised p-button-secondary font-semibold' />
-                        </>
-                    }
                     fullScreen
                     blockScroll
                     className='surface-100'
                     showCloseIcon={false}
                     visible={visible}
                 >
-                    <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='p-5 mb-3 bg-white'>
-                        <div className='grid '>
-                            <div className='field col-12 md:col-8'>
-                                <label htmlFor='selectItem'>Item</label>
+                    <div className='grid mt-1 flex justify-content-center'>
+                        <div className='col-12 lg:col-8 flex align-items-center'>
+                            <div className='flex flex-column'>
+                                <span className='font-semibold mb-1 text-sm'>Cliente: {clientName}</span>
+                            </div>
+                        </div>
+                        <div className='col-6 lg:col-2'>
+                            <Button label='Salvar Alterações' onClick={() => saveChanges()} className='w-full p-button-raised p-button-success font-semibold' />
+                        </div>
+                        <div className='col-6 lg:w-9rem' >
+                            <Button label='Cancelar' onClick={() => setVisible(false)} className='w-full p-button-raised p-button-secondary font-semibold' />
+                        </div>
+                    </div>
+                    <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 bg-white'>
+                        <div className='grid'>
+                            <div className='field col-6 lg:col-1'>
+                                <label htmlFor='selectItem'>Código</label>
                                 <RequiredFlag />
                                 <AutoComplete
+                                    ref={item}
                                     value={selectedItem}
                                     suggestions={filteredItems}
                                     completeMethod={searchItem}
-                                    field='label'
+                                    readOnly
+                                    field='codigoRex'
                                     onChange={e => setSelectedItem(e.value)}
                                     id='selectItem'
                                     className='w-full'
-                                    inputClassName={`w-full p-inputtext-sm ${validation.item}`}
+                                    inputClassName={`w-full p-inputtext-sm  ${validation.item}`}
                                 />
                             </div>
-                            <div className='field col-3 md:col-1'>
+                            <div className='field col-6 lg:col-1'>
                                 <label htmlFor='itemQuantia'>Quantia</label>
                                 <RequiredFlag />
                                 <InputNumber
                                     inputId='itemQuantia'
-                                    className={`w-full ${validation.quantia}`}
-                                    inputClassName='w-full p-inputtext-sm'
+                                    className='w-full'
+                                    inputClassName={`w-full p-inputtext-sm ${validation.quantia} p-1`}
                                     mode='decimal'
                                     minFractionDigits={2}
                                     maxFractionDigits={2}
@@ -132,7 +142,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     onChange={e => setQuantity(e.value)}
                                 />
                             </div>
-                            <div className='field col-3 md:col-1'>
+                            <div className='field col-6 lg:col-1'>
                                 <label htmlFor='itemNn'>UN</label>
                                 <InputText
                                     id='itemUn'
@@ -141,7 +151,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     className='w-full p-inputtext-sm'
                                 />
                             </div>
-                            <div className='field col md:col-2'>
+                            <div className='field col lg:col-1'>
                                 <label htmlFor='itemPrecoBruto'>Preco Bruto</label>
                                 <InputNumber
                                     inputId='' id='itemPrecoBruto'
@@ -149,150 +159,156 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     readOnly
                                     className='w-full'
                                     inputClassName='w-full p-inputtext-sm'
-                                    prefix='R$ '
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
                                 />
                             </div>
-                        </div>
-                        <div className='grid'>
-                            <div className='col-6 lg:col-2'>
-                                <div className=' flex flex-column'>
+                            <div className='field col-6 lg:col-1'>
+                                <div className='flex align-items-center mb-1'>
+                                    <RadioButton
+                                        className='mr-1'
+                                        name='faixa'
+                                        inputId='faixa1'
+                                        value={selectedItem && selectedItem.faixa_1 ? selectedItem.faixa_1 : 0}
+                                        onChange={e => setFaixa(e.value)}
+                                        checked={faixa && faixa === (selectedItem.faixa_1 ? selectedItem.faixa_1 : null)}
+                                    />
                                     <label className='cursor-pointer' htmlFor='faixa1'>Faixa 1</label>
-                                    <div className='flex align-items-center mt-2'>
-                                        <RadioButton
-                                            name='faixa'
-                                            id='faixa1'
-                                            value={selectedItem && selectedItem.faixa_1 ? selectedItem.faixa_1 : 0}
-                                            onChange={e => setFaixa(e.value)}
-                                            checked={faixa && faixa === (selectedItem.faixa_1 ? selectedItem.faixa_1 : null)}
-                                        />
-                                        <InputNumber
-                                            className='ml-2 w-full'
-                                            inputClassName='w-full cursor-pointer p-inputtext-sm'
-                                            value={selectedItem && selectedItem.faixa_1 ? selectedItem.faixa_1 : null}
-                                            htmlFor='faixa1'
-                                            mode='currency'
-                                            currency='BRL'
-                                            readOnly
-                                        />
-                                    </div>
                                 </div>
+                                <InputNumber
+                                    className='w-full'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm'
+                                    value={selectedItem && selectedItem.faixa_1 ? selectedItem.faixa_1 : null}
+                                    htmlFor='faixa1'
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
+                                    readOnly
+                                />
                             </div>
-                            <div className='col-6 lg:col-2'>
-                                <div className=' flex flex-column'>
-                                    <label className='cursor-pointer' htmlFor='faixa2'>Faixa 2</label>
-                                    <div className='flex align-items-center mt-2'>
-                                        <RadioButton
-                                            name='faixa'
-                                            id='faixa2'
-                                            value={selectedItem && selectedItem.faixa_2 ? selectedItem.faixa_2 : 0}
-                                            onChange={e => setFaixa(e.value)}
-                                            checked={faixa && faixa === (selectedItem.faixa_2 ? selectedItem.faixa_2 : 0)}
-                                        />
-                                        <InputNumber
-                                            className='ml-2 w-full'
-                                            inputClassName='w-full cursor-pointer p-inputtext-sm'
-                                            value={selectedItem && selectedItem.faixa_2 ? selectedItem.faixa_2 : null}
-                                            mode='currency'
-                                            currency='BRL'
-                                            readOnly
-                                        />
-                                    </div>
+                            <div className='field col-6 lg:col-1'>
+                                <div className='flex flex-row mb-1'>
+                                    <RadioButton
+                                        className='mr-1'
+                                        name='faixa'
+                                        inputId='faixa2'
+                                        value={selectedItem && selectedItem.faixa_2 ? selectedItem.faixa_2 : 0}
+                                        onChange={e => setFaixa(e.value)}
+                                        checked={faixa && faixa === (selectedItem.faixa_2 ? selectedItem.faixa_2 : 0)}
+                                    />
+                                    <label className='cursor-pointer flex align-items-center' htmlFor='faixa2'>Faixa 2</label>
                                 </div>
+                                <InputNumber
+                                    className='w-full'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm'
+                                    value={selectedItem && selectedItem.faixa_2 ? selectedItem.faixa_2 : null}
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
+                                    readOnly
+                                />
                             </div>
-                            <div className='col-6 lg:col-2'>
-                                <div className=' flex flex-column'>
+                            <div className='col-6 lg:col-1'>
+                                <div className='flex align-items-center mb-1'>
+                                    <RadioButton
+                                        className='mr-1'
+                                        name='faixa'
+                                        id='faixa3'
+                                        value={selectedItem && selectedItem.faixa_3 ? selectedItem.faixa_3 : 0}
+                                        onChange={e => setFaixa(e.value)}
+                                        checked={faixa && faixa === (selectedItem.faixa_3 ? selectedItem.faixa_3 : null)}
+                                    />
                                     <label className='cursor-pointer' htmlFor='faixa2'>Faixa 3</label>
-                                    <div className='flex align-items-center mt-2'>
-                                        <RadioButton
-                                            name='faixa'
-                                            id='faixa3'
-                                            value={selectedItem && selectedItem.faixa_3 ? selectedItem.faixa_3 : 0}
-                                            onChange={e => setFaixa(e.value)}
-                                            checked={faixa && faixa === (selectedItem.faixa_3 ? selectedItem.faixa_3 : null)}
-                                        />
-                                        <InputNumber
-                                            className='ml-2 w-full'
-                                            inputClassName='w-full cursor-pointer p-inputtext-sm'
-                                            value={selectedItem && selectedItem.faixa_3 ? selectedItem.faixa_3 : null}
-                                            htmlFor='faixa3'
-                                            mode='currency'
-                                            currency='BRL'
-                                            readOnly
-                                        />
-                                    </div>
                                 </div>
+                                <InputNumber
+                                    className='w-full'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm'
+                                    value={selectedItem && selectedItem.faixa_3 ? selectedItem.faixa_3 : null}
+                                    htmlFor='faixa3'
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
+                                    readOnly
+                                />
                             </div>
-                            <div className='col-6 lg:col-2'>
-                                <div className=' flex flex-column'>
+                            <div className='col-6 lg:col-1'>
+                                <div className=' flex align-items-center mb-1'>
+                                    <RadioButton
+                                        className='mr-1'
+                                        name='faixa'
+                                        id='faixa4'
+                                        value={selectedItem && selectedItem.faixa_4 ? selectedItem.faixa_4 : 0}
+                                        onChange={e => setFaixa(e.value)}
+                                        checked={faixa && faixa === (selectedItem.faixa_4 ? selectedItem.faixa_4 : null)}
+                                    />
                                     <label className='cursor-pointer' htmlFor='faixa4'>Faixa 4</label>
-                                    <div className='flex align-items-center mt-2'>
-                                        <RadioButton
-                                            name='faixa'
-                                            id='faixa4'
-                                            value={selectedItem && selectedItem.faixa_4 ? selectedItem.faixa_4 : 0}
-                                            onChange={e => setFaixa(e.value)}
-                                            checked={faixa && faixa === (selectedItem.faixa_4 ? selectedItem.faixa_4 : null)}
-                                        />
-                                        <InputNumber
-                                            className='ml-2 w-full'
-                                            inputClassName='w-full cursor-pointer p-inputtext-sm'
-                                            value={selectedItem && selectedItem.faixa_4 ? selectedItem.faixa_4 : null}
-                                            htmlFor='faixa4'
-                                            mode='currency'
-                                            currency='BRL'
-                                            readOnly
-                                        />
-                                    </div>
                                 </div>
+                                <InputNumber
+                                    className='w-full'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm'
+                                    value={selectedItem && selectedItem.faixa_4 ? selectedItem.faixa_4 : null}
+                                    htmlFor='faixa4'
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
+                                    readOnly
+                                />
                             </div>
-                            <div className='col-6 lg:col-2'>
-                                <div className=' flex flex-column'>
+                            <div className='col-6 lg:col-1'>
+                                <div className=' flex align-items-center mb-1'>
+                                    <RadioButton
+                                        className=''
+                                        name='faixa'
+                                        id='solicitado'
+                                        value={faixaSol}
+                                        onChange={e => setFaixa(e.value)}
+                                        checked={faixa && faixa === faixaSol ? true : false}
+                                    />
                                     <label className='cursor-pointer' htmlFor='solicitado'>Solicitado</label>
-                                    <div className='flex align-items-center mt-2'>
-                                        <RadioButton
-                                            name='faixa'
-                                            id='solicitado'
-                                            value={faixaSol}
-                                            onChange={e => setFaixa(e.value)}
-                                            checked={faixa && faixa === faixaSol ? true : false}
-                                        />
-                                        <InputNumber
-                                            className='ml-2 w-full'
-                                            inputClassName='w-full cursor-pointer p-inputtext-sm'
-                                            value={faixaSol}
-                                            onChange={e => setFaixaSol(e.value)}
-                                            htmlFor='solicitado'
-                                            mode='currency'
-                                            currency='BRL'
-                                        />
-                                    </div>
                                 </div>
+                                <InputNumber
+                                    className=' w-full'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm'
+                                    value={faixaSol}
+                                    onChange={e => setFaixaSol(e.value)}
+                                    htmlFor='solicitado'
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
+                                />
                             </div>
-                            <div className='col-6 lg:col-2'>
-                                <div className=' flex flex-column'>
-                                    <label className='cursor-pointer' htmlFor='itemTotal'>Total</label>
-                                    <div className='flex align-items-center mt-2'>
-                                        <InputNumber
-                                            inputStyle={{ fontWeight: '700' }}
-                                            className='w-full'
-                                            inputClassName='w-full cursor-pointer p-inputtext-sm'
-                                            value={faixa * quantity}
-                                            htmlFor='itemTotal'
-                                            mode='currency'
-                                            currency='BRL'
-                                            readOnly
-                                        />
-                                    </div>
-                                </div>
+                            <div className='field col-6 lg:col-1'>
+                                <label className='cursor-pointer' htmlFor='itemTotal'>Total</label>
+                                <InputNumber
+                                    inputStyle={{ fontWeight: '700' }}
+                                    className='w-full'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm p-1'
+                                    value={faixa * quantity}
+                                    htmlFor='itemTotal'
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
+                                    readOnly
+                                />
                             </div>
-                        </div>
-                        <div className='grid'>
-                            <div className='field col-6 lg:col-2'>
+                            <div className='field col-6 lg:col-1'>
+                                <label>Ultimo Preco</label>
+                                <InputNumber
+                                    className='w-full'
+                                    inputClassName='w-full p-inputtext-sm'
+                                    readOnly
+                                    value={selectedItem && selectedItem.ultimoPreco ? selectedItem.ultimoPreco : null}
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
+                                />
+                            </div>
+                            <div className='field col-6 lg:col-1'>
                                 <label>Média KG</label>
                                 <InputNumber
                                     className='w-full'
                                     inputClassName='w-full p-inputtext-sm'
-                                    suffix=' kg'
                                     mode='decimal'
                                     readOnly
                                     maxFractionDigits={2}
@@ -300,29 +316,29 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     value={selectedItem && selectedItem.peso_bruto && quantity ? quantity * selectedItem.peso_bruto : null}
                                 />
                             </div>
-                            <div className='field col-6 lg:col-2'>
+                        </div>
+                        <div className='grid'>
+                            <div className='field col-6 lg:w-10rem'>
                                 <label>Data</label>
                                 <Datepicker initialDate={date} onChange={e => setDate(e.value)} />
                             </div>
-                            <div className='field col-6 lg:col-2'>
+                            <div className='field col-6 lg:w-10rem'>
                                 <label>Entrega</label>
                                 <Datepicker initialDate={dateDelivery} onChange={e => setDateDelivery(e.value)} />
                             </div>
-                            <div className='field col-6 lg:col-2'>
+                            <div className='field col-6 lg:w-8rem'>
                                 <label>Pedido/Ordem</label>
                                 <InputText className='w-full p-inputtext-sm' value={pedidoOrdem} onChange={e => setPedidoOrdem(e.target.value)} />
                             </div>
-                            <div className='field col-6 lg:col-2'>
+                            <div className='field col-6 lg:w-8rem'>
                                 <label>Sequencia</label>
                                 <InputText className='w-full p-inputtext-sm' value={sequency} onChange={e => setSequency(e.target.value)} />
                             </div>
-                            <div className='field col-6 lg:col-2'>
+                            <div className='field col-6 lg:w-8rem'>
                                 <label>Cod Pro Cli</label>
                                 <InputText className='w-full p-inputtext-sm' value={codProCli} onChange={e => setCodProCli(e.target.value)} />
                             </div>
-                        </div>
-                        <div className='grid'>
-                            <div className='field col-12 lg:col-6'>
+                            <div className='field col-12 lg:col-3'>
                                 <label>Transação</label>
                                 <Dropdown
                                     optionLabel='label'
@@ -337,11 +353,13 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     onchange={e => setSelectedTransaction(e.value)}
                                 />
                             </div>
-                            <div className='field col-12 lg:col-6'>
-                                <label>Observação</label>
+                        </div>
+                        <div className='grid'>
+                            <div className='flex flex-row col-12 lg:col-6'>
                                 <InputTextarea
-                                    className='w-full'
-                                    rows={4}
+                                    className='w-full text-sm'
+                                    placeholder='Observações'
+                                    rows={2}
                                     autoResize
                                     value={note}
                                     onChange={e => setNote(e.target.value)}
@@ -350,112 +368,118 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                         </div>
                     </div>
 
-                    <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='p-5 mb-3 bg-white'>
+                    <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 my-2 bg-white'>
                         <div className='grid'>
-                            <div className='field col'>
-                                <label>Descrição</label>
-                                <InputText
-                                    readOnly
-                                    className='w-full p-inputtext-sm'
-                                    value={selectedItem && selectedItem.descricacao ? selectedItem.descricacao : ''}
-                                />
+                            <div className='col-12 lg:col-10'>
+                                <div className='grid'>
+                                    <div className='field col-12'>
+                                        <label>Descrição</label>
+                                        <InputText
+                                            readOnly
+                                            className='w-full p-inputtext-sm'
+                                            value={selectedItem && selectedItem.descricacao ? selectedItem.descricacao : ''}
+                                        />
+                                    </div>
+                                    <div className='field col-12 lg:col-2'>
+                                        <label>Cód REX</label>
+                                        <InputText
+                                            readOnly
+                                            className='w-full p-inputtext-sm'
+                                            value={selectedItem && selectedItem.codigoRex ? selectedItem.codigoRex : ''}
+                                        />
+                                    </div>
+                                    <div className='field col-12 lg:col-2'>
+                                        <label>Cód Sapiens</label>
+                                        <InputText
+                                            readOnly
+                                            className='w-full p-inputtext-sm'
+                                            value={selectedItem && selectedItem.codigoSap ? selectedItem.codigoSap : ''}
+                                        />
+                                    </div>
+                                    <div className='field col-12 lg:col-2'>
+                                        <label>Peso</label>
+                                        <InputNumber
+                                            readOnly
+                                            className='w-full p-inputtext-sm'
+                                            inputClassName='w-full'
+                                            mode='decimal'
+                                            maxFractionDigits={2}
+                                            minFractionDigits={2}
+                                            value={selectedItem && selectedItem.peso_bruto ? selectedItem.peso_bruto : ''}
+                                        />
+                                    </div>
+                                    <div className='field col-12 lg:col-2'>
+                                        <label>Preço</label>
+                                        <InputNumber
+                                            readOnly
+                                            className='w-full p-inputtext-sm'
+                                            inputClassName='w-full'
+                                            mode='currency'
+                                            currency='BRL'
+                                            value={selectedItem && selectedItem.preco_bruto ? selectedItem.preco_bruto : ''}
+                                        />
+                                    </div>
+                                    <div className='field col-12 lg:col-2'>
+                                        <label htmlFor='itemUnidade'>Unidade</label>
+                                        <InputText
+                                            id='itemUnidade'
+                                            readOnly
+                                            className='w-full p-inputtext-sm'
+                                            value={selectedItem && selectedItem.un ? selectedItem.un : ''}
+                                        />
+                                    </div>
+                                    <div className='field col-12 lg:col-2'>
+                                        <label htmlFor='itemQtiaEmbalada'>Qtia Embalada</label>
+                                        <InputNumber
+                                            inputId='itemQtiaEmbalada'
+                                            readOnly
+                                            className='w-full p-inputtext-sm'
+                                            inputClassName='w-full'
+                                            mode='decimal'
+                                            maxFractionDigits={2}
+                                            minFractionDigits={2}
+                                            value={selectedItem && selectedItem.qtia_embalada ? selectedItem.qtia_embalada : ''}
+                                        />
+                                    </div>
+                                    <div className='field col-12 lg:col-4'>
+                                        <label htmlFor='itemDerivacao'>Derivação</label>
+                                        <InputText
+                                            readOnly
+                                            id='itemDerivacao'
+                                            className='w-full p-inputtext-sm'
+                                            value={selectedItem && selectedItem.derivacao ? selectedItem.derivacao : ''}
+                                        />
+                                    </div>
+                                    <div className='field col-12 lg:col-4'>
+                                        <label htmlFor='itemEmbalagem'>Embalagem</label>
+                                        <InputText
+                                            readOnly
+                                            id='itemEmbalagem'
+                                            className='w-full p-inputtext-sm'
+                                            value={selectedItem && selectedItem.embalagem ? selectedItem.embalagem : ''}
+                                        />
+                                    </div>
+                                    <div className='field col-12 lg:col-4'>
+                                        <label htmlFor='itemClassFiscal'>Classificação Fiscal</label>
+                                        <InputText
+                                            readOnly
+                                            id='itemClassFiscal'
+                                            className='w-full p-inputtext-sm'
+                                            value={selectedItem && selectedItem.class_fiscal ? selectedItem.class_fiscal : ''}
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div className='grid'>
-                            <div className='field col-12 lg:col-2'>
-                                <label>Cód REX</label>
-                                <InputText
-                                    readOnly
-                                    className='w-full p-inputtext-sm'
-                                    value={selectedItem && selectedItem.codigoRex ? selectedItem.codigoRex : ''}
-                                />
-                            </div>
-                            <div className='field col-12 lg:col-2'>
-                                <label>Cód Sapiens</label>
-                                <InputText
-                                    readOnly
-                                    className='w-full p-inputtext-sm'
-                                    value={selectedItem && selectedItem.codigoSap ? selectedItem.codigoSap : ''}
-                                />
-                            </div>
-                            <div className='field col-12 lg:col-2'>
-                                <label>Peso</label>
-                                <InputNumber
-                                    readOnly
-                                    className='w-full p-inputtext-sm'
-                                    inputClassName='w-full'
-                                    mode='decimal'
-                                    maxFractionDigits={2}
-                                    minFractionDigits={2}
-                                    value={selectedItem && selectedItem.peso_bruto ? selectedItem.peso_bruto : ''}
-                                />
-                            </div>
-                            <div className='field col-12 lg:col-2'>
-                                <label>Preço</label>
-                                <InputNumber
-                                    readOnly
-                                    className='w-full p-inputtext-sm'
-                                    inputClassName='w-full'
-                                    mode='currency'
-                                    currency='BRL'
-                                    value={selectedItem && selectedItem.preco_bruto ? selectedItem.preco_bruto : ''}
-                                />
-                            </div>
-                            <div className='field col-12 lg:col-2'>
-                                <label htmlFor='itemUnidade'>Unidade</label>
-                                <InputText
-                                    id='itemUnidade'
-                                    readOnly
-                                    className='w-full p-inputtext-sm'
-                                    value={selectedItem && selectedItem.un ? selectedItem.un : ''}
-                                />
-                            </div>
-                            <div className='field col-12 lg:col-2'>
-                                <label htmlFor='itemQtiaEmbalada'>Qtia Embalada</label>
-                                <InputNumber
-                                    inputId='itemQtiaEmbalada'
-                                    readOnly
-                                    className='w-full p-inputtext-sm'
-                                    inputClassName='w-full'
-                                    mode='decimal'
-                                    maxFractionDigits={2}
-                                    minFractionDigits={2}
-                                    value={selectedItem && selectedItem.qtia_embalada ? selectedItem.qtia_embalada : ''}
-                                />
-                            </div>
-                        </div>
-                        <div className='grid'>
-                            <div className='field col-12 lg:col-4'>
-                                <label htmlFor='itemDerivacao'>Derivação</label>
-                                <InputText
-                                    readOnly
-                                    id='itemDerivacao'
-                                    className='w-full p-inputtext-sm'
-                                    value={selectedItem && selectedItem.derivacao ? selectedItem.derivacao : ''}
-                                />
-                            </div>
-                            <div className='field col-12 lg:col-4'>
-                                <label htmlFor='itemEmbalagem'>Embalagem</label>
-                                <InputText
-                                    readOnly
-                                    id='itemEmbalagem'
-                                    className='w-full p-inputtext-sm'
-                                    value={selectedItem && selectedItem.embalagem ? selectedItem.embalagem : ''}
-                                />
-                            </div>
-                            <div className='field col-12 lg:col-4'>
-                                <label htmlFor='itemClassFiscal'>Classificação Fiscal</label>
-                                <InputText
-                                    readOnly
-                                    id='itemClassFiscal'
-                                    className='w-full p-inputtext-sm'
-                                    value={selectedItem && selectedItem.class_fiscal ? selectedItem.class_fiscal : ''}
-                                />
+                            <div className='col-12 lg:col-2 flex align-items-center justify-content-center'>
+                                <span
+                                    className={`font-semibold text-8xl ${selectedItem ? (selectedItem.curva == 'A' ? 'text-blue-500' : selectedItem.curva == 'B' ? 'text-green-500' : selectedItem.curva == 'C' ? 'text-pink-500' : null) : null}`}>
+                                    {selectedItem ? selectedItem.curva : ''}
+                                </span>
                             </div>
                         </div>
                     </div>
 
-                    <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='p-5 mb-3 bg-white'>
+                    <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 mb-2 bg-white'>
                         <div className='grid'>
                             <div className='col-6 lg:col-12'>
                                 <div className='grid flex align-items-center'>
