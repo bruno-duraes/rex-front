@@ -162,7 +162,7 @@ export function AddBudgetPage() {
     }
 
     return (
-        <>
+        <div className=''>
             <ModalEditItem
                 index={editItem && editItem.index ? editItem.index : null}
                 item={editItem && editItem.item ? editItem.item : null}
@@ -182,9 +182,8 @@ export function AddBudgetPage() {
                 deadline={entrega ? entrega : null}
             />
 
-            <div className='grid'>
-                <div className='col-10'></div>
-                <div className='col-12 lg:col-2 flex justify-content-end'>
+            <div className='grid surface-400 border-round mb-2'>
+                <div className='col-12 lg:col-1'>
                     <Button
                         label='Salvar'
                         type='submit'
@@ -197,15 +196,19 @@ export function AddBudgetPage() {
                 </div>
             </div>
             <div className="grid">
-                <div className='field col-12 md:col-2 mb-2'>
-                    < label htmlFor='emissao' > Emissão</label >
+                <div className='col-3 lg:w-10rem text-right'>
+                    < label htmlFor='emissao'>Emissão: </label>
+                </div>
+                <div className='col-8 lg:w-10rem'>
                     <Datepicker id='emissao' readonly={true} initialDate={emissao} onChange={(e) => setEmissao(e.value)} />
                 </div >
             </div >
             <div className='grid'>
-                <div className="field col">
-                    <label htmlFor='budgetNum'>Usuário</label>
+                <div className='col-3 lg:w-10rem text-right'>
                     <RequiredFlag />
+                    <label htmlFor='budgetNum'>Usuário:</label>
+                </div>
+                <div className="col-8 lg:col-3">
                     <Dropdown
                         id='budgetNum'
                         className='w-full p-inputtext-sm'
@@ -217,9 +220,11 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedUser(e.value)}
                     />
                 </div>
-                <div className="field col-12 md:col-8">
-                    <label htmlFor='cliente'>Cliente </label>
+                <div className='col-3 lg:col-1 text-right'>
                     <RequiredFlag />
+                    <label htmlFor='cliente'>Cliente:</label>
+                </div>
+                <div className="col-9 md:col-6">
                     <Dropdown
                         id='cliente'
                         className='w-full p-inputtext-sm'
@@ -232,12 +237,17 @@ export function AddBudgetPage() {
                     />
                 </div>
             </div>
-            <div className='grid '>
-                <div className='field col-12 md:col'>
-                    <label htmlFor='obsCliente'>Observação do Cliente</label>
+            <div className='grid'>
+                <div className='col-3 lg:w-10rem text-right'>
+                    <label htmlFor='obsCliente'>
+                        Observação <br />
+                        do Cliente:
+                    </label>
+                </div>
+                <div className='col-9 md:col-10'>
                     <InputTextarea
                         id='obsCliente'
-                        className='w-full'
+                        className='w-full text-sm'
                         rows={2}
                         autoResize
                         value={obsCliente}
@@ -246,28 +256,37 @@ export function AddBudgetPage() {
                 </div>
             </div>
             <div className='grid mb-2'>
-                <div className='col flex justify-content-between'>
-                    <Button iconPos='right' icon='pi pi-search' label='Pedidos em Aberto' />
-                    <Button iconPos='right' icon='pi pi-search' label='Titulos em Aberto' />
+                <div className='lg:w-10rem'></div>
+                <div className='col-12 lg:col-10 flex justify-content-between'>
+                    <Button iconPos='right' icon='pi pi-search lg:text-base text-xs' label='Pedidos em Aberto' className='lg:text-base text-xs' />
+                    <Button iconPos='right' icon='pi pi-search lg:text-base text-xs' label='Titulos em Aberto' className='lg:text-base text-xs' />
                 </div>
             </div>
             <div className='grid'>
-                <div className='field col-12 md:col-2 flex flex-column'>
-                    <label htmlFor='numPed'>N° Ped/Oc Cli</label>
+                <div className='col-3 lg:w-10rem text-right'>
+                    <label htmlFor='numPed'>N° Ped/Oc Cli:</label>
+                </div>
+                <div className='col-9 md:col-2 flex align-items-center '>
                     <InputText
                         id='numPed'
-                        className='p-inputtext-sm'
+                        className='p-inputtext-sm w-full'
                         value={nPed_OcCli}
                         onChange={e => setNPed_OcCli(e.target.value)}
                     />
                 </div>
-                <div className='field col-12 md:col-2 flex flex-column'>
-                    <label htmlFor='entrega'>Entrega<RequiredFlag /></label>
-                    <Datepicker id='entrega' initialDate={entrega} onChange={e => setEntrega(e.value)} />
+                <div className='col-12 lg:col-3 lg:col-offset-5 flex lg:justify-content-end'>
+                    <div className='flex align-items-center w-full flex justify-content-end'>
+                        <label className='pl-3 mr-3 mb-1' htmlFor='entrega'>Entrega:</label>
+                        <Datepicker id='entrega' initialDate={entrega} onChange={e => setEntrega(e.value)} className=' lg:w-10rem' />
+                    </div>
                 </div>
-                <div className='field col'>
-                    <label htmlFor='representante'>Representante</label>
+            </div>
+            <div className='grid'>
+                <div className='col-3 lg:w-10rem text-right' style={{ wordBreak: 'break-all' }}>
                     <RequiredFlag />
+                    <label htmlFor='representante'>Representante:</label>
+                </div>
+                <div className='col-9 lg:col-4 flex align-items-center'>
                     <Dropdown
                         id='representante'
                         className='w-full p-inputtext-sm'
@@ -278,11 +297,11 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedRep(e.value)}
                     />
                 </div>
-            </div>
-            <div className='grid'>
-                <div className='field col-12 md:col-4'>
-                    <label htmlFor='transacao'>Transação</label>
+                <div className='col-3 lg:col-1 text-right'>
                     <RequiredFlag />
+                    <label htmlFor='transacao'>Transação:</label>
+                </div>
+                <div className='col-9 md:col-5'>
                     <Dropdown
                         id='transacao'
                         className='w-full p-inputtext-sm'
@@ -293,9 +312,13 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedTransactions(e.value)}
                     />
                 </div>
-                <div className='field col-12 md:col-4'>
-                    <label htmlFor='transportador'>Transportador</label>
+            </div>
+            <div className='grid'>
+                <div className='col-3 lg:w-10rem text-right' style={{ wordBreak: 'break-all' }}>
                     <RequiredFlag />
+                    <label htmlFor='transportador'>Transportador:</label>
+                </div>
+                <div className='col-9 lg:col-4 flex align-items-center'>
                     <Dropdown
                         id='transportador'
                         className='w-full p-inputtext-sm'
@@ -306,8 +329,10 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedConvenyor(e.value)}
                     />
                 </div>
-                <div className='field col-12 md:col-4'>
-                    <label htmlFor='redespacho'>Redespacho</label>
+                <div className='col-3 lg:col-1 text-right' >
+                    <label htmlFor='redespacho'>Redespacho:</label>
+                </div>
+                <div className='col-9 lg:col-5'>
                     <Dropdown
                         id='redespacho'
                         className='w-full p-inputtext-sm'
@@ -320,8 +345,10 @@ export function AddBudgetPage() {
                 </div>
             </div>
             <div className='grid'>
-                <div className='field col-12 md:col-5'>
-                    <label htmlFor='condPagto'>Condição do Pagamento</label>
+                <div className='col-3 lg:w-10rem text-right'>
+                    <label htmlFor='condPagto'>Condição do Pagamento:</label>
+                </div>
+                <div className='col-9 lg:col-5 flex align-items-center'>
                     <Dropdown
                         id='condPagto'
                         className='w-full p-inputtext-sm'
@@ -332,8 +359,10 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedPaymentCond(e.value)}
                     />
                 </div>
-                <div className='field col-12 md:col-2'>
-                    <label htmlFor='moeda'>Moeda</label>
+                <div className='col-3 lg:col-1 flex align-items-center justify-content-end text-right'>
+                    <label htmlFor='moeda'>Moeda:</label>
+                </div>
+                <div className='col-9 lg:col-4 flex align-items-center'>
                     <Dropdown
                         id='moeda'
                         className='w-full p-inputtext-sm'
@@ -344,8 +373,10 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedCurrency(e.value)}
                     />
                 </div>
-                <div className='field col-12 md:col-5'>
-                    <label htmlFor='tipoPagto'>Tipo de Pagamento</label>
+                <div className='col-3 lg:w-10rem text-right'>
+                    <label htmlFor='tipoPagto'>Tipo de Pagamento:</label>
+                </div>
+                <div className='col-9 lg:col-10'>
                     <Dropdown
                         id='tipoPagto'
                         className='w-full p-inputtext-sm'
@@ -357,10 +388,12 @@ export function AddBudgetPage() {
                     />
                 </div>
             </div>
-            <div className='grid formgrid'>
-                <div className='field col-12 md:col-1 flex flex-column mr-3'>
-                    <label>Frete</label>
-                    <div className='flex align-items-center '>
+            <div className='grid'>
+                <div className='col-3 lg:w-10rem text-right'>
+                    <label>Frete:</label>
+                </div>
+                <div className='col-9 lg:col-2'>
+                    <div className='flex align-items-center'>
                         <RadioButton
                             inputId='cif'
                             className='mr-1'
@@ -381,12 +414,15 @@ export function AddBudgetPage() {
                         <label htmlFor='fob' className='font-bold cursor-pointer'>Fob</label>
                     </div>
                 </div>
-                <div className='field col-12 md:col-2 flex flex-column'>
-                    <label htmlFor='freightValue'>Valor do Frete</label>
+                <div className='col-3 lg:col-2 lg:col-offset-5 text-right'>
+                    <label htmlFor='freightValue'>Valor do Frete:</label>
+                </div>
+                <div className='col-9 lg:col-1 flex align-items-center'>
                     <InputNumber
                         size={1}
                         inputId='freightValue'
-                        inputClassName='p-inputtext-sm'
+                        className='w-full'
+                        inputClassName='p-inputtext-sm w-full'
                         value={priceFreight}
                         onValueChange={(e) => setPriceFreight(e.value)}
                         mode='decimal'
@@ -394,37 +430,45 @@ export function AddBudgetPage() {
                         minFractionDigits={2}
                     />
                 </div>
-                <div className='field col-12 md:col-2 flex flex-column'>
-                    <label htmlFor='valorMinimo'>Valor Minimo</label>
+                <div className='col-3 lg:w-10rem text-right'>
+                    <label htmlFor='valorMinimo'>Valor Minimo:</label>
+                </div>
+                <div className='col-9 lg:col-2 flex align-items-center'>
                     <InputNumber
-                        size={1}
                         inputId='valorMinimo'
-                        inputClassName='p-inputtext-sm'
+                        className='w-full'
+                        inputClassName='p-inputtext-sm w-full'
                         value={minValue}
                         onValueChange={(e) => setMinValue(e.value)}
                         mode='decimal'
+                        prefix='R$ '
                         minFractionDigits={2}
                         maxFractionDigits={2}
                     />
                 </div>
-                <div className='field col-12 md:col-2 flex flex-column' >
-                    <label htmlFor='valorMinimoDuplicata'>Valor Minimo Duplicata</label>
+                <div className='col-3 lg:col-2 text-right'>
+                    <label htmlFor='valorMinimoDuplicata'>Valor Minimo Duplicata:</label>
+                </div>
+                <div className='col-9 lg:col-2 flex align-items-center' >
                     <InputNumber
-                        size={1}
-                        inputClassName='p-inputtext-sm'
+                        className='w-full'
+                        inputClassName='p-inputtext-sm w-full'
                         inputId='valorMinimoDuplicata'
                         value={minValueDup}
                         onValueChange={(e) => setMinValueDup(e.value)}
                         mode='decimal'
+                        prefix='R$ '
                         minFractionDigits={2}
                         maxFractionDigits={2}
                     />
                 </div>
-                <div className='field col-12 md:col-2 flex flex-column'>
-                    <label htmlFor='validadeOrcamento'>Validade do Orçamento</label>
+                <div className='col-3 lg:col-2 text-right'>
+                    <label htmlFor='validadeOrcamento'>Validade do Orçamento:</label>
+                </div>
+                <div className='col-9 lg:col-2 flex align-items-center'>
                     <InputNumber
-                        size={1}
-                        inputClassName='p-inputtext-sm'
+                        className='w-full'
+                        inputClassName='w-full p-inputtext-sm'
                         inputId='validadeOrcamento'
                         value={budgetValidity}
                         onValueChange={(e) => setBudgetValidity(e.value)}
@@ -432,8 +476,11 @@ export function AddBudgetPage() {
                     />
                 </div>
             </div>
-            <div className='grid flex flex-wrap mt-2'>
-                <div className='col-12 md:col-2'>
+            <div className='grid'>
+                <div className='col-3 lg:w-10rem text-right'>
+                    <label>Opções:</label>
+                </div>
+                <div className='col-9 lg:col-2 '>
                     <Checkbox
                         inputId='emiteCert'
                         checked={checkEmiteCert}
@@ -442,7 +489,7 @@ export function AddBudgetPage() {
                     />
                     <label htmlFor='emiteCert' className='cursor-pointer'>Emite Certificado</label>
                 </div>
-                <div className='col-12 md:col-2'>
+                <div className='col-9 col-offset-3 lg:col-offset-0 lg:col-3 lg:flex justify-content-center align-items-center'>
                     <Checkbox
                         inputId='emitePPAP'
                         checked={checkEmitePPAP}
@@ -451,7 +498,7 @@ export function AddBudgetPage() {
                     />
                     <label htmlFor='emitePPAP' className='cursor-pointer'>Emite PPAP</label>
                 </div>
-                <div className='col-12 md:col-2'>
+                <div className='col-12 col-offset-3 lg:col-offset-0 lg:col-3 lg:flex justify-content-center align-items-center '>
                     <Checkbox
                         inputId='mantemSaldo'
                         checked={checkMantemSaldo}
@@ -460,7 +507,7 @@ export function AddBudgetPage() {
                     />
                     <label htmlFor='mantemSaldo' className='cursor-pointer'>Mantém Saldo</label>
                 </div>
-                <div className='col-12 md:col-2'>
+                <div className='col-12 col-offset-3 lg:col-offset-0 lg:col-2 lg:flex justify-content-end align-items-center'>
                     <Checkbox
                         inputId='aceitaParcial'
                         checked={checkAceitaParcial}
@@ -471,14 +518,14 @@ export function AddBudgetPage() {
                 </div>
             </div>
             <Divider icon={'fa-solid fa-cart-plus'} label='Items do Pedido' />
-            <div className='w-full'>
+            <div className='w-full my-2'>
                 <Button
                     className='w-full p-button-raised'
                     label={<span className='font-semibold'>Adicionar Item</span>}
                     onClick={() => setModalVisible(true)}
                 />
             </div>
-            <div className='mt-3'>
+            <div>
                 <DataTable
                     resizableColumns
                     header={
@@ -553,6 +600,6 @@ export function AddBudgetPage() {
                 </DataTable>
             </div >
 
-        </>
+        </div>
     )
 }
