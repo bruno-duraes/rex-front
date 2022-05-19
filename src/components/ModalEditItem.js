@@ -112,7 +112,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                     </div>
                     <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 bg-white'>
                         <div className='grid'>
-                            <div className='field col-6 lg:col-1'>
+                            <div className='field col-6 lg:w-5rem'>
                                 <label htmlFor='selectItem'>Código</label>
                                 <RequiredFlag />
                                 <AutoComplete
@@ -120,15 +120,14 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     value={selectedItem}
                                     suggestions={filteredItems}
                                     completeMethod={searchItem}
-                                    readOnly
-                                    field='codigoRex'
+                                    field={'codigoRex'}
                                     onChange={e => setSelectedItem(e.value)}
                                     id='selectItem'
                                     className='w-full'
-                                    inputClassName={`w-full p-inputtext-sm  ${validation.item}`}
+                                    inputClassName={`w-full p-inputtext-sm p-1 ${validation.item}`}
                                 />
                             </div>
-                            <div className='field col-6 lg:col-1'>
+                            <div className='field col-6 lg:w-5rem'>
                                 <label htmlFor='itemQuantia'>Quantia</label>
                                 <RequiredFlag />
                                 <InputNumber
@@ -142,7 +141,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     onChange={e => setQuantity(e.value)}
                                 />
                             </div>
-                            <div className='field col-6 lg:col-1'>
+                            <div className='field col-6 lg:w-4rem text-center'>
                                 <label htmlFor='itemNn'>UN</label>
                                 <InputText
                                     id='itemUn'
@@ -164,7 +163,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     minFractionDigits={2}
                                 />
                             </div>
-                            <div className='field col-6 lg:col-1'>
+                            <div className='field col-6 lg:w-6rem'>
                                 <div className='flex align-items-center mb-1'>
                                     <RadioButton
                                         className='mr-1'
@@ -187,7 +186,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     readOnly
                                 />
                             </div>
-                            <div className='field col-6 lg:col-1'>
+                            <div className='field col-6 lg:w-6rem'>
                                 <div className='flex flex-row mb-1'>
                                     <RadioButton
                                         className='mr-1'
@@ -209,7 +208,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     readOnly
                                 />
                             </div>
-                            <div className='col-6 lg:col-1'>
+                            <div className='col-6 lg:w-6rem'>
                                 <div className='flex align-items-center mb-1'>
                                     <RadioButton
                                         className='mr-1'
@@ -232,7 +231,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     readOnly
                                 />
                             </div>
-                            <div className='col-6 lg:col-1'>
+                            <div className='col-6 lg:w-6rem'>
                                 <div className=' flex align-items-center mb-1'>
                                     <RadioButton
                                         className='mr-1'
@@ -304,11 +303,11 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     minFractionDigits={2}
                                 />
                             </div>
-                            <div className='field col-6 lg:col-1'>
+                            <div className='field col-6 lg:w-5rem'>
                                 <label>Média KG</label>
                                 <InputNumber
                                     className='w-full'
-                                    inputClassName='w-full p-inputtext-sm'
+                                    inputClassName='w-full p-inputtext-sm p-1'
                                     mode='decimal'
                                     readOnly
                                     maxFractionDigits={2}
@@ -316,15 +315,15 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     value={selectedItem && selectedItem.peso_bruto && quantity ? quantity * selectedItem.peso_bruto : null}
                                 />
                             </div>
+                            <div className='field col-6 lg:w-7rem'>
+                                <label>Data</label>
+                                <Datepicker initialDate={date} readonly removeBtn />
+                            </div>
                         </div>
                         <div className='grid'>
-                            <div className='field col-6 lg:w-10rem'>
-                                <label>Data</label>
-                                <Datepicker initialDate={date} onChange={e => setDate(e.value)} />
-                            </div>
-                            <div className='field col-6 lg:w-10rem'>
+                            <div className='field col-6 lg:w-7rem'>
                                 <label>Entrega</label>
-                                <Datepicker initialDate={dateDelivery} onChange={e => setDateDelivery(e.value)} />
+                                <Datepicker initialDate={dateDelivery} readonly removeBtn />
                             </div>
                             <div className='field col-6 lg:w-8rem'>
                                 <label>Pedido/Ordem</label>
@@ -380,7 +379,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                             value={selectedItem && selectedItem.descricacao ? selectedItem.descricacao : ''}
                                         />
                                     </div>
-                                    <div className='field col-12 lg:col-2'>
+                                    <div className='field col-12 lg:col-2 py-0'>
                                         <label>Cód REX</label>
                                         <InputText
                                             readOnly
@@ -388,7 +387,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                             value={selectedItem && selectedItem.codigoRex ? selectedItem.codigoRex : ''}
                                         />
                                     </div>
-                                    <div className='field col-12 lg:col-2'>
+                                    <div className='field col-12 lg:col-2 py-0'>
                                         <label>Cód Sapiens</label>
                                         <InputText
                                             readOnly
@@ -396,7 +395,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                             value={selectedItem && selectedItem.codigoSap ? selectedItem.codigoSap : ''}
                                         />
                                     </div>
-                                    <div className='field col-12 lg:col-2'>
+                                    <div className='field col-12 lg:col-2 py-0'>
                                         <label>Peso</label>
                                         <InputNumber
                                             readOnly
@@ -408,7 +407,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                             value={selectedItem && selectedItem.peso_bruto ? selectedItem.peso_bruto : ''}
                                         />
                                     </div>
-                                    <div className='field col-12 lg:col-2'>
+                                    <div className='field col-12 lg:col-2 py-0'>
                                         <label>Preço</label>
                                         <InputNumber
                                             readOnly
@@ -419,7 +418,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                             value={selectedItem && selectedItem.preco_bruto ? selectedItem.preco_bruto : ''}
                                         />
                                     </div>
-                                    <div className='field col-12 lg:col-2'>
+                                    <div className='field col-12 lg:col-2 py-0'>
                                         <label htmlFor='itemUnidade'>Unidade</label>
                                         <InputText
                                             id='itemUnidade'
@@ -428,7 +427,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                             value={selectedItem && selectedItem.un ? selectedItem.un : ''}
                                         />
                                     </div>
-                                    <div className='field col-12 lg:col-2'>
+                                    <div className='field col-12 lg:col-2 py-0'>
                                         <label htmlFor='itemQtiaEmbalada'>Qtia Embalada</label>
                                         <InputNumber
                                             inputId='itemQtiaEmbalada'
@@ -441,7 +440,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                             value={selectedItem && selectedItem.qtia_embalada ? selectedItem.qtia_embalada : ''}
                                         />
                                     </div>
-                                    <div className='field col-12 lg:col-4'>
+                                    <div className='field col-12 lg:col-4 '>
                                         <label htmlFor='itemDerivacao'>Derivação</label>
                                         <InputText
                                             readOnly
@@ -450,7 +449,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                             value={selectedItem && selectedItem.derivacao ? selectedItem.derivacao : ''}
                                         />
                                     </div>
-                                    <div className='field col-12 lg:col-4'>
+                                    <div className='field col-12 lg:col-4 '>
                                         <label htmlFor='itemEmbalagem'>Embalagem</label>
                                         <InputText
                                             readOnly
@@ -459,7 +458,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                             value={selectedItem && selectedItem.embalagem ? selectedItem.embalagem : ''}
                                         />
                                     </div>
-                                    <div className='field col-12 lg:col-4'>
+                                    <div className='field col-12 lg:col-4 '>
                                         <label htmlFor='itemClassFiscal'>Classificação Fiscal</label>
                                         <InputText
                                             readOnly
@@ -473,7 +472,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                             <div className='col-12 lg:col-2 flex align-items-center justify-content-center'>
                                 <span
                                     className={`font-semibold text-8xl ${selectedItem ? (selectedItem.curva == 'A' ? 'text-blue-500' : selectedItem.curva == 'B' ? 'text-green-500' : selectedItem.curva == 'C' ? 'text-pink-500' : null) : null}`}>
-                                    {selectedItem ? selectedItem.curva : ''}
+                                    {selectedItem && selectedItem.curva ? selectedItem.curva : ''}
                                 </span>
                             </div>
                         </div>
@@ -481,7 +480,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
 
                     <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 mb-2 bg-white'>
                         <div className='grid'>
-                            <div className='col-6 lg:col-12'>
+                            <div className='col-6 lg:col-12 pb-0'>
                                 <div className='grid flex align-items-center'>
                                     <div className='flex flex-row col-12 lg:col-2 w-10rem'>
                                         <label htmlFor='itemDepPadrao'>Dep Padrão: 004</label>
@@ -559,7 +558,7 @@ export function ModalEditItem({ item, budgetItems, changeItems, index, visible, 
                                     </div>
                                 </div>
                             </div>
-                            <div className='col-6 lg:col-12'>
+                            <div className='col-6 lg:col-12 py-0'>
                                 <div className='grid flex align-items-center'>
                                     <div className='col-12 lg:col-2 w-10rem'>
                                         <label htmlFor='depCliente'>Dep Cliente: 573</label>

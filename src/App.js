@@ -54,8 +54,8 @@ export function App() {
             <div className="flex p-2 w-ful" style={{ background: '#337597' }} >
                 {renderButtonBar()}
             </div>
-            <div className="container p-3 surface-200">
-                <Card>
+            <div className="container p-2 surface-200">
+                <Card className="p-0">
                     {renderState.render}
                 </Card>
             </div>

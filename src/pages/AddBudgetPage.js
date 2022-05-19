@@ -162,7 +162,7 @@ export function AddBudgetPage() {
     }
 
     return (
-        <div className=''>
+        <div>
             <ModalEditItem
                 index={editItem && editItem.index ? editItem.index : null}
                 item={editItem && editItem.item ? editItem.item : null}
@@ -182,7 +182,7 @@ export function AddBudgetPage() {
                 deadline={entrega ? entrega : null}
             />
 
-            <div className='grid surface-400 border-round mb-2'>
+            <div className='grid mb-3' style={{ borderBottom: 'solid 1px #ced4da' }}>
                 <div className='col-12 lg:col-1'>
                     <Button
                         label='Salvar'

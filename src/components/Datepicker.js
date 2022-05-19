@@ -1,7 +1,7 @@
 import { addLocale } from 'primereact/api';
 import { Calendar } from 'primereact/calendar';
 
-export function Datepicker({ initialDate, onChange, readonly }) {
+export function Datepicker({ initialDate, onChange, readonly, disabled, removeBtn }) {
     addLocale('br', {
         firstDayOfWeek: 1,
         dayName: ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'],
@@ -17,8 +17,9 @@ export function Datepicker({ initialDate, onChange, readonly }) {
             mask="99/99/9999"
             dateFormat='dd/mm/yy'
             locale='br'
-            showIcon
-            disabled={readonly}
+            showIcon={!removeBtn}
+            readOnlyInput={readonly}
+            disabled={disabled}
             onChange={onChange}
             value={initialDate}
             showOnFocus={false}

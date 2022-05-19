@@ -57,6 +57,11 @@ label {
     padding: 5px;
 }
 
+.p-card .p-card-body {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+}
+
 .p-sidebar-header {
     display: none
 }
