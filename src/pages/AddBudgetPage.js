@@ -81,7 +81,7 @@ export function AddBudgetPage() {
     const [selectedPaymentCond, setSelectedPaymentCond] = useState(null);
     const [selectedCurrency, setSelectedCurrency] = useState({ name: '1 - Real | R$' });
     const [selectedPaymentType, setSelectedPaymentType] = useState(null);
-    const [freight, setFreight] = useState(null);
+    const [freight, setFreight] = useState('Cif');
     const [priceFreight, setPriceFreight] = useState(null);
     const [minValue, setMinValue] = useState(null);
     const [minValueDup, setMinValueDup] = useState(null);
@@ -99,6 +99,7 @@ export function AddBudgetPage() {
     const [editItem, setEditItem] = useState(null);
     const [editItemVisible, setEditItemVisible] = useState(false);
     const [tableTotal, setTableTotal] = useState('0,00');
+    const [invalidState, setInvalidState] = useState({});
     const { setRender, globalToast } = useContext(RenderContext);
 
     useEffect(() => {
@@ -110,6 +111,7 @@ export function AddBudgetPage() {
             setTableTotal(v);
         }
     }, [products])
+
     function saveOrder() {
         function validProp(p) {
             return p ? p.name : ''
@@ -150,6 +152,49 @@ export function AddBudgetPage() {
             valorTotal: valorTotal,
             itens: products
         }
+
+        if (
+            !order.cliente ||
+            !order.representante ||
+            !order.transacao ||
+            !order.transportador
+        ) {
+            let erros = '';
+            if (!order.cliente) {
+                erros += '• Cliente \n';
+                setInvalidState(state => ({ ...state, cliente: true }))
+            } else {
+                setInvalidState(state => ({ ...state, cliente: false }))
+            };
+            if (!order.representante) {
+                erros += '• Representante\n ';
+                setInvalidState(state => ({ ...state, representante: true }));
+            } else {
+                setInvalidState(state => ({ ...state, representante: false }))
+            };
+            if (!order.transacao) {
+                erros += '• Transação\n ';
+                setInvalidState(state => ({ ...state, transacao: true }));
+            } else {
+                setInvalidState(state => ({ ...state, transacao: false }))
+            };
+            if (!order.transportador) {
+                erros += '• Transportador\n ';
+                setInvalidState(state => ({ ...state, transportador: true }))
+            } else {
+                setInvalidState(state => ({ ...state, transportador: false }))
+            };
+            if (!order.entrega) {
+                erros += '• Entrega\n';
+                setInvalidState(state => ({ ...state, entrega: true }))
+            } else {
+                setInvalidState(state => ({ ...state, entrega: false }))
+            };
+            console.log(erros)
+            globalToast.current.show({ severity: 'error', summary: 'Campos Obrigátorios', detail: erros, life: 5000 })
+            throw new Error('invalid form')
+        }
+
         let orders = JSON.parse(localStorage.getItem('orders'));
         if (!orders) {
             localStorage.setItem('orders', JSON.stringify([order]));
@@ -227,7 +272,7 @@ export function AddBudgetPage() {
                 <div className="col-9 md:col-6">
                     <Dropdown
                         id='cliente'
-                        className='w-full p-inputtext-sm'
+                        className={`w-full p-inputtext-sm ${invalidState.cliente ? 'p-invalid' : ''}`}
                         filter
                         value={selectedClient}
                         options={clients}
@@ -276,8 +321,8 @@ export function AddBudgetPage() {
                 </div>
                 <div className='col-12 lg:col-3 lg:col-offset-5 flex lg:justify-content-end'>
                     <div className='flex align-items-center w-full flex justify-content-end'>
-                        <label className='pl-3 mr-3 mb-1' htmlFor='entrega'>Entrega:</label>
-                        <Datepicker id='entrega' initialDate={entrega} onChange={e => setEntrega(e.value)} className=' lg:w-10rem' />
+                        <label className='pl-3 mr-3 mb-1' htmlFor='entrega'><RequiredFlag />Entrega:</label>
+                        <Datepicker id='entrega' initialDate={entrega} onChange={e => setEntrega(e.value)} className={`lg:w-10rem ${invalidState.entrega ? 'p-invalid' : ''}`} />
                     </div>
                 </div>
             </div>
@@ -289,7 +334,9 @@ export function AddBudgetPage() {
                 <div className='col-9 lg:col-4 flex align-items-center'>
                     <Dropdown
                         id='representante'
-                        className='w-full p-inputtext-sm'
+                        className={
+                            `w-full p-inputtext-sm ${invalidState.representante ? 'p-invalid' : ''}`
+                        }
                         filter value={selectedRep}
                         options={representatives}
                         optionLabel={'name'}
@@ -304,7 +351,7 @@ export function AddBudgetPage() {
                 <div className='col-9 md:col-5'>
                     <Dropdown
                         id='transacao'
-                        className='w-full p-inputtext-sm'
+                        className={`w-full p-inputtext-sm ${invalidState.transacao ? 'p-invalid' : ''}`}
                         filter value={selectedTrasaction}
                         options={transactions}
                         optionLabel={'name'}
@@ -321,7 +368,9 @@ export function AddBudgetPage() {
                 <div className='col-9 lg:col-4 flex align-items-center'>
                     <Dropdown
                         id='transportador'
-                        className='w-full p-inputtext-sm'
+                        className={
+                            `w-full p-inputtext-sm ${invalidState.transportador ? 'p-invalid' : ''}`
+                        }
                         filter value={selectedConvenyor}
                         options={convenyors}
                         optionLabel={'name'}
@@ -521,6 +570,7 @@ export function AddBudgetPage() {
             <div className='w-full my-2'>
                 <Button
                     className='w-full p-button-raised'
+                    disabled={!selectedClient || !selectedRep || !selectedTrasaction || !selectedConvenyor || !entrega ? true : false}
                     label={<span className='font-semibold'>Adicionar Item</span>}
                     onClick={() => setModalVisible(true)}
                 />

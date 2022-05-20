@@ -1,6 +1,5 @@
 import { AutoComplete } from 'primereact/autocomplete';
 import { Button } from 'primereact/button';
-import { Checkbox } from 'primereact/checkbox';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Dropdown } from 'primereact/dropdown';
@@ -386,9 +385,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 onchange={e => setSelectedTransaction(e.value)}
                             />
                         </div>
-                    </div>
-                    <div className='grid'>
-                        <div className='flex flex-row col-12 lg:col-6'>
+                        <div className='flex flex-row col-12 lg:col-3'>
                             <InputTextarea
                                 className='w-full text-sm'
                                 placeholder='Observações'
@@ -399,50 +396,73 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                             />
                         </div>
                     </div>
+                    {/* <div className='grid'>
+                        <div className='flex flex-row col-12 lg:col-6'>
+                            <InputTextarea
+                                className='w-full text-sm'
+                                placeholder='Observações'
+                                rows={2}
+                                autoResize
+                                value={note}
+                                onChange={e => setNote(e.target.value)}
+                            />
+                        </div>
+                    </div> */}
                 </div>
 
                 <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 my-2 bg-white'>
                     <div className='grid'>
-                        <div className='col-12 lg:col-10'>
+                        <div className='col-12 lg:col-10 pb-0'>
                             <div className='grid'>
-                                <div className='field col-12'>
-                                    <label>Descrição</label>
+                                <div className='col-1 text-right'>
+                                    <label className='mr-2 w-5rem'>Descrição:</label>
+                                </div>
+                                <div className='col-11 pb-0'>
                                     <InputText
                                         readOnly
                                         className='w-full p-inputtext-sm'
                                         value={selectedItem && selectedItem.descricacao ? selectedItem.descricacao : ''}
                                     />
                                 </div>
-                                <div className='field col-12 lg:col-2 py-0'>
-                                    <label>Cód REX</label>
+                                <div className='col-1 text-right'>
+                                    <label>Cód REX:</label>
+                                </div>
+                                <div className='col-11 lg:col-2 pb-0'>
                                     <InputText
                                         readOnly
                                         className='w-full p-inputtext-sm'
                                         value={selectedItem && selectedItem.codigoRex ? selectedItem.codigoRex : ''}
                                     />
                                 </div>
-                                <div className='field col-12 lg:col-2 py-0'>
-                                    <label>Cód Sapiens</label>
+                                <div className='col-1 text-right'>
+                                    <label>Cód ERP:</label>
+                                </div>
+                                <div className='field col-11 lg:col-2 pb-0'>
                                     <InputText
                                         readOnly
                                         className='w-full p-inputtext-sm'
                                         value={selectedItem && selectedItem.codigoSap ? selectedItem.codigoSap : ''}
                                     />
                                 </div>
-                                <div className='field col-12 lg:col-2 py-0'>
-                                    <label>Peso</label>
+                                <div className='col-1 text-right'>
+                                    <label>Peso:</label>
+                                </div>
+                                <div className='field col-12 lg:col-2 pb-0'>
                                     <InputNumber
                                         readOnly
                                         className='w-full p-inputtext-sm'
                                         inputClassName='w-full'
                                         mode='decimal'
+                                        suffix='kg'
                                         maxFractionDigits={2}
                                         minFractionDigits={2}
                                         value={selectedItem && selectedItem.peso_bruto ? selectedItem.peso_bruto : ''}
                                     />
                                 </div>
-                                <div className='field col-12 lg:col-2 py-0'>
-                                    <label>Preço</label>
+                                <div className='col-1 text-right'>
+                                    <label>Preço:</label>
+                                </div>
+                                <div className='field col-12 lg:col-2 pb-0'>
                                     <InputNumber
                                         readOnly
                                         className='w-full p-inputtext-sm'
@@ -452,8 +472,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         value={selectedItem && selectedItem.preco_bruto ? selectedItem.preco_bruto : ''}
                                     />
                                 </div>
-                                <div className='field col-12 lg:col-2 py-0'>
-                                    <label htmlFor='itemUnidade'>Unidade</label>
+                                <div className='col-1 text-right pb-0'>
+                                    <label htmlFor='itemUnidade'>Unidade:</label>
+                                </div>
+                                <div className='field col-12 lg:col-1 pb-0'>
                                     <InputText
                                         id='itemUnidade'
                                         readOnly
@@ -461,8 +483,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         value={selectedItem && selectedItem.un ? selectedItem.un : ''}
                                     />
                                 </div>
-                                <div className='field col-12 lg:col-2 py-0'>
-                                    <label htmlFor='itemQtiaEmbalada'>Qtia Embalada</label>
+                                <div className=' col-2 text-right pb-0'>
+                                    <label htmlFor='itemQtiaEmbalada'>Qtia Embalada:</label>
+                                </div>
+                                <div className='field col-12 lg:col-2 pb-0'>
                                     <InputNumber
                                         inputId='itemQtiaEmbalada'
                                         readOnly
@@ -474,8 +498,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         value={selectedItem && selectedItem.qtia_embalada ? selectedItem.qtia_embalada : ''}
                                     />
                                 </div>
-                                <div className='field col-12 lg:col-4 '>
-                                    <label htmlFor='itemDerivacao'>Derivação</label>
+                                <div className='col-1 text-right'>
+                                    <label htmlFor='itemDerivacao'>Derivação:</label>
+                                </div>
+                                <div className='field col-12 lg:col-5  pb-0'>
                                     <InputText
                                         readOnly
                                         id='itemDerivacao'
@@ -483,8 +509,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         value={selectedItem && selectedItem.derivacao ? selectedItem.derivacao : ''}
                                     />
                                 </div>
-                                <div className='field col-12 lg:col-4 '>
-                                    <label htmlFor='itemEmbalagem'>Embalagem</label>
+                                <div className='col-1 text-right'>
+                                    <label htmlFor='itemEmbalagem'>Embalagem:</label>
+                                </div>
+                                <div className='field col-12 lg:col-4 pb-0'>
                                     <InputText
                                         readOnly
                                         id='itemEmbalagem'
@@ -492,8 +520,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         value={selectedItem && selectedItem.embalagem ? selectedItem.embalagem : ''}
                                     />
                                 </div>
-                                <div className='field col-12 lg:col-4 '>
-                                    <label htmlFor='itemClassFiscal'>Classificação Fiscal</label>
+                                <div className='col-2 text-right'>
+                                    <label htmlFor='itemClassFiscal'>Classificação Fiscal:</label>
+                                </div>
+                                <div className='field col-12 lg:col-4 pb-0'>
                                     <InputText
                                         readOnly
                                         id='itemClassFiscal'
@@ -503,16 +533,17 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 </div>
                             </div>
                         </div>
-                        <div className='col-12 lg:col-2 flex align-items-center justify-content-center'>
+                        <div className='col-12 lg:col-2 flex align-items-center justify-content-center flex-column'>
+                            <label>Curva</label>
                             <span
-                                className={`font-semibold text-8xl ${selectedItem ? (selectedItem.curva == 'A' ? 'text-blue-500' : selectedItem.curva == 'B' ? 'text-green-500' : selectedItem.curva == 'C' ? 'text-pink-500' : null) : null}`}>
+                                className={`font-semibold m-0 text-7xl ${selectedItem ? (selectedItem.curva == 'A' ? 'text-blue-500' : selectedItem.curva == 'B' ? 'text-green-500' : selectedItem.curva == 'C' ? 'text-pink-500' : null) : null}`}>
                                 {selectedItem && selectedItem.curva ? selectedItem.curva : ''}
                             </span>
                         </div>
                     </div>
                 </div>
 
-                <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 mb-2 bg-white'>
+                {/* <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 mb-2 bg-white'>
                     <div className='grid'>
                         <div className='col-6 lg:col-12 pb-0'>
                             <div className='grid flex align-items-center'>
@@ -671,10 +702,25 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
+                <DataTable
+                    header={<span className='text-700 text-sm'>Depósitos</span>}
+                    showGridlines
+                    selectionMode='single'
+                    className='mb-2
+                    '
+                    value={selectedItem && selectedItem.depositos ? selectedItem.depositos : null}
+                >
+                    <Column field='dep' headerClassName='text-700 text-sm' header='Dep' />
+                    <Column field='cod' headerClassName='text-700 text-sm' header='Cod' />
+                    <Column field='estoque' headerClassName='text-700 text-sm' header='Estoque' />
+                    <Column field='resPedidos' headerClassName='text-700 text-sm' header='Res. Pedidos' />
+                    <Column field='resPreFatura' headerClassName='text-700 text-sm' header='Res. Pré-Fatura' />
+                    <Column field='totalOP' headerClassName='text-700 text-sm' header='Total em OP' />
+                    <Column field='saldo' headerClassName='text-700 text-sm' header='Saldo' />
+                </DataTable>
 
                 <DataTable
-                    tableStyle={{ background: 'blue' }}
                     header={<span className='text-700 text-sm'>Saldos dos Acabamentos do Produto</span>}
                     emptyMessage='Nenhum Produto Selecionado'
                     showGridlines

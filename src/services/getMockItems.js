@@ -22,6 +22,26 @@ export function getMockItems() {
             estoqueCliente: 0,
             derivacao: 'Derivacao 01',
             class_fiscal: 'Classificação Fiscal X',
+            depositos: [
+                {
+                    dep: 'Padrão',
+                    cod: '004',
+                    estoque: 975,
+                    resPedidos: 0,
+                    resPreFatura: 0,
+                    totalOP: 0,
+                    saldo: 0,
+                },
+                {
+                    dep: 'Cliente',
+                    cod: '573',
+                    estoque: 426,
+                    resPedidos: 0,
+                    resPreFatura: 0,
+                    totalOP: 0,
+                    saldo: 0,
+                },
+            ],
             acabamentos: [
                 {
                     ref: 1123,
@@ -67,6 +87,26 @@ export function getMockItems() {
             estoqueCliente: 12,
             derivacao: 'Derivacao 02',
             class_fiscal: 'Classificação Fiscal Y',
+            depositos: [
+                {
+                    dep: 'Padrão',
+                    cod: '004',
+                    estoque: 56,
+                    resPedidos: 0,
+                    resPreFatura: 0,
+                    totalOP: 0,
+                    saldo: 0,
+                },
+                {
+                    dep: 'Cliente',
+                    cod: '573',
+                    estoque: 56,
+                    resPedidos: 0,
+                    resPreFatura: 0,
+                    totalOP: 0,
+                    saldo: 0,
+                },
+            ],
             acabamentos: [
                 {
                     ref: 41123,
@@ -112,6 +152,17 @@ export function getMockItems() {
             estoqueCliente: 36,
             derivacao: 'Derivacao 01',
             class_fiscal: 'Classificação Fiscal Z',
+            depositos: [
+                {
+                    dep: 'Padrão',
+                    cod: '004',
+                    estoque: 36,
+                    resPedidos: 0,
+                    resPreFatura: 0,
+                    totalOP: 0,
+                    saldo: 0,
+                },
+            ],
             acabamentos: [
                 {
                     ref: 21123,
