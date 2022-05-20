@@ -240,15 +240,14 @@ export function AddBudgetPage() {
                     />
                 </div>
             </div>
-            <div className="grid">
+            <div className="grid mb-2">
                 <div className='col-3 lg:w-10rem text-right'>
                     < label htmlFor='emissao'>Emissão: </label>
                 </div>
                 <div className='col-8 lg:w-10rem'>
                     <Datepicker id='emissao' readonly={true} initialDate={emissao} onChange={(e) => setEmissao(e.value)} />
                 </div >
-            </div >
-            <div className='grid'>
+                <div className='lg:col-8'></div>
                 <div className='col-3 lg:w-10rem text-right'>
                     <RequiredFlag />
                     <label htmlFor='budgetNum'>Usuário:</label>
@@ -281,8 +280,6 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedClient(e.value)}
                     />
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right'>
                     <label htmlFor='obsCliente'>
                         Observação <br />
@@ -299,15 +296,11 @@ export function AddBudgetPage() {
                         onChange={e => setObsCliente(e.target.value)}
                     />
                 </div>
-            </div>
-            <div className='grid mb-2'>
                 <div className='lg:w-10rem'></div>
                 <div className='col-12 lg:col-10 flex justify-content-between'>
                     <Button iconPos='right' icon='pi pi-search lg:text-base text-xs' label='Pedidos em Aberto' className='lg:text-base text-xs' />
                     <Button iconPos='right' icon='pi pi-search lg:text-base text-xs' label='Titulos em Aberto' className='lg:text-base text-xs' />
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right'>
                     <label htmlFor='numPed'>N° Ped/Oc Cli:</label>
                 </div>
@@ -325,8 +318,6 @@ export function AddBudgetPage() {
                         <Datepicker id='entrega' initialDate={entrega} onChange={e => setEntrega(e.value)} className={`lg:w-10rem ${invalidState.entrega ? 'p-invalid' : ''}`} />
                     </div>
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right' style={{ wordBreak: 'break-all' }}>
                     <RequiredFlag />
                     <label htmlFor='representante'>Representante:</label>
@@ -359,8 +350,6 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedTransactions(e.value)}
                     />
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right' style={{ wordBreak: 'break-all' }}>
                     <RequiredFlag />
                     <label htmlFor='transportador'>Transportador:</label>
@@ -392,8 +381,6 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedReDispatch(e.value)}
                     />
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right'>
                     <label htmlFor='condPagto'>Condição do Pagamento:</label>
                 </div>
@@ -436,8 +423,6 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedPaymentType(e.value)}
                     />
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right'>
                     <label>Frete:</label>
                 </div>
@@ -524,8 +509,6 @@ export function AddBudgetPage() {
                         suffix=' dias'
                     />
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right'>
                     <label>Opções:</label>
                 </div>

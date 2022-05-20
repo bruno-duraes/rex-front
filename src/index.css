@@ -16,7 +16,7 @@ label {
 .p-inputtext-sm,
 .p-dropdown,
 .p-dropdown-filter {
-    height: 25px;
+    height: 16pt;
     font-size: smaller;
 }
 
@@ -64,4 +64,24 @@ label {
 
 .p-sidebar-header {
     display: none
+}
+
+.grid>div {
+    padding-bottom: 0.3rem;
+    padding-top: 0.2rem;
+}
+
+.grid>div>.p-inputtext-sm>input,
+.grid>div>.p-inputtext-sm,
+.grid>div>input,
+.grid>div>.p-inputnumber,
+.grid>div>.p-dropdown,
+.grid>div>.p-inputnumber>input,
+.grid>div>label {
+    font-size: 9pt;
+    /* height: 14pt; */
+}
+
+.p-datatable .p-datatable-header {
+    padding: 0.3rem;
 }
