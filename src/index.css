@@ -13,11 +13,17 @@ label {
     border: none;
 }
 
+.pi-chevron-down::before {
+    font-size: 10pt;
+}
+
 .p-inputtext-sm,
 .p-dropdown,
+.p-inputtext-sm .p-inputtext,
+.p-inputtext.p-inputtext-s,
 .p-dropdown-filter {
-    height: 16pt;
-    font-size: smaller;
+    height: 15pt;
+    font-size: 9pt;
 }
 
 .p-dropdown-label {
@@ -46,7 +52,6 @@ label {
 .p-datatable td {
     font-size: smaller;
     font-weight: 550;
-    color: #555555;
 }
 
 .p-datatable .p-datatable-thead>tr>th {
@@ -79,7 +84,6 @@ label {
 .grid>div>.p-inputnumber>input,
 .grid>div>label {
     font-size: 9pt;
-    /* height: 14pt; */
 }
 
 .p-datatable .p-datatable-header {

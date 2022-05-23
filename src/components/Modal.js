@@ -33,6 +33,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
     const [depCliente, setDepCliente] = useState(false);
     const [lastProduct, setLastProduct] = useState('');
     const [filterCod, setFilterCod] = useState('codigoRex');
+    const [selectedDeposit, setSelectedDeposit] = useState(null);
     const toast = useRef(null);
     const item = useRef(null);
     const [validation, setValidation] = useState({ item: '', quantia: '' });
@@ -132,7 +133,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     <div className='col-12 lg:col-5 flex align-items-center'>
                         <div className='flex flex-column'>
                             <span className='font-medium mb-1 text-sm'>Cliente: {clientName}</span>
-                            <span className='font-semibold text-sm'>Ultimo Produto Incluído: {lastProduct}</span>
+                            <span className='font-semibold text-xs'>Ultimo Produto Incluído: {lastProduct}</span>
                         </div>
                     </div>
                     <div className='col-6 lg:col-2'>
@@ -143,7 +144,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     </div>
                 </div>
                 <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 bg-white'>
-                    <div className='grid'>
+                    <div className='grid flex align-items-end'>
                         <div className=' col-6 lg:w-5rem'>
                             <label htmlFor='selectItem'>
                                 Código
@@ -197,7 +198,8 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                             />
                         </div>
                         <div className=' col-6 lg:w-6rem'>
-                            <div className='flex align-items-center mb-1'>
+                            <label className='cursor-pointer' htmlFor='faixa1'>Faixa 1</label>
+                            <div className='flex flex-row'>
                                 <RadioButton
                                     className='mr-1'
                                     name='faixa'
@@ -206,21 +208,21 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     onChange={e => setFaixa(e.value)}
                                     checked={faixa && faixa === (selectedItem.faixa_1 ? selectedItem.faixa_1 : null)}
                                 />
-                                <label className='cursor-pointer' htmlFor='faixa1'>Faixa 1</label>
+                                <InputNumber
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-0 '
+                                    className='w-full'
+                                    value={selectedItem && selectedItem.faixa_1 ? selectedItem.faixa_1 : null}
+                                    htmlFor='faixa1'
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
+                                    readOnly
+                                />
                             </div>
-                            <InputNumber
-                                className='w-full'
-                                inputClassName='w-full cursor-pointer p-inputtext-sm'
-                                value={selectedItem && selectedItem.faixa_1 ? selectedItem.faixa_1 : null}
-                                htmlFor='faixa1'
-                                mode='decimal'
-                                maxFractionDigits={2}
-                                minFractionDigits={2}
-                                readOnly
-                            />
                         </div>
                         <div className=' col-6 lg:w-6rem'>
-                            <div className='flex flex-row mb-1'>
+                            <label className='cursor-pointer flex align-items-center' htmlFor='faixa2'>Faixa 2</label>
+                            <div className='flex flex-row'>
                                 <RadioButton
                                     className='mr-1'
                                     name='faixa'
@@ -229,20 +231,20 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     onChange={e => setFaixa(e.value)}
                                     checked={faixa && faixa === (selectedItem.faixa_2 ? selectedItem.faixa_2 : 0)}
                                 />
-                                <label className='cursor-pointer flex align-items-center' htmlFor='faixa2'>Faixa 2</label>
+                                <InputNumber
+                                    className='w-full'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-0'
+                                    value={selectedItem && selectedItem.faixa_2 ? selectedItem.faixa_2 : null}
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
+                                    readOnly
+                                />
                             </div>
-                            <InputNumber
-                                className='w-full'
-                                inputClassName='w-full cursor-pointer p-inputtext-sm'
-                                value={selectedItem && selectedItem.faixa_2 ? selectedItem.faixa_2 : null}
-                                mode='decimal'
-                                maxFractionDigits={2}
-                                minFractionDigits={2}
-                                readOnly
-                            />
                         </div>
                         <div className='col-6 lg:w-6rem'>
-                            <div className='flex align-items-center mb-1'>
+                            <label className='cursor-pointer' htmlFor='faixa2'>Faixa 3</label>
+                            <div className='flex flex-row'>
                                 <RadioButton
                                     className='mr-1'
                                     name='faixa'
@@ -251,21 +253,21 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     onChange={e => setFaixa(e.value)}
                                     checked={faixa && faixa === (selectedItem.faixa_3 ? selectedItem.faixa_3 : null)}
                                 />
-                                <label className='cursor-pointer' htmlFor='faixa2'>Faixa 3</label>
+                                <InputNumber
+                                    className='w-full'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-0'
+                                    value={selectedItem && selectedItem.faixa_3 ? selectedItem.faixa_3 : null}
+                                    htmlFor='faixa3'
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
+                                    readOnly
+                                />
                             </div>
-                            <InputNumber
-                                className='w-full'
-                                inputClassName='w-full cursor-pointer p-inputtext-sm'
-                                value={selectedItem && selectedItem.faixa_3 ? selectedItem.faixa_3 : null}
-                                htmlFor='faixa3'
-                                mode='decimal'
-                                maxFractionDigits={2}
-                                minFractionDigits={2}
-                                readOnly
-                            />
                         </div>
                         <div className='col-6 lg:w-6rem'>
-                            <div className=' flex align-items-center mb-1'>
+                            <label className='cursor-pointer' htmlFor='faixa4'>Faixa 4</label>
+                            <div className=' flex flex-row'>
                                 <RadioButton
                                     className='mr-1'
                                     name='faixa'
@@ -274,41 +276,40 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     onChange={e => setFaixa(e.value)}
                                     checked={faixa && faixa === (selectedItem.faixa_4 ? selectedItem.faixa_4 : null)}
                                 />
-                                <label className='cursor-pointer' htmlFor='faixa4'>Faixa 4</label>
+                                <InputNumber
+                                    className='w-full'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-0'
+                                    value={selectedItem && selectedItem.faixa_4 ? selectedItem.faixa_4 : null}
+                                    htmlFor='faixa4'
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
+                                    readOnly
+                                />
                             </div>
-                            <InputNumber
-                                className='w-full'
-                                inputClassName='w-full cursor-pointer p-inputtext-sm'
-                                value={selectedItem && selectedItem.faixa_4 ? selectedItem.faixa_4 : null}
-                                htmlFor='faixa4'
-                                mode='decimal'
-                                maxFractionDigits={2}
-                                minFractionDigits={2}
-                                readOnly
-                            />
                         </div>
                         <div className='col-6 lg:col-1'>
-                            <div className=' flex align-items-center mb-1'>
+                            <label className='cursor-pointer' htmlFor='solicitado'>Solicitado</label>
+                            <div className=' flex flex-row'>
                                 <RadioButton
-                                    className=''
+                                    className='mr-1'
                                     name='faixa'
                                     id='solicitado'
                                     value={faixaSol}
                                     onChange={e => setFaixa(e.value)}
                                     checked={faixa && faixa === faixaSol ? true : false}
                                 />
-                                <label className='cursor-pointer' htmlFor='solicitado'>Solicitado</label>
+                                <InputNumber
+                                    className=' w-full'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-0'
+                                    value={faixaSol}
+                                    onChange={e => setFaixaSol(e.value)}
+                                    htmlFor='solicitado'
+                                    mode='decimal'
+                                    maxFractionDigits={2}
+                                    minFractionDigits={2}
+                                />
                             </div>
-                            <InputNumber
-                                className=' w-full'
-                                inputClassName='w-full cursor-pointer p-inputtext-sm'
-                                value={faixaSol}
-                                onChange={e => setFaixaSol(e.value)}
-                                htmlFor='solicitado'
-                                mode='decimal'
-                                maxFractionDigits={2}
-                                minFractionDigits={2}
-                            />
                         </div>
                         <div className=' col-6 lg:col-1'>
                             <label className='cursor-pointer' htmlFor='itemTotal'>Total</label>
@@ -324,18 +325,6 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 readOnly
                             />
                         </div>
-                        <div className=' col-6 lg:col-1'>
-                            <label>Ultimo Preco</label>
-                            <InputNumber
-                                className='w-full'
-                                inputClassName='w-full p-inputtext-sm'
-                                readOnly
-                                value={selectedItem && selectedItem.ultimoPreco ? selectedItem.ultimoPreco : null}
-                                mode='decimal'
-                                maxFractionDigits={2}
-                                minFractionDigits={2}
-                            />
-                        </div>
                         <div className=' col-6 lg:w-5rem'>
                             <label>Média KG</label>
                             <InputNumber
@@ -348,13 +337,25 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 value={selectedItem && selectedItem.peso_bruto && quantity ? quantity * selectedItem.peso_bruto : null}
                             />
                         </div>
+                        <div className=' col-6 lg:col-1'>
+                            <label>Ultimo Preco</label>
+                            <InputNumber
+                                className='w-full'
+                                inputClassName='w-full p-inputtext-sm'
+                                readOnly
+                                value={selectedItem && selectedItem.ultimoPreco ? selectedItem.ultimoPreco : null}
+                                mode='decimal'
+                                maxFractionDigits={2}
+                                minFractionDigits={2}
+                            />
+                        </div>
                         <div className=' col-6 lg:w-7rem'>
                             <label>Data</label>
                             {/* {selectedItem && selectedItem.data ? console.log(new Date(selectedItem.data.split('/').reverse().join('/'))) : null} */}
                             <Datepicker initialDate={selectedItem && selectedItem.data ? new Date(selectedItem.data.split('/').reverse().join('/')) : null} readonly removeBtn />
                         </div>
                     </div>
-                    <div className='grid'>
+                    <div className='grid pt-2'>
                         <div className=' col-6 lg:w-10rem'>
                             <label>Entrega</label>
                             <Datepicker initialDate={dateDelivery} onChange={e => setDateDelivery(e.value)} />
@@ -397,18 +398,6 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                             />
                         </div>
                     </div>
-                    {/* <div className='grid'>
-                        <div className='flex flex-row col-12 lg:col-6'>
-                            <InputTextarea
-                                className='w-full text-sm'
-                                placeholder='Observações'
-                                rows={2}
-                                autoResize
-                                value={note}
-                                onChange={e => setNote(e.target.value)}
-                            />
-                        </div>
-                    </div> */}
                 </div>
 
                 <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 pb-2 pt-3 my-2 bg-white'>
@@ -547,8 +536,11 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                 <DataTable
                     header={<span className='text-700 text-sm'>Depósitos</span>}
                     showGridlines
+                    emptyMessage='Nenhum Produto Selecionado'
                     selectionMode='single'
-                    className='mb-2 tabela'
+                    selection={selectedDeposit}
+                    onSelectionChange={e => setSelectedDeposit(e.value)}
+                    className='mb-3 tabela'
                     value={selectedItem && selectedItem.depositos ? selectedItem.depositos : null}
                 >
                     <Column field='dep' headerClassName='text-700 text-sm' header='Dep' />
@@ -557,7 +549,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     <Column field='resPedidos' headerClassName='text-700 text-sm' header='Res. Pedidos' />
                     <Column field='resPreFatura' headerClassName='text-700 text-sm' header='Res. Pré-Fatura' />
                     <Column field='totalOP' headerClassName='text-700 text-sm' header='Total em OP' />
-                    <Column field='saldo' headerClassName='text-700 text-sm' header='Saldo' />
+                    <Column field='saldo' headerClassName='text-700 text-sm' body={({ saldo }) => <span style={{ color: `${saldo <= 0 ? 'red' : null}` }}>{saldo}</span>} header='Saldo' />
                 </DataTable>
 
                 <DataTable
@@ -578,6 +570,27 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     <Column headerClassName='text-700 text-sm' field='total_prefaturas' header='Total Pré-Faturas' />
                     <Column headerClassName='text-700 text-sm' field='total_ordens' header='Total Ordens' />
                     <Column headerClassName='text-700 text-sm' field='estoque_sc' header='Estoque SC' />
+                </DataTable>
+
+                <DataTable
+                    header={<span className='text-700 text-sm'>Produtos do Orçamento/Pedido</span>}
+                    emptyMessage='Nenhum Produto Incluído'
+                    className='mt-3'
+                    showGridlines
+                    value={budgetItems}
+                >
+                    <Column headerClassName='text-700 text-sm' body={(_, { rowIndex }) => rowIndex + 1} header='Seq'></Column>
+                    <Column headerClassName='text-700 text-sm' field='codigo' header='Cod'></Column>
+                    <Column headerClassName='text-700 text-sm' field='descricao' header='Descrição'></Column>
+                    <Column headerClassName='text-700 text-sm' field='quantidade' header='Quantia'></Column>
+                    <Column headerClassName='text-700 text-sm' field='un' header='UN'></Column>
+                    <Column headerClassName='text-700 text-sm' field='precoBruto' header='Preço Bruto' body={({ precoBruto }) => precoBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
+                    <Column headerClassName='text-700 text-sm' field='precoFinal' header='Preço Final' body={({ precoFinal }) => precoFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
+                    <Column headerClassName='text-700 text-sm' field='totalProduto' body={({ totalProduto }) => parseFloat(totalProduto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} header='Tot Produto'></Column>
+                    <Column headerClassName='text-700 text-sm' field='peso' header='Peso'></Column>
+                    <Column headerClassName='text-700 text-sm' field='media' header='Média'></Column>
+                    <Column headerClassName='text-700 text-sm' field='apro_ger' header='Apro. Ger'></Column>
+                    <Column headerClassName='text-700 text-sm' field='apro_dir' header='Apro. Dir'></Column>
                 </DataTable>
             </Sidebar>
         </>

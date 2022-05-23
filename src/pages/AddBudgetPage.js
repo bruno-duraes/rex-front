@@ -25,9 +25,9 @@ export function AddBudgetPage() {
         { name: 'User 03' },
     ];
     const clients = [
-        { name: 'Client 01' },
-        { name: 'Client 02' },
-        { name: 'Client 03' },
+        { name: 'Client 01', vendedor: 'Vendedor Interno A', representante: 'Representante A' },
+        { name: 'Client 02', vendedor: 'Vendedor Interno B', representante: 'Representante B' },
+        { name: 'Client 03', vendedor: 'Vendedor Interno C', representante: 'Representante C' },
     ];
     const representatives = [
         { name: 'Representante 01' },
@@ -133,7 +133,7 @@ export function AddBudgetPage() {
             obsCliente: obsCliente,
             nPed_OcCli: nPed_OcCli,
             entrega: entrega ? dateISOLocale(entrega) : null,
-            representante: validProp(selectedRep),
+            representante: selectedClient.representante,
             transacao: validProp(selectedTrasaction),
             transportador: validProp(selectedConvenyor),
             redespacho: validProp(selectedReDispatch),
@@ -155,7 +155,6 @@ export function AddBudgetPage() {
 
         if (
             !order.cliente ||
-            !order.representante ||
             !order.transacao ||
             !order.transportador
         ) {
@@ -165,12 +164,6 @@ export function AddBudgetPage() {
                 setInvalidState(state => ({ ...state, cliente: true }))
             } else {
                 setInvalidState(state => ({ ...state, cliente: false }))
-            };
-            if (!order.representante) {
-                erros += '• Representante\n ';
-                setInvalidState(state => ({ ...state, representante: true }));
-            } else {
-                setInvalidState(state => ({ ...state, representante: false }))
             };
             if (!order.transacao) {
                 erros += '• Transação\n ';
@@ -240,19 +233,19 @@ export function AddBudgetPage() {
                     />
                 </div>
             </div>
+
             <div className="grid mb-2">
                 <div className='col-3 lg:w-10rem text-right'>
                     < label htmlFor='emissao'>Emissão: </label>
                 </div>
-                <div className='col-8 lg:w-10rem'>
-                    <Datepicker id='emissao' readonly={true} initialDate={emissao} onChange={(e) => setEmissao(e.value)} />
+                <div className='col-8 lg:col-4'>
+                    <Datepicker id='emissao' readonly={true} initialDate={emissao} onChange={(e) => setEmissao(e.value)} className='w-8rem' />
                 </div >
-                <div className='lg:col-8'></div>
-                <div className='col-3 lg:w-10rem text-right'>
+                <div className='col-3 lg:col-2 text-right'>
                     <RequiredFlag />
                     <label htmlFor='budgetNum'>Usuário:</label>
                 </div>
-                <div className="col-8 lg:col-3">
+                <div className="col-9 lg:col-4">
                     <Dropdown
                         id='budgetNum'
                         className='w-full p-inputtext-sm'
@@ -264,11 +257,14 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedUser(e.value)}
                     />
                 </div>
-                <div className='col-3 lg:col-1 text-right'>
+            </div>
+
+            <div className="grid mb-2">
+                <div className='col-3 lg:w-10rem text-right'>
                     <RequiredFlag />
                     <label htmlFor='cliente'>Cliente:</label>
                 </div>
-                <div className="col-9 md:col-6">
+                <div className="col-9 md:col-5">
                     <Dropdown
                         id='cliente'
                         className={`w-full p-inputtext-sm ${invalidState.cliente ? 'p-invalid' : ''}`}
@@ -278,6 +274,17 @@ export function AddBudgetPage() {
                         optionLabel={'name'}
                         filterBy='name'
                         onChange={(e) => setSelectedClient(e.value)}
+                    />
+                </div>
+                <div className='col-3 lg:col-2 text-right'>
+                    <label>Vendedor Interno:</label>
+                </div>
+                <div className='col-9 lg:col-3'>
+                    <InputText
+                        id='numPed'
+                        className='p-inputtext-sm w-full'
+                        readOnly
+                        value={selectedClient && selectedClient.vendedor ? selectedClient.vendedor : undefined}
                     />
                 </div>
                 <div className='col-3 lg:w-10rem text-right'>
@@ -323,16 +330,10 @@ export function AddBudgetPage() {
                     <label htmlFor='representante'>Representante:</label>
                 </div>
                 <div className='col-9 lg:col-4 flex align-items-center'>
-                    <Dropdown
-                        id='representante'
-                        className={
-                            `w-full p-inputtext-sm ${invalidState.representante ? 'p-invalid' : ''}`
-                        }
-                        filter value={selectedRep}
-                        options={representatives}
-                        optionLabel={'name'}
-                        filterBy='name'
-                        onChange={(e) => setSelectedRep(e.value)}
+                    <InputText
+                        readOnly
+                        value={selectedClient && selectedClient.representante ? selectedClient.representante : undefined}
+                        className='w-full p-inputtext-sm'
                     />
                 </div>
                 <div className='col-3 lg:col-1 text-right'>
@@ -553,14 +554,13 @@ export function AddBudgetPage() {
             <div className='w-full my-2'>
                 <Button
                     className='w-full p-button-raised'
-                    disabled={!selectedClient || !selectedRep || !selectedTrasaction || !selectedConvenyor || !entrega ? true : false}
+                    disabled={!selectedClient || !selectedTrasaction || !selectedConvenyor || !entrega ? true : false}
                     label={<span className='font-semibold'>Adicionar Item</span>}
                     onClick={() => setModalVisible(true)}
                 />
             </div>
             <div>
                 <DataTable
-                    resizableColumns
                     header={
                         <div className='flex justify-content-between text-700 text-sm'>
                             <span>Produtos do Orçamento/Pedido</span>
@@ -570,7 +570,6 @@ export function AddBudgetPage() {
                     value={products}
                     responsiveLayout="stack"
                     showGridlines
-                    className='relative'
                 >
                     <Column headerClassName='text-700 text-sm' body={(_, { rowIndex }) => rowIndex + 1} header='Seq'></Column>
                     <Column headerClassName='text-700 text-sm' field='codigo' header='Cod'></Column>
