@@ -220,7 +220,7 @@ export function AddBudgetPage() {
                 deadline={entrega ? entrega : null}
             />
 
-            <div className='grid mb-3' style={{ borderBottom: 'solid 1px #ced4da' }}>
+            <div className='grid mb-3 pb-1' style={{ borderBottom: 'solid 1px #ced4da' }}>
                 <div className='col-12 lg:col-1'>
                     <Button
                         label='Salvar'
@@ -326,7 +326,6 @@ export function AddBudgetPage() {
                     </div>
                 </div>
                 <div className='col-3 lg:w-10rem text-right' style={{ wordBreak: 'break-all' }}>
-                    <RequiredFlag />
                     <label htmlFor='representante'>Representante:</label>
                 </div>
                 <div className='col-9 lg:col-4 flex align-items-center'>
@@ -383,7 +382,7 @@ export function AddBudgetPage() {
                     />
                 </div>
                 <div className='col-3 lg:w-10rem text-right'>
-                    <label htmlFor='condPagto'>Condição do Pagamento:</label>
+                    <label htmlFor='condPagto'>Cond. Pagto:</label>
                 </div>
                 <div className='col-9 lg:col-5 flex align-items-center'>
                     <Dropdown

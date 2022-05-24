@@ -16,6 +16,7 @@ import { Datepicker } from './Datepicker';
 import { RequiredFlag } from './RequiredFlag';
 
 export function Modal({ budgetItems, setBudgetItems, visible, setVisible, clientName, deadline }) {
+    console.log(deadline)
     const [selectedItem, setSelectedItem] = useState(null);
     const [filteredItems, setFilteredItems] = useState(null);
     const [quantity, setQuantity] = useState(null);
@@ -23,7 +24,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
     const [faixaSol, setFaixaSol] = useState(null);
     const [selectedItemFinish, setSelectedItemFinish] = useState(null);
     // const [date, setDate] = useState(new Date());
-    const [dateDelivery, setDateDelivery] = useState(deadline ? new Date(deadline) : null);
+    const [dateDelivery, setDateDelivery] = useState(deadline);
     const [pedidoOrdem, setPedidoOrdem] = useState('');
     const [sequency, setSequency] = useState('');
     const [codProCli, setCodProCli] = useState('');
@@ -109,7 +110,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                 showCloseIcon={false}
                 visible={visible}
             >
-                <div className='grid mt-1'>
+                <div className='grid my-1'>
                     <div className='col-12 lg:col-3 flex justify-content-center align-items-center'>
                         <RadioButton
                             inputId='codigo-rex'
@@ -137,10 +138,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                         </div>
                     </div>
                     <div className='col-6 lg:col-2'>
-                        <Button label='Adicionar Item' onClick={() => addItem()} className='w-full p-button-raised p-button-success font-semibold' />
+                        <Button label='Adicionar Item' onClick={() => addItem()} className='w-full h-2rem p-button-raised  font-semibold' />
                     </div>
                     <div className='col-6 lg:w-9rem'>
-                        <Button label='Cancelar' onClick={() => setVisible(false)} className='w-full p-button-raised p-button-secondary font-semibold' />
+                        <Button label='Cancelar' onClick={() => setVisible(false)} className='w-full h-2rem p-button-raised p-button-secondary font-semibold' />
                     </div>
                 </div>
                 <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 bg-white'>
@@ -197,7 +198,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 minFractionDigits={2}
                             />
                         </div>
-                        <div className=' col-6 lg:w-6rem'>
+                        <div className=' col-6 lg:w-7rem'>
                             <label className='cursor-pointer' htmlFor='faixa1'>Faixa 1</label>
                             <div className='flex flex-row'>
                                 <RadioButton
@@ -209,7 +210,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     checked={faixa && faixa === (selectedItem.faixa_1 ? selectedItem.faixa_1 : null)}
                                 />
                                 <InputNumber
-                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-0 '
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-1 '
                                     className='w-full'
                                     value={selectedItem && selectedItem.faixa_1 ? selectedItem.faixa_1 : null}
                                     htmlFor='faixa1'
@@ -220,7 +221,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 />
                             </div>
                         </div>
-                        <div className=' col-6 lg:w-6rem'>
+                        <div className=' col-6 lg:w-7rem'>
                             <label className='cursor-pointer flex align-items-center' htmlFor='faixa2'>Faixa 2</label>
                             <div className='flex flex-row'>
                                 <RadioButton
@@ -233,7 +234,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 />
                                 <InputNumber
                                     className='w-full'
-                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-0'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-1'
                                     value={selectedItem && selectedItem.faixa_2 ? selectedItem.faixa_2 : null}
                                     mode='decimal'
                                     maxFractionDigits={2}
@@ -242,7 +243,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 />
                             </div>
                         </div>
-                        <div className='col-6 lg:w-6rem'>
+                        <div className='col-6 lg:w-7rem'>
                             <label className='cursor-pointer' htmlFor='faixa2'>Faixa 3</label>
                             <div className='flex flex-row'>
                                 <RadioButton
@@ -255,7 +256,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 />
                                 <InputNumber
                                     className='w-full'
-                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-0'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-1'
                                     value={selectedItem && selectedItem.faixa_3 ? selectedItem.faixa_3 : null}
                                     htmlFor='faixa3'
                                     mode='decimal'
@@ -265,7 +266,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 />
                             </div>
                         </div>
-                        <div className='col-6 lg:w-6rem'>
+                        <div className='col-6 lg:w-7rem'>
                             <label className='cursor-pointer' htmlFor='faixa4'>Faixa 4</label>
                             <div className=' flex flex-row'>
                                 <RadioButton
@@ -278,7 +279,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 />
                                 <InputNumber
                                     className='w-full'
-                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-0'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-1'
                                     value={selectedItem && selectedItem.faixa_4 ? selectedItem.faixa_4 : null}
                                     htmlFor='faixa4'
                                     mode='decimal'
@@ -288,7 +289,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 />
                             </div>
                         </div>
-                        <div className='col-6 lg:col-1'>
+                        <div className='col-6 lg:w-7rem'>
                             <label className='cursor-pointer' htmlFor='solicitado'>Solicitado</label>
                             <div className=' flex flex-row'>
                                 <RadioButton
@@ -301,7 +302,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 />
                                 <InputNumber
                                     className=' w-full'
-                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-0'
+                                    inputClassName='w-full cursor-pointer p-inputtext-sm px-1'
                                     value={faixaSol}
                                     onChange={e => setFaixaSol(e.value)}
                                     htmlFor='solicitado'
@@ -311,7 +312,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 />
                             </div>
                         </div>
-                        <div className=' col-6 lg:col-1'>
+                        <div className=' col-6 lg:w-5rem'>
                             <label className='cursor-pointer' htmlFor='itemTotal'>Total</label>
                             <InputNumber
                                 inputStyle={{ fontWeight: '700' }}
@@ -337,7 +338,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 value={selectedItem && selectedItem.peso_bruto && quantity ? quantity * selectedItem.peso_bruto : null}
                             />
                         </div>
-                        <div className=' col-6 lg:col-1'>
+                        <div className=' col-6 lg:w-5rem px-0'>
                             <label>Ultimo Preco</label>
                             <InputNumber
                                 className='w-full'
@@ -349,10 +350,9 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 minFractionDigits={2}
                             />
                         </div>
-                        <div className=' col-6 lg:w-7rem'>
+                        <div className=' col-6 lg:w-5rem'>
                             <label>Data</label>
-                            {/* {selectedItem && selectedItem.data ? console.log(new Date(selectedItem.data.split('/').reverse().join('/'))) : null} */}
-                            <Datepicker initialDate={selectedItem && selectedItem.data ? new Date(selectedItem.data.split('/').reverse().join('/')) : null} readonly removeBtn />
+                            <Datepicker initialDate={selectedItem && selectedItem.data ? new Date(selectedItem.data.split('/').reverse().join('/')) : null} readonly removeBtn inputClassName='text-left p-0' />
                         </div>
                     </div>
                     <div className='grid pt-2'>
@@ -404,40 +404,40 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     <div className='grid'>
                         <div className='col-12 lg:col-10'>
                             <div className='grid item-descricao'>
-                                <div className='col-1 text-right'>
+                                <div className='col-3 lg:col-1 text-right'>
                                     <label className='text-sm'>Descrição:</label>
                                 </div>
-                                <div className='col-11'>
+                                <div className='col-9 lg:col-11'>
                                     <InputText
                                         readOnly
                                         className='w-full p-inputtext-sm text-base '
-                                        value={selectedItem && selectedItem.descricacao ? selectedItem.descricacao : ''}
+                                        value={selectedItem && selectedItem.descricacao ? selectedItem.descricacao : undefined}
                                     />
                                 </div>
-                                <div className='col-1 text-right text-xs'>
+                                <div className='col-3 lg:col-1 text-right text-xs'>
                                     <label>Cód REX:</label>
                                 </div>
-                                <div className='col-11 lg:col-2'>
+                                <div className='col-9 lg:col-2'>
                                     <InputText
                                         readOnly
                                         className='w-full p-inputtext-sm '
                                         value={selectedItem && selectedItem.codigoRex ? selectedItem.codigoRex : ''}
                                     />
                                 </div>
-                                <div className='col-1 text-right'>
+                                <div className='col-3 lg:col-1 text-right'>
                                     <label>Cód ERP:</label>
                                 </div>
-                                <div className='field col-11 lg:col-2'>
+                                <div className='col-9 lg:col-2'>
                                     <InputText
                                         readOnly
                                         className='w-full p-inputtext-sm'
                                         value={selectedItem && selectedItem.codigoSap ? selectedItem.codigoSap : ''}
                                     />
                                 </div>
-                                <div className='col-1 text-right'>
+                                <div className='col-3 lg:col-1 text-right'>
                                     <label>Peso:</label>
                                 </div>
-                                <div className='field col-12 lg:col-2'>
+                                <div className='col-9 lg:col-2'>
                                     <InputNumber
                                         readOnly
                                         className='w-full p-inputtext-sm'
@@ -449,10 +449,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         value={selectedItem && selectedItem.peso_bruto ? selectedItem.peso_bruto : ''}
                                     />
                                 </div>
-                                <div className='col-1 text-right'>
+                                <div className='col-3 lg:col-1 text-right'>
                                     <label>Preço:</label>
                                 </div>
-                                <div className='field col-12 lg:col-2'>
+                                <div className='col-9 lg:col-2'>
                                     <InputNumber
                                         readOnly
                                         className='w-full p-inputtext-sm'
@@ -462,10 +462,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         value={selectedItem && selectedItem.preco_bruto ? selectedItem.preco_bruto : ''}
                                     />
                                 </div>
-                                <div className='col-1 text-right '>
+                                <div className='col-3 lg:col-1 text-right '>
                                     <label htmlFor='itemUnidade'>Unidade:</label>
                                 </div>
-                                <div className='field col-12 lg:col-1'>
+                                <div className='col-9 lg:col-1'>
                                     <InputText
                                         id='itemUnidade'
                                         readOnly
@@ -473,10 +473,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         value={selectedItem && selectedItem.un ? selectedItem.un : ''}
                                     />
                                 </div>
-                                <div className=' col-2 text-right'>
+                                <div className='col-4 lg:col-2 text-right'>
                                     <label htmlFor='itemQtiaEmbalada'>Qtia Embalada:</label>
                                 </div>
-                                <div className='field col-12 lg:col-2'>
+                                <div className='col-8 lg:col-2'>
                                     <InputNumber
                                         inputId='itemQtiaEmbalada'
                                         readOnly
@@ -488,10 +488,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         value={selectedItem && selectedItem.qtia_embalada ? selectedItem.qtia_embalada : ''}
                                     />
                                 </div>
-                                <div className='col-1 text-right'>
+                                <div className='col-3 lg:col-1 text-right'>
                                     <label htmlFor='itemDerivacao'>Derivação:</label>
                                 </div>
-                                <div className='field col-12 lg:col-5'>
+                                <div className='col-9 lg:col-5'>
                                     <InputText
                                         readOnly
                                         id='itemDerivacao'
@@ -499,10 +499,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         value={selectedItem && selectedItem.derivacao ? selectedItem.derivacao : ''}
                                     />
                                 </div>
-                                <div className='col-1 text-right'>
+                                <div className='col-3 lg:col-1 text-right'>
                                     <label htmlFor='itemEmbalagem'>Embalagem:</label>
                                 </div>
-                                <div className='field col-12 lg:col-4'>
+                                <div className='col-9 lg:col-4'>
                                     <InputText
                                         readOnly
                                         id='itemEmbalagem'
@@ -510,10 +510,10 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         value={selectedItem && selectedItem.embalagem ? selectedItem.embalagem : ''}
                                     />
                                 </div>
-                                <div className='col-2 text-right'>
+                                <div className='col-5 lg:col-2 text-right'>
                                     <label htmlFor='itemClassFiscal'>Classificação Fiscal:</label>
                                 </div>
-                                <div className='field col-12 lg:col-4'>
+                                <div className='col-7 lg:col-4'>
                                     <InputText
                                         readOnly
                                         id='itemClassFiscal'
