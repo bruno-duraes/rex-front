@@ -90,3 +90,8 @@ label {
     background: #8fc4fc;
     color: #000000;
 }
+
+.bg-label {
+    background-color: rgb(236, 236, 236);
+    border: 0.5px solid #FFFF;
+}

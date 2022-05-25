@@ -9,18 +9,8 @@ import { getMockOrders } from '../services/getMockOrders';
 import { ViewPage } from './ViewPage';
 
 export function ConsultPage() {
-    let orders = getMockOrders()/*.map(p => (
-        {
-            status: p.status,
-            numero: p.numero,
-            pedCliente: p.pedCliente,
-            data: new Date(p.emissao).toLocaleDateString(),
-            valor: p.valorTotal,
-            cliente: p.cliente,
-            representante: p.representante,
-            usuario: p.usuario
-        }
-    ));*/
+
+    let orders = getMockOrders();
 
     const [orcamentos, setOrcamentos] = useState(orders);
     const [filters, setFilters] = useState(null)

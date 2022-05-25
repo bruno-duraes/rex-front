@@ -15,6 +15,7 @@ import { Modal } from '../components/Modal';
 import { ModalEditItem } from '../components/ModalEditItem';
 import { RequiredFlag } from '../components/RequiredFlag';
 import { RenderContext } from '../providers/renderContext';
+import { getLoggedUser } from '../services/getLoggedUser';
 import { dateISOLocale } from '../utils/dateISOLocale';
 import { ConsultPage } from './ConsultPage';
 
@@ -72,7 +73,8 @@ export function AddBudgetPage() {
         { name: '10 - Dupli' },
     ];
 
-    const [selectedUser, setSelectedUser] = useState({ name: 'User 01' });
+    let loggedUser = getLoggedUser();
+    const [loggedUserName, setLoggedUserName] = useState(loggedUser.rNome);
     const [selectedClient, setSelectedClient] = useState(null);
     const [selectedRep, setSelectedRep] = useState(null);
     const [selectedTrasaction, setSelectedTransactions] = useState(null);
@@ -83,9 +85,9 @@ export function AddBudgetPage() {
     const [selectedPaymentType, setSelectedPaymentType] = useState(null);
     const [freight, setFreight] = useState('Cif');
     const [priceFreight, setPriceFreight] = useState(null);
-    const [minValue, setMinValue] = useState(null);
-    const [minValueDup, setMinValueDup] = useState(null);
-    const [budgetValidity, setBudgetValidity] = useState(null);
+    const [minValue, setMinValue] = useState(1000);
+    const [minValueDup, setMinValueDup] = useState(750);
+    const [budgetValidity, setBudgetValidity] = useState(17);
     const [checkEmiteCert, setCheckEmiteCert] = useState(false);
     const [checkEmitePPAP, setCheckEmitePPAP] = useState(false);
     const [checkMantemSaldo, setCheckMantemSaldo] = useState(false);
@@ -125,10 +127,46 @@ export function AddBudgetPage() {
             valorTotal = parseFloat(valorTotal) + parseFloat(totalProduto);
         }
 
+        if (
+            !selectedClient ||
+            !selectedTrasaction ||
+            !selectedConvenyor ||
+            !entrega
+        ) {
+            let erros = '';
+            if (!selectedClient) {
+                erros += '• Cliente \n';
+                setInvalidState(state => ({ ...state, cliente: true }))
+            } else {
+                setInvalidState(state => ({ ...state, cliente: false }))
+            };
+            if (!selectedTrasaction) {
+                erros += '• Transação\n ';
+                setInvalidState(state => ({ ...state, transacao: true }));
+            } else {
+                setInvalidState(state => ({ ...state, transacao: false }))
+            };
+            if (!selectedConvenyor) {
+                erros += '• Transportador\n ';
+                setInvalidState(state => ({ ...state, transportador: true }))
+            } else {
+                setInvalidState(state => ({ ...state, transportador: false }))
+            };
+            if (!entrega) {
+                erros += '• Entrega\n';
+                setInvalidState(state => ({ ...state, entrega: true }))
+            } else {
+                setInvalidState(state => ({ ...state, entrega: false }))
+            };
+            console.log(erros)
+            globalToast.current.show({ severity: 'error', summary: 'Campos Obrigátorios', detail: erros, life: 5000 })
+            throw new Error('invalid form')
+        }
+
         let order = {
             numero: Math.floor(Math.random() * (9999 - 1000)) + 1000,
             emissao: emissao ? dateISOLocale(emissao) : null,
-            usuario: validProp(selectedUser),
+            usuario: loggedUserName,
             cliente: validProp(selectedClient),
             obsCliente: obsCliente,
             nPed_OcCli: nPed_OcCli,
@@ -151,41 +189,6 @@ export function AddBudgetPage() {
             aceitaParcial: checkAceitaParcial,
             valorTotal: valorTotal,
             itens: products
-        }
-
-        if (
-            !order.cliente ||
-            !order.transacao ||
-            !order.transportador
-        ) {
-            let erros = '';
-            if (!order.cliente) {
-                erros += '• Cliente \n';
-                setInvalidState(state => ({ ...state, cliente: true }))
-            } else {
-                setInvalidState(state => ({ ...state, cliente: false }))
-            };
-            if (!order.transacao) {
-                erros += '• Transação\n ';
-                setInvalidState(state => ({ ...state, transacao: true }));
-            } else {
-                setInvalidState(state => ({ ...state, transacao: false }))
-            };
-            if (!order.transportador) {
-                erros += '• Transportador\n ';
-                setInvalidState(state => ({ ...state, transportador: true }))
-            } else {
-                setInvalidState(state => ({ ...state, transportador: false }))
-            };
-            if (!order.entrega) {
-                erros += '• Entrega\n';
-                setInvalidState(state => ({ ...state, entrega: true }))
-            } else {
-                setInvalidState(state => ({ ...state, entrega: false }))
-            };
-            console.log(erros)
-            globalToast.current.show({ severity: 'error', summary: 'Campos Obrigátorios', detail: erros, life: 5000 })
-            throw new Error('invalid form')
         }
 
         let orders = JSON.parse(localStorage.getItem('orders'));
@@ -235,32 +238,27 @@ export function AddBudgetPage() {
             </div>
 
             <div className="grid mb-2">
-                <div className='col-3 lg:w-10rem text-right'>
+                <div className='col-3 lg:w-10rem text-right bg-label'>
                     < label htmlFor='emissao'>Emissão: </label>
                 </div>
-                <div className='col-8 lg:col-4'>
+                <div className='col-8 lg:col-5'>
                     <Datepicker id='emissao' readonly={true} initialDate={emissao} onChange={(e) => setEmissao(e.value)} className='w-8rem' />
                 </div >
-                <div className='col-3 lg:col-2 text-right'>
+                <div className='col-3 lg:col-1 text-right bg-label'>
                     <RequiredFlag />
                     <label htmlFor='budgetNum'>Usuário:</label>
                 </div>
                 <div className="col-9 lg:col-4">
-                    <Dropdown
-                        id='budgetNum'
+                    <InputText
+                        readOnly
+                        value={loggedUserName}
                         className='w-full p-inputtext-sm'
-                        filter
-                        value={selectedUser}
-                        options={users}
-                        optionLabel={'name'}
-                        filterBy='name'
-                        onChange={(e) => setSelectedUser(e.value)}
                     />
                 </div>
             </div>
 
             <div className="grid mb-2">
-                <div className='col-3 lg:w-10rem text-right'>
+                <div className='col-3 lg:w-10rem text-right bg-label'>
                     <RequiredFlag />
                     <label htmlFor='cliente'>Cliente:</label>
                 </div>
@@ -276,7 +274,7 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedClient(e.value)}
                     />
                 </div>
-                <div className='col-3 lg:col-2 text-right'>
+                <div className='col-3 lg:col-2 text-right bg-label'>
                     <label>Vendedor Interno:</label>
                 </div>
                 <div className='col-9 lg:col-3'>
@@ -287,7 +285,7 @@ export function AddBudgetPage() {
                         value={selectedClient && selectedClient.vendedor ? selectedClient.vendedor : undefined}
                     />
                 </div>
-                <div className='col-3 lg:w-10rem text-right'>
+                <div className='col-3 lg:w-10rem text-right bg-label'>
                     <label htmlFor='obsCliente'>
                         Observação <br />
                         do Cliente:
@@ -308,7 +306,7 @@ export function AddBudgetPage() {
                     <Button iconPos='right' icon='pi pi-search lg:text-base text-xs' label='Pedidos em Aberto' className='lg:text-base text-xs' />
                     <Button iconPos='right' icon='pi pi-search lg:text-base text-xs' label='Titulos em Aberto' className='lg:text-base text-xs' />
                 </div>
-                <div className='col-3 lg:w-10rem text-right'>
+                <div className='col-3 lg:w-10rem text-right bg-label'>
                     <label htmlFor='numPed'>N° Ped/Oc Cli:</label>
                 </div>
                 <div className='col-9 md:col-2 flex align-items-center '>
@@ -319,13 +317,15 @@ export function AddBudgetPage() {
                         onChange={e => setNPed_OcCli(e.target.value)}
                     />
                 </div>
-                <div className='col-12 lg:col-3 lg:col-offset-5 flex lg:justify-content-end'>
-                    <div className='flex align-items-center w-full flex justify-content-end'>
-                        <label className='pl-3 mr-3 mb-1' htmlFor='entrega'><RequiredFlag />Entrega:</label>
-                        <Datepicker id='entrega' initialDate={entrega} onChange={e => setEntrega(e.value)} className={`lg:w-10rem ${invalidState.entrega ? 'p-invalid' : ''}`} />
+                <div className='col-12 lg:col-3 py-0 lg:col-offset-5 flex lg:justify-content-end'>
+                    <div className='text-right w-6rem bg-label mr-2'>
+                        <label className='p-2' htmlFor='entrega'><RequiredFlag />Entrega:</label>
+                    </div>
+                    <div className='flex align-items-center'>
+                        <Datepicker id='entrega' initialDate={entrega} onChange={e => setEntrega(e.value)} className={`lg:w-8rem ${invalidState.entrega ? 'p-invalid' : ''}`} />
                     </div>
                 </div>
-                <div className='col-3 lg:w-10rem text-right' style={{ wordBreak: 'break-all' }}>
+                <div className='col-3 lg:w-10rem text-right bg-label' style={{ wordBreak: 'break-all' }}>
                     <label htmlFor='representante'>Representante:</label>
                 </div>
                 <div className='col-9 lg:col-4 flex align-items-center'>
@@ -335,7 +335,7 @@ export function AddBudgetPage() {
                         className='w-full p-inputtext-sm'
                     />
                 </div>
-                <div className='col-3 lg:col-1 text-right'>
+                <div className='col-3 lg:col-1 text-right bg-label'>
                     <RequiredFlag />
                     <label htmlFor='transacao'>Transação:</label>
                 </div>
@@ -350,7 +350,7 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedTransactions(e.value)}
                     />
                 </div>
-                <div className='col-3 lg:w-10rem text-right' style={{ wordBreak: 'break-all' }}>
+                <div className='col-3 lg:w-10rem text-right bg-label' style={{ wordBreak: 'break-all' }}>
                     <RequiredFlag />
                     <label htmlFor='transportador'>Transportador:</label>
                 </div>
@@ -367,7 +367,7 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedConvenyor(e.value)}
                     />
                 </div>
-                <div className='col-3 lg:col-1 text-right' >
+                <div className='col-3 lg:col-1 text-right bg-label' >
                     <label htmlFor='redespacho'>Redespacho:</label>
                 </div>
                 <div className='col-9 lg:col-5'>
@@ -381,7 +381,8 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedReDispatch(e.value)}
                     />
                 </div>
-                <div className='col-3 lg:w-10rem text-right'>
+                <div className='col-3 lg:w-10rem text-right bg-label'>
+                    <RequiredFlag />
                     <label htmlFor='condPagto'>Cond. Pagto:</label>
                 </div>
                 <div className='col-9 lg:col-5 flex align-items-center'>
@@ -395,7 +396,8 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedPaymentCond(e.value)}
                     />
                 </div>
-                <div className='col-3 lg:col-1 flex align-items-center justify-content-end text-right'>
+                <div className='col-3 lg:col-1 flex align-items-center justify-content-end text-right bg-label'>
+                    <RequiredFlag />
                     <label htmlFor='moeda'>Moeda:</label>
                 </div>
                 <div className='col-9 lg:col-4 flex align-items-center'>
@@ -409,7 +411,7 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedCurrency(e.value)}
                     />
                 </div>
-                <div className='col-3 lg:w-10rem text-right'>
+                <div className='col-3 lg:w-10rem text-right bg-label'>
                     <label htmlFor='tipoPagto'>Tipo de Pagamento:</label>
                 </div>
                 <div className='col-9 lg:col-10'>
@@ -423,7 +425,7 @@ export function AddBudgetPage() {
                         onChange={(e) => setSelectedPaymentType(e.value)}
                     />
                 </div>
-                <div className='col-3 lg:w-10rem text-right'>
+                <div className='col-3 lg:w-10rem text-right bg-label'>
                     <label>Frete:</label>
                 </div>
                 <div className='col-9 lg:col-2'>
@@ -448,7 +450,7 @@ export function AddBudgetPage() {
                         <label htmlFor='fob' className='font-bold cursor-pointer'>Fob</label>
                     </div>
                 </div>
-                <div className='col-3 lg:col-2 lg:col-offset-5 text-right'>
+                <div className='col-3 lg:col-2 lg:col-offset-5 text-right bg-label'>
                     <label htmlFor='freightValue'>Valor do Frete:</label>
                 </div>
                 <div className='col-9 lg:col-1 flex align-items-center'>
@@ -464,7 +466,7 @@ export function AddBudgetPage() {
                         minFractionDigits={2}
                     />
                 </div>
-                <div className='col-3 lg:w-10rem text-right'>
+                <div className='col-3 lg:w-10rem text-right bg-label'>
                     <label htmlFor='valorMinimo'>Valor Minimo:</label>
                 </div>
                 <div className='col-9 lg:col-2 flex align-items-center'>
@@ -480,7 +482,7 @@ export function AddBudgetPage() {
                         maxFractionDigits={2}
                     />
                 </div>
-                <div className='col-3 lg:col-2 text-right'>
+                <div className='col-3 lg:col-2 text-right bg-label'>
                     <label htmlFor='valorMinimoDuplicata'>Valor Minimo Duplicata:</label>
                 </div>
                 <div className='col-9 lg:col-2 flex align-items-center' >
@@ -496,7 +498,7 @@ export function AddBudgetPage() {
                         maxFractionDigits={2}
                     />
                 </div>
-                <div className='col-3 lg:col-2 text-right'>
+                <div className='col-3 lg:col-2 text-right bg-label'>
                     <label htmlFor='validadeOrcamento'>Validade do Orçamento:</label>
                 </div>
                 <div className='col-9 lg:col-2 flex align-items-center'>
@@ -509,7 +511,7 @@ export function AddBudgetPage() {
                         suffix=' dias'
                     />
                 </div>
-                <div className='col-3 lg:w-10rem text-right'>
+                <div className='col-3 lg:w-10rem text-right bg-label'>
                     <label>Opções:</label>
                 </div>
                 <div className='col-9 lg:col-2 '>

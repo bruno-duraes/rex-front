@@ -72,7 +72,7 @@ export function ViewPage({ data, index }) {
         { name: '10 - Dupli' },
 
     ];
-    const [selectedUser, setSelectedUser] = useState({ name: data.usuario });
+    const [loggedUserName, setLoggedUserName] = useState(data.usuario);
     const [selectedClient, setSelectedClient] = useState({ name: data.cliente });
     const [selectedRep, setSelectedRep] = useState({ name: data.representante });
     const [selectedTrasaction, setSelectedTransactions] = useState({ name: data.transacao });
@@ -100,6 +100,7 @@ export function ViewPage({ data, index }) {
     const [editItemVisible, setEditItemVisible] = useState(false);
     const [tableTotal, setTableTotal] = useState('0,00');
     const { setRender, globalToast } = useContext(RenderContext);
+    const [invalidState, setInvalidState] = useState({});
 
     useEffect(() => {
         if (products.length > 0) {
@@ -110,6 +111,7 @@ export function ViewPage({ data, index }) {
             setTableTotal(v);
         }
     }, [products]);
+
     function saveOrder() {
         function validProp(p) {
             return p ? p.name : ''
@@ -121,10 +123,47 @@ export function ViewPage({ data, index }) {
         for (const [i, { totalProduto }] of products.entries()) {
             valorTotal = parseFloat(valorTotal) + parseFloat(totalProduto);
         }
+
+        if (
+            !selectedClient ||
+            !selectedTrasaction ||
+            !selectedConvenyor ||
+            !entrega
+        ) {
+            let erros = '';
+            if (!selectedClient) {
+                erros += '• Cliente \n';
+                setInvalidState(state => ({ ...state, cliente: true }))
+            } else {
+                setInvalidState(state => ({ ...state, cliente: false }))
+            };
+            if (!selectedTrasaction) {
+                erros += '• Transação\n ';
+                setInvalidState(state => ({ ...state, transacao: true }));
+            } else {
+                setInvalidState(state => ({ ...state, transacao: false }))
+            };
+            if (!selectedConvenyor) {
+                erros += '• Transportador\n ';
+                setInvalidState(state => ({ ...state, transportador: true }))
+            } else {
+                setInvalidState(state => ({ ...state, transportador: false }))
+            };
+            if (!entrega) {
+                erros += '• Entrega\n';
+                setInvalidState(state => ({ ...state, entrega: true }))
+            } else {
+                setInvalidState(state => ({ ...state, entrega: false }))
+            };
+            console.log(erros)
+            globalToast.current.show({ severity: 'error', summary: 'Campos Obrigátorios', detail: erros, life: 5000 })
+            throw new Error('invalid form')
+        }
+
         let order = {
             numero: data.numero,
             emissao: emissao ? dateISOLocale(emissao) : null,
-            usuario: validProp(selectedUser),
+            usuario: validProp(loggedUserName),
             cliente: validProp(selectedClient),
             obsCliente: obsCliente,
             nPed_OcCli: nPed_OcCli,
@@ -156,7 +195,7 @@ export function ViewPage({ data, index }) {
     }
 
     return (
-        <>
+        <div>
             <ModalEditItem
                 index={editItem && editItem.index ? editItem.index : null}
                 item={editItem && editItem.item ? editItem.item : null}
@@ -165,6 +204,7 @@ export function ViewPage({ data, index }) {
                 changeItems={setProducts}
                 budgetItems={products}
                 clientName={selectedClient ? selectedClient.name : undefined}
+                deadline={entrega ? entrega : null}
             />
             <Modal
                 visible={modalVisible}
@@ -174,7 +214,8 @@ export function ViewPage({ data, index }) {
                 clientName={selectedClient ? selectedClient.name : undefined}
                 deadline={entrega ? entrega : null}
             />
-            <div className='grid mb-3' style={{ borderBottom: 'solid 1px #ced4da' }}>
+
+            <div className='grid mb-3 pb-1' style={{ borderBottom: 'solid 1px #ced4da' }}>
                 <div className='col-12 lg:col-1'>
                     <Button
                         label='Salvar'
@@ -187,39 +228,36 @@ export function ViewPage({ data, index }) {
                     />
                 </div>
             </div>
-            <div className="grid">
+
+            <div className="grid mb-2">
                 <div className='col-3 lg:w-10rem text-right'>
                     < label htmlFor='emissao'>Emissão: </label>
                 </div>
-                <div className='col-8 lg:w-10rem'>
-                    <Datepicker id='emissao' readonly={true} initialDate={emissao} onChange={(e) => setEmissao(e.value)} />
+                <div className='col-8 lg:col-4'>
+                    <Datepicker id='emissao' readonly={true} initialDate={emissao} onChange={(e) => setEmissao(e.value)} className='w-8rem' />
                 </div >
-            </div >
-            <div className='grid'>
-                <div className='col-3 lg:w-10rem text-right'>
+                <div className='col-3 lg:col-2 text-right'>
                     <RequiredFlag />
                     <label htmlFor='budgetNum'>Usuário:</label>
                 </div>
-                <div className="col-8 lg:col-3">
-                    <Dropdown
-                        id='budgetNum'
+                <div className="col-9 lg:col-4">
+                    <InputText
+                        readOnly
+                        value={loggedUserName}
                         className='w-full p-inputtext-sm'
-                        filter
-                        value={selectedUser}
-                        options={users}
-                        optionLabel={'name'}
-                        filterBy='name'
-                        onChange={(e) => setSelectedUser(e.value)}
                     />
                 </div>
-                <div className='col-3 lg:col-1 text-right'>
+            </div>
+
+            <div className="grid mb-2">
+                <div className='col-3 lg:w-10rem text-right'>
                     <RequiredFlag />
                     <label htmlFor='cliente'>Cliente:</label>
                 </div>
-                <div className="col-9 md:col-6">
+                <div className="col-9 md:col-5">
                     <Dropdown
                         id='cliente'
-                        className='w-full p-inputtext-sm'
+                        className={`w-full p-inputtext-sm ${invalidState.cliente ? 'p-invalid' : ''}`}
                         filter
                         value={selectedClient}
                         options={clients}
@@ -228,8 +266,17 @@ export function ViewPage({ data, index }) {
                         onChange={(e) => setSelectedClient(e.value)}
                     />
                 </div>
-            </div>
-            <div className='grid'>
+                <div className='col-3 lg:col-2 text-right'>
+                    <label>Vendedor Interno:</label>
+                </div>
+                <div className='col-9 lg:col-3'>
+                    <InputText
+                        id='numPed'
+                        className='p-inputtext-sm w-full'
+                        readOnly
+                        value={selectedClient && selectedClient.vendedor ? selectedClient.vendedor : undefined}
+                    />
+                </div>
                 <div className='col-3 lg:w-10rem text-right'>
                     <label htmlFor='obsCliente'>
                         Observação <br />
@@ -246,15 +293,11 @@ export function ViewPage({ data, index }) {
                         onChange={e => setObsCliente(e.target.value)}
                     />
                 </div>
-            </div>
-            <div className='grid mb-2'>
                 <div className='lg:w-10rem'></div>
                 <div className='col-12 lg:col-10 flex justify-content-between'>
                     <Button iconPos='right' icon='pi pi-search lg:text-base text-xs' label='Pedidos em Aberto' className='lg:text-base text-xs' />
                     <Button iconPos='right' icon='pi pi-search lg:text-base text-xs' label='Titulos em Aberto' className='lg:text-base text-xs' />
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right'>
                     <label htmlFor='numPed'>N° Ped/Oc Cli:</label>
                 </div>
@@ -268,25 +311,18 @@ export function ViewPage({ data, index }) {
                 </div>
                 <div className='col-12 lg:col-3 lg:col-offset-5 flex lg:justify-content-end'>
                     <div className='flex align-items-center w-full flex justify-content-end'>
-                        <label className='pl-3 mr-3 mb-1' htmlFor='entrega'>Entrega:</label>
-                        <Datepicker id='entrega' initialDate={entrega} onChange={e => setEntrega(e.value)} className=' lg:w-10rem' />
+                        <label className='pl-3 mr-3 mb-1' htmlFor='entrega'><RequiredFlag />Entrega:</label>
+                        <Datepicker id='entrega' initialDate={entrega} onChange={e => setEntrega(e.value)} className={`lg:w-10rem ${invalidState.entrega ? 'p-invalid' : ''}`} />
                     </div>
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right' style={{ wordBreak: 'break-all' }}>
-                    <RequiredFlag />
                     <label htmlFor='representante'>Representante:</label>
                 </div>
                 <div className='col-9 lg:col-4 flex align-items-center'>
-                    <Dropdown
-                        id='representante'
+                    <InputText
+                        readOnly
+                        value={selectedClient && selectedClient.representante ? selectedClient.representante : undefined}
                         className='w-full p-inputtext-sm'
-                        filter value={selectedRep}
-                        options={representatives}
-                        optionLabel={'name'}
-                        filterBy='name'
-                        onChange={(e) => setSelectedRep(e.value)}
                     />
                 </div>
                 <div className='col-3 lg:col-1 text-right'>
@@ -296,7 +332,7 @@ export function ViewPage({ data, index }) {
                 <div className='col-9 md:col-5'>
                     <Dropdown
                         id='transacao'
-                        className='w-full p-inputtext-sm'
+                        className={`w-full p-inputtext-sm ${invalidState.transacao ? 'p-invalid' : ''}`}
                         filter value={selectedTrasaction}
                         options={transactions}
                         optionLabel={'name'}
@@ -304,8 +340,6 @@ export function ViewPage({ data, index }) {
                         onChange={(e) => setSelectedTransactions(e.value)}
                     />
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right' style={{ wordBreak: 'break-all' }}>
                     <RequiredFlag />
                     <label htmlFor='transportador'>Transportador:</label>
@@ -313,7 +347,9 @@ export function ViewPage({ data, index }) {
                 <div className='col-9 lg:col-4 flex align-items-center'>
                     <Dropdown
                         id='transportador'
-                        className='w-full p-inputtext-sm'
+                        className={
+                            `w-full p-inputtext-sm ${invalidState.transportador ? 'p-invalid' : ''}`
+                        }
                         filter value={selectedConvenyor}
                         options={convenyors}
                         optionLabel={'name'}
@@ -335,10 +371,8 @@ export function ViewPage({ data, index }) {
                         onChange={(e) => setSelectedReDispatch(e.value)}
                     />
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right'>
-                    <label htmlFor='condPagto'>Condição do Pagamento:</label>
+                    <label htmlFor='condPagto'>Cond. Pagto:</label>
                 </div>
                 <div className='col-9 lg:col-5 flex align-items-center'>
                     <Dropdown
@@ -379,8 +413,6 @@ export function ViewPage({ data, index }) {
                         onChange={(e) => setSelectedPaymentType(e.value)}
                     />
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right'>
                     <label>Frete:</label>
                 </div>
@@ -467,8 +499,6 @@ export function ViewPage({ data, index }) {
                         suffix=' dias'
                     />
                 </div>
-            </div>
-            <div className='grid'>
                 <div className='col-3 lg:w-10rem text-right'>
                     <label>Opções:</label>
                 </div>
@@ -513,13 +543,13 @@ export function ViewPage({ data, index }) {
             <div className='w-full my-2'>
                 <Button
                     className='w-full p-button-raised'
+                    disabled={!selectedClient || !selectedTrasaction || !selectedConvenyor || !entrega ? true : false}
                     label={<span className='font-semibold'>Adicionar Item</span>}
                     onClick={() => setModalVisible(true)}
                 />
             </div>
-            <div className='mt-3'>
+            <div>
                 <DataTable
-                    resizableColumns
                     header={
                         <div className='flex justify-content-between text-700 text-sm'>
                             <span>Produtos do Orçamento/Pedido</span>
@@ -529,7 +559,6 @@ export function ViewPage({ data, index }) {
                     value={products}
                     responsiveLayout="stack"
                     showGridlines
-                    className='relative'
                 >
                     <Column headerClassName='text-700 text-sm' body={(_, { rowIndex }) => rowIndex + 1} header='Seq'></Column>
                     <Column headerClassName='text-700 text-sm' field='codigo' header='Cod'></Column>
@@ -592,6 +621,6 @@ export function ViewPage({ data, index }) {
                 </DataTable>
             </div >
 
-        </>
+        </div>
     )
 }

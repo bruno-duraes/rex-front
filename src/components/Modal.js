@@ -9,35 +9,35 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { RadioButton } from 'primereact/radiobutton';
 import { Sidebar } from 'primereact/sidebar';
 import { Toast } from 'primereact/toast';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getMockItems } from '../services/getMockItems';
 import { dateISOLocale } from '../utils/dateISOLocale';
 import { Datepicker } from './Datepicker';
 import { RequiredFlag } from './RequiredFlag';
 
 export function Modal({ budgetItems, setBudgetItems, visible, setVisible, clientName, deadline }) {
-    console.log(deadline)
     const [selectedItem, setSelectedItem] = useState(null);
     const [filteredItems, setFilteredItems] = useState(null);
     const [quantity, setQuantity] = useState(null);
     const [faixa, setFaixa] = useState(null);
     const [faixaSol, setFaixaSol] = useState(null);
     const [selectedItemFinish, setSelectedItemFinish] = useState(null);
-    // const [date, setDate] = useState(new Date());
     const [dateDelivery, setDateDelivery] = useState(deadline);
     const [pedidoOrdem, setPedidoOrdem] = useState('');
     const [sequency, setSequency] = useState('');
     const [codProCli, setCodProCli] = useState('');
     const [selectedTransaction, setSelectedTransaction] = useState({ label: '90150 - Orçamento Indústria' });
     const [note, setNote] = useState('');
-    const [depPadrao, setDepPadrao] = useState(false);
-    const [depCliente, setDepCliente] = useState(false);
     const [lastProduct, setLastProduct] = useState('');
     const [filterCod, setFilterCod] = useState('codigoRex');
     const [selectedDeposit, setSelectedDeposit] = useState(null);
     const toast = useRef(null);
     const item = useRef(null);
     const [validation, setValidation] = useState({ item: '', quantia: '' });
+
+    useEffect(() => {
+        setDateDelivery(deadline);
+    }, [deadline])
 
     let items = getMockItems();
 
@@ -50,6 +50,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
         setSelectedItem(null);
         setQuantity(null);
     }
+
     function addItem() {
         const item = {
             codigo: selectedItem.codigoRex,
@@ -61,7 +62,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
             totalProduto: (quantity * faixa).toFixed(2),
             peso: selectedItem.peso_bruto,
             media: (selectedItem.peso_bruto * quantity).toFixed(2),
-            faixaSelecionada: faixa,
+            faixaSelecionada: faixa == 'solicitado' ? faixaSol : faixa,
             acabamentoSelecionado: selectedItemFinish,
             data: dateISOLocale(new Date(selectedItem.data.split('/').reverse().join('/'))),
             entrega: dateDelivery ? dateISOLocale(dateDelivery) : null,
@@ -70,8 +71,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
             codProCli: codProCli,
             transacao: selectedTransaction.label,
             observacao: note,
-            depCliente: depCliente,
-            depPadrao: depPadrao,
+            deposito: selectedDeposit,
             itemSelecionado: selectedItem
         };
         let budgetItemsCopy = Array.from(budgetItems);
@@ -297,13 +297,14 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     name='faixa'
                                     id='solicitado'
                                     value={faixaSol}
-                                    onChange={e => setFaixa(e.value)}
-                                    checked={faixa && faixa === faixaSol ? true : false}
+                                    onChange={e => setFaixa('solicitado')}
+                                    checked={faixa == 'solicitado'}
                                 />
                                 <InputNumber
                                     className=' w-full'
                                     inputClassName='w-full cursor-pointer p-inputtext-sm px-1'
                                     value={faixaSol}
+                                    max={99999.99}
                                     onChange={e => setFaixaSol(e.value)}
                                     htmlFor='solicitado'
                                     mode='decimal'
@@ -312,13 +313,14 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 />
                             </div>
                         </div>
-                        <div className=' col-6 lg:w-5rem'>
+                        <div className=' col-6 lg:w-5rem px-1'>
                             <label className='cursor-pointer' htmlFor='itemTotal'>Total</label>
                             <InputNumber
                                 inputStyle={{ fontWeight: '700' }}
                                 className='w-full'
+                                max={999999.99}
                                 inputClassName='w-full cursor-pointer p-inputtext-sm p-1'
-                                value={faixa * quantity}
+                                value={faixa == 'solicitado' ? faixaSol * quantity : faixa * quantity}
                                 htmlFor='itemTotal'
                                 mode='decimal'
                                 maxFractionDigits={2}
