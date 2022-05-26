@@ -9,7 +9,6 @@ import { getMockOrders } from '../services/getMockOrders';
 import { ViewPage } from './ViewPage';
 
 export function ConsultPage() {
-
     let orders = getMockOrders();
 
     const [orcamentos, setOrcamentos] = useState(orders);

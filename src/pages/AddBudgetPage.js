@@ -15,6 +15,7 @@ import { Modal } from '../components/Modal';
 import { ModalEditItem } from '../components/ModalEditItem';
 import { RequiredFlag } from '../components/RequiredFlag';
 import { RenderContext } from '../providers/renderContext';
+import getCliente from '../services/getCliente';
 import { getLoggedUser } from '../services/getLoggedUser';
 import { dateISOLocale } from '../utils/dateISOLocale';
 import { ConsultPage } from './ConsultPage';
@@ -25,11 +26,11 @@ export function AddBudgetPage() {
         { name: 'User 02' },
         { name: 'User 03' },
     ];
-    const clients = [
-        { name: 'Client 01', vendedor: 'Vendedor Interno A', representante: 'Representante A' },
-        { name: 'Client 02', vendedor: 'Vendedor Interno B', representante: 'Representante B' },
-        { name: 'Client 03', vendedor: 'Vendedor Interno C', representante: 'Representante C' },
-    ];
+    // const clients = [
+    //     { name: 'Client 01', vendedor: 'Vendedor Interno A', representante: 'Representante A' },
+    //     { name: 'Client 02', vendedor: 'Vendedor Interno B', representante: 'Representante B' },
+    //     { name: 'Client 03', vendedor: 'Vendedor Interno C', representante: 'Representante C' },
+    // ];
     const representatives = [
         { name: 'Representante 01' },
         { name: 'Representante 02' },
@@ -76,8 +77,8 @@ export function AddBudgetPage() {
     let loggedUser = getLoggedUser();
     const [loggedUserName, setLoggedUserName] = useState(loggedUser.rNome);
     const [selectedClient, setSelectedClient] = useState(null);
-    const [selectedRep, setSelectedRep] = useState(null);
     const [selectedTrasaction, setSelectedTransactions] = useState(null);
+    const [clients, setClients] = useState([]);
     const [selectedConvenyor, setSelectedConvenyor] = useState(null);
     const [selectedReDispatch, setSelectedReDispatch] = useState(null);
     const [selectedPaymentCond, setSelectedPaymentCond] = useState(null);
@@ -202,6 +203,10 @@ export function AddBudgetPage() {
         }
     }
 
+    function listClients(e) {
+        getCliente(e).then((data) => setClients(data))
+    }
+
     return (
         <div>
             <ModalEditItem
@@ -269,8 +274,9 @@ export function AddBudgetPage() {
                         filter
                         value={selectedClient}
                         options={clients}
-                        optionLabel={'name'}
-                        filterBy='name'
+                        optionLabel={'nome'}
+                        filterBy='nome'
+                        onFilter={e => listClients(e.filter)}
                         onChange={(e) => setSelectedClient(e.value)}
                     />
                 </div>
