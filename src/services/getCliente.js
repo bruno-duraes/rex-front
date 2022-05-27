@@ -1,12 +1,143 @@
 import { getLoggedUser } from "./getLoggedUser";
 
 export default async function getCliente(consult) {
-    const loggedUser = getLoggedUser();
+    const loggedUser = await getLoggedUser();
+
+    let mockData = [
+        {
+            "codExterno": "1429",
+            "nome": "1429 - Bemar Com.Ferramentas e Parafusos Ltda - EPP",
+            "endCli": "Av.Guapira",
+            "codCpg": "004",
+            "desCpg": "28",
+            "codFpg": "1",
+            "desFpg": "Duplicata",
+            "codTra": "0",
+            "nomTra": "",
+            "codTns": "90151",
+            "nomeTns": "Orçamento Comércio"
+        },
+        {
+            "codExterno": "50901",
+            "nome": "50901 - Bemec Comercial Ltda",
+            "endCli": "Rua Caldas Da Rainha",
+            "codCpg": "004",
+            "desCpg": "28",
+            "codFpg": "1",
+            "desFpg": "Duplicata",
+            "codTra": "0",
+            "nomTra": "",
+            "codTns": "90150",
+            "nomeTns": "Orçamento Indústria"
+        },
+        {
+            "codExterno": "5623",
+            "nome": "5623 - Bencao Com.de Material de Construcao Ltda",
+            "endCli": "Rua Johannes Janzen-Colonia Witmarsum",
+            "codCpg": "004",
+            "desCpg": "28",
+            "codFpg": "1",
+            "desFpg": "Duplicata",
+            "codTra": "0",
+            "nomTra": "",
+            "codTns": "90151",
+            "nomeTns": "Orçamento Comércio"
+        },
+        {
+            "codExterno": "11149",
+            "nome": "11149 - Berlinerluft Do Brasil Ind.e Com.Ltda",
+            "endCli": "Rua Visconde De Sao Leopoldo",
+            "codCpg": "004",
+            "desCpg": "28",
+            "codFpg": "1",
+            "desFpg": "Duplicata",
+            "codTra": "0",
+            "nomTra": "",
+            "codTns": "90150",
+            "nomeTns": "Orçamento Indústria"
+        },
+        {
+            "codExterno": "11485",
+            "nome": "11485 - Bernardes e Coco Ltda",
+            "endCli": "Av.Brasil",
+            "codCpg": "004",
+            "desCpg": "28",
+            "codFpg": "1",
+            "desFpg": "Duplicata",
+            "codTra": "0",
+            "nomTra": "",
+            "codTns": "90151",
+            "nomeTns": "Orçamento Comércio"
+        },
+        {
+            "codExterno": "4724",
+            "nome": "4724 - Casa do Parafuso Aracaju Ltda",
+            "endCli": "Av.Dr.Carlos Firpo",
+            "codCpg": "001",
+            "desCpg": "A Vista",
+            "codFpg": "2",
+            "desFpg": "Depósito",
+            "codTra": "0",
+            "nomTra": "",
+            "codTns": "90151",
+            "nomeTns": "Orçamento Comércio"
+        },
+        {
+            "codExterno": "16399",
+            "nome": "16399 - Casanova Ind.Com.Toldos e Esq.Ferro e Alum.Ld",
+            "endCli": "Av.Presidente Rosevelt",
+            "codCpg": "031",
+            "desCpg": "30/60/90",
+            "codFpg": "2",
+            "desFpg": "Depósito",
+            "codTra": "0",
+            "nomTra": "",
+            "codTns": "90150",
+            "nomeTns": "Orçamento Indústria"
+        },
+        {
+            "codExterno": "16517",
+            "nome": "16517 - Agricase Equipamentos Agricolas Ltda",
+            "endCli": "Rod. Br 163",
+            "codCpg": "001",
+            "desCpg": "A Vista",
+            "codFpg": "2",
+            "desFpg": "Depósito",
+            "codTra": "0",
+            "nomTra": "",
+            "codTns": "90151",
+            "nomeTns": "Orçamento Comércio"
+        },
+        {
+            "codExterno": "17428",
+            "nome": "17428 - Fabbof Industria Metalurgica Ltda",
+            "endCli": "Rua Vitorio Lazzaretti",
+            "codCpg": "031",
+            "desCpg": "30/60/90",
+            "codFpg": "1",
+            "desFpg": "Duplicata",
+            "codTra": "3",
+            "nomTra": "Rexfix Industria de Fixadores Metalicos LTDA",
+            "codTns": "90150",
+            "nomeTns": "Orçamento Indústria"
+        },
+        {
+            "codExterno": "17516",
+            "nome": "17516 - MM Escapamentos Ltda",
+            "endCli": "Rua Almirante Tamandare",
+            "codCpg": "001",
+            "desCpg": "A Vista",
+            "codFpg": "2",
+            "desFpg": "Depósito",
+            "codTra": "0",
+            "nomTra": "",
+            "codTns": "90151",
+            "nomeTns": "Orçamento Comércio"
+        }
+    ]
 
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
-    headers.append('Access-Control-Allow-Origin', 'http://localhost:3000');
-    headers.append('Access-Control-Allow-Credentials', 'true');
 
     let raw = JSON.stringify(
         {
@@ -29,11 +160,12 @@ export default async function getCliente(consult) {
         redirect: 'follow'
     };
 
-    try {
-        let request = await fetch("https://rex.clicvenda.com.br/cvIntegradorSenior/rest/Listas/executarRequisicaoExterna", config)
-        let response = await request.json()
-        return response.resultado
-    } catch (err) {
-        console.error({ message: 'Erro na requisição!', details: err })
-    }
+    return mockData
+    // try {
+    //     let request = await fetch("https://rex.clicvenda.com.br/cvIntegradorSenior/rest/Listas/executarRequisicaoExterna", config)
+    //     let response = await request.json()
+    //     return response.resultado
+    // } catch (err) {
+    //     console.error({ message: 'Erro na requisição!', details: err })
+    // }
 }

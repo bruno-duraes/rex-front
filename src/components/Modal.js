@@ -10,12 +10,13 @@ import { RadioButton } from 'primereact/radiobutton';
 import { Sidebar } from 'primereact/sidebar';
 import { Toast } from 'primereact/toast';
 import { useEffect, useRef, useState } from 'react';
-import { getMockItems } from '../services/getMockItems';
+import getProdutos from '../services/getProdutos';
+import getTransacoes from '../services/getTransacoes';
 import { dateISOLocale } from '../utils/dateISOLocale';
 import { Datepicker } from './Datepicker';
 import { RequiredFlag } from './RequiredFlag';
 
-export function Modal({ budgetItems, setBudgetItems, visible, setVisible, clientName, deadline }) {
+export function Modal({ budgetItems, setBudgetItems, visible, setVisible, clientName, deadline, transaction }) {
     const [selectedItem, setSelectedItem] = useState(null);
     const [filteredItems, setFilteredItems] = useState(null);
     const [quantity, setQuantity] = useState(null);
@@ -26,7 +27,8 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
     const [pedidoOrdem, setPedidoOrdem] = useState('');
     const [sequency, setSequency] = useState('');
     const [codProCli, setCodProCli] = useState('');
-    const [selectedTransaction, setSelectedTransaction] = useState({ label: '90150 - Orçamento Indústria' });
+    const [selectedTransaction, setSelectedTransaction] = useState(transaction);
+    const [transactions, setTransactions] = useState([]);
     const [note, setNote] = useState('');
     const [lastProduct, setLastProduct] = useState('');
     const [filterCod, setFilterCod] = useState('codigoRex');
@@ -35,11 +37,14 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
     const item = useRef(null);
     const [validation, setValidation] = useState({ item: '', quantia: '' });
 
+    // Inicialização
+    useEffect(() => {
+        getTransacoes('').then(data => setTransactions(data));
+    }, [])
+
     useEffect(() => {
         setDateDelivery(deadline);
     }, [deadline])
-
-    let items = getMockItems();
 
     function resetModal() {
         setFaixa(null);
@@ -83,22 +88,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
         resetModal();
     }
     function searchItem(e) {
-        let query = e.query;
-        let _filteredItems = [];
-        if (filterCod == 'codigoRex') {
-            for (const [i, p] of items.entries()) {
-                if (p.codigoRex.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
-                    _filteredItems.push(p);
-                }
-            }
-        } else if (filterCod == 'codigoCliente') {
-            for (const [i, p] of items.entries()) {
-                if (p.codigoCliente.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
-                    _filteredItems.push(p);
-                }
-            }
-        }
-        setFilteredItems(_filteredItems);
+        getProdutos(e.query).then(data => setFilteredItems(data))
     }
     return (
         <>
@@ -147,15 +137,13 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                 <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 bg-white'>
                     <div className='grid flex align-items-end'>
                         <div className=' col-6 lg:w-5rem'>
-                            <label htmlFor='selectItem'>
-                                Código
-                            </label>
+                            <label htmlFor='selectItem'>Código</label>
                             <AutoComplete
                                 ref={item}
                                 value={selectedItem}
                                 suggestions={filteredItems}
                                 completeMethod={searchItem}
-                                field={filterCod == 'codigoRex' ? 'codigoRex' : filterCod == 'codigoCliente' ? 'codigoCliente' : undefined}
+                                field={filterCod == 'codigoRex' ? 'codExterno' : filterCod == 'codigoCliente' ? 'codExterno' : undefined}
                                 onChange={e => setSelectedItem(e.value)}
                                 id='selectItem'
                                 className='w-full'
@@ -180,7 +168,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                             <label htmlFor='itemNn'>UN</label>
                             <InputText
                                 id='itemUn'
-                                value={selectedItem && selectedItem.un ? selectedItem.un : ''}
+                                value={selectedItem && selectedItem.unimed ? selectedItem.unimed : undefined}
                                 readOnly
                                 className='w-full p-inputtext-sm'
                             />
@@ -189,7 +177,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                             <label htmlFor='itemPrecoBruto'>Preco Bruto</label>
                             <InputNumber
                                 inputId='' id='itemPrecoBruto'
-                                value={selectedItem && selectedItem.preco_bruto ? selectedItem.preco_bruto : null}
+                                value={selectedItem && selectedItem.preco ? selectedItem.preco : null}
                                 readOnly
                                 className='w-full'
                                 inputClassName='w-full p-inputtext-sm'
@@ -205,14 +193,14 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     className='mr-1'
                                     name='faixa'
                                     inputId='faixa1'
-                                    value={selectedItem && selectedItem.faixa_1 ? selectedItem.faixa_1 : 0}
+                                    value={selectedItem && selectedItem.valorFaixa1 ? selectedItem.valorFaixa1 : 0}
                                     onChange={e => setFaixa(e.value)}
-                                    checked={faixa && faixa === (selectedItem.faixa_1 ? selectedItem.faixa_1 : null)}
+                                    checked={faixa && faixa === (selectedItem.valorFaixa1 ? selectedItem.valorFaixa1 : null)}
                                 />
                                 <InputNumber
                                     inputClassName='w-full cursor-pointer p-inputtext-sm px-1 '
                                     className='w-full'
-                                    value={selectedItem && selectedItem.faixa_1 ? selectedItem.faixa_1 : null}
+                                    value={selectedItem && selectedItem.valorFaixa1 ? selectedItem.valorFaixa1 : null}
                                     htmlFor='faixa1'
                                     mode='decimal'
                                     maxFractionDigits={2}
@@ -228,14 +216,14 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     className='mr-1'
                                     name='faixa'
                                     inputId='faixa2'
-                                    value={selectedItem && selectedItem.faixa_2 ? selectedItem.faixa_2 : 0}
+                                    value={selectedItem && selectedItem.valorFaixa2 ? selectedItem.valorFaixa2 : 0}
                                     onChange={e => setFaixa(e.value)}
-                                    checked={faixa && faixa === (selectedItem.faixa_2 ? selectedItem.faixa_2 : 0)}
+                                    checked={faixa && faixa === (selectedItem.valorFaixa2 ? selectedItem.valorFaixa2 : 0)}
                                 />
                                 <InputNumber
                                     className='w-full'
                                     inputClassName='w-full cursor-pointer p-inputtext-sm px-1'
-                                    value={selectedItem && selectedItem.faixa_2 ? selectedItem.faixa_2 : null}
+                                    value={selectedItem && selectedItem.valorFaixa2 ? selectedItem.valorFaixa2 : null}
                                     mode='decimal'
                                     maxFractionDigits={2}
                                     minFractionDigits={2}
@@ -250,14 +238,14 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     className='mr-1'
                                     name='faixa'
                                     id='faixa3'
-                                    value={selectedItem && selectedItem.faixa_3 ? selectedItem.faixa_3 : 0}
+                                    value={selectedItem && selectedItem.valorFaixa3 ? selectedItem.valorFaixa3 : 0}
                                     onChange={e => setFaixa(e.value)}
-                                    checked={faixa && faixa === (selectedItem.faixa_3 ? selectedItem.faixa_3 : null)}
+                                    checked={faixa && faixa === (selectedItem.valorFaixa3 ? selectedItem.valorFaixa3 : null)}
                                 />
                                 <InputNumber
                                     className='w-full'
                                     inputClassName='w-full cursor-pointer p-inputtext-sm px-1'
-                                    value={selectedItem && selectedItem.faixa_3 ? selectedItem.faixa_3 : null}
+                                    value={selectedItem && selectedItem.valorFaixa3 ? selectedItem.valorFaixa3 : null}
                                     htmlFor='faixa3'
                                     mode='decimal'
                                     maxFractionDigits={2}
@@ -273,14 +261,14 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     className='mr-1'
                                     name='faixa'
                                     id='faixa4'
-                                    value={selectedItem && selectedItem.faixa_4 ? selectedItem.faixa_4 : 0}
+                                    value={selectedItem && selectedItem.valorFaixa4 ? selectedItem.valorFaixa4 : 0}
                                     onChange={e => setFaixa(e.value)}
-                                    checked={faixa && faixa === (selectedItem.faixa_4 ? selectedItem.faixa_4 : null)}
+                                    checked={faixa && faixa === (selectedItem.valorFaixa4 ? selectedItem.valorFaixa4 : null)}
                                 />
                                 <InputNumber
                                     className='w-full'
                                     inputClassName='w-full cursor-pointer p-inputtext-sm px-1'
-                                    value={selectedItem && selectedItem.faixa_4 ? selectedItem.faixa_4 : null}
+                                    value={selectedItem && selectedItem.valorFaixa4 ? selectedItem.valorFaixa4 : null}
                                     htmlFor='faixa4'
                                     mode='decimal'
                                     maxFractionDigits={2}
@@ -354,7 +342,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                         </div>
                         <div className=' col-6 lg:w-5rem'>
                             <label>Data</label>
-                            <Datepicker initialDate={selectedItem && selectedItem.data ? new Date(selectedItem.data.split('/').reverse().join('/')) : null} readonly removeBtn inputClassName='text-left p-0' />
+                            <Datepicker initialDate={selectedItem && selectedItem.datEnt ? new Date(selectedItem.datEnt.split('/').reverse().join('/')) : null} readonly removeBtn inputClassName='text-left p-0' />
                         </div>
                     </div>
                     <div className='grid pt-2'>
@@ -377,14 +365,9 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                         <div className=' col-12 lg:col-3'>
                             <label>Transação</label>
                             <Dropdown
-                                optionLabel='label'
-                                options={[
-                                    { label: 'Tipo 1' },
-                                    { label: 'Tipo 2' },
-                                    { label: '90150 - Orçamento Indústria' }
-                                ]}
+                                optionLabel='filtro'
+                                options={transactions}
                                 value={selectedTransaction}
-                                disabled
                                 className='w-full p-inputtext-sm'
                                 onchange={e => setSelectedTransaction(e.value)}
                             />
@@ -413,7 +396,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     <InputText
                                         readOnly
                                         className='w-full p-inputtext-sm text-base '
-                                        value={selectedItem && selectedItem.descricacao ? selectedItem.descricacao : undefined}
+                                        value={selectedItem && selectedItem.nome ? selectedItem.nome : undefined}
                                     />
                                 </div>
                                 <div className='col-3 lg:col-1 text-right text-xs'>
@@ -433,7 +416,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     <InputText
                                         readOnly
                                         className='w-full p-inputtext-sm'
-                                        value={selectedItem && selectedItem.codigoSap ? selectedItem.codigoSap : ''}
+                                        value={selectedItem && selectedItem.codExterno ? selectedItem.codExterno : ''}
                                     />
                                 </div>
                                 <div className='col-3 lg:col-1 text-right'>
@@ -461,7 +444,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         inputClassName='w-full'
                                         mode='currency'
                                         currency='BRL'
-                                        value={selectedItem && selectedItem.preco_bruto ? selectedItem.preco_bruto : ''}
+                                        value={selectedItem && selectedItem.preco ? selectedItem.preco : ''}
                                     />
                                 </div>
                                 <div className='col-3 lg:col-1 text-right '>
@@ -472,7 +455,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         id='itemUnidade'
                                         readOnly
                                         className='w-full p-inputtext-sm'
-                                        value={selectedItem && selectedItem.un ? selectedItem.un : ''}
+                                        value={selectedItem && selectedItem.unimed ? selectedItem.unimed : ''}
                                     />
                                 </div>
                                 <div className='col-4 lg:col-2 text-right'>
@@ -562,16 +545,16 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     className='tabela'
                     selection={selectedItemFinish}
                     onSelectionChange={e => setSelectedItemFinish(e.value)}
-                    value={selectedItem && selectedItem.acabamentos ? selectedItem.acabamentos : null}
+                    value={selectedItem && selectedItem.acabamento ? selectedItem.acabamento : null}
                     responsiveLayout='stack' >
-                    <Column headerClassName='text-700 text-sm' field='ref' header='Ref' />
-                    <Column headerClassName='text-700 text-sm' field='acabamento' header='Acabamento' />
-                    <Column headerClassName='text-700 text-sm' field='total_disponivel' header='Total Disponível' />
-                    <Column headerClassName='text-700 text-sm' field='estoque_terc' header='Estoque Terceiros' />
-                    <Column headerClassName='text-700 text-sm' field='total_pedidos' header='Total Pedidos' />
-                    <Column headerClassName='text-700 text-sm' field='total_prefaturas' header='Total Pré-Faturas' />
-                    <Column headerClassName='text-700 text-sm' field='total_ordens' header='Total Ordens' />
-                    <Column headerClassName='text-700 text-sm' field='estoque_sc' header='Estoque SC' />
+                    <Column headerClassName='text-700 text-sm' field='codigo' header='Ref' />
+                    <Column headerClassName='text-700 text-sm' field='derivacao' header='Acabamento' />
+                    <Column headerClassName='text-700 text-sm' field='disponivel' header='Total Disponível' />
+                    <Column headerClassName='text-700 text-sm' field='' header='Estoque Terceiros' />
+                    <Column headerClassName='text-700 text-sm' field='resPedidos' header='Total Pedidos' />
+                    <Column headerClassName='text-700 text-sm' field='resPreFat' header='Total Pré-Faturas' />
+                    <Column headerClassName='text-700 text-sm' field='matriz' header='Total Ordens' />
+                    <Column headerClassName='text-700 text-sm' field='disponivel' header='Estoque SC' />
                 </DataTable>
 
                 <DataTable

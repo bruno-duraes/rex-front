@@ -1,3 +1,4 @@
+import { AutoComplete } from 'primereact/autocomplete';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
 import { Column } from 'primereact/column';
@@ -16,69 +17,32 @@ import { ModalEditItem } from '../components/ModalEditItem';
 import { RequiredFlag } from '../components/RequiredFlag';
 import { RenderContext } from '../providers/renderContext';
 import getCliente from '../services/getCliente';
+import getCondPagto from '../services/getCondPagto';
 import { getLoggedUser } from '../services/getLoggedUser';
+import getTiposPagto from '../services/getTiposPagto';
+import getTransacoes from '../services/getTransacoes';
+import getTransportadoras from '../services/getTransportadoras';
 import { dateISOLocale } from '../utils/dateISOLocale';
 import { ConsultPage } from './ConsultPage';
 
 export function AddBudgetPage() {
-    const users = [
-        { name: 'User 01' },
-        { name: 'User 02' },
-        { name: 'User 03' },
-    ];
-    // const clients = [
-    //     { name: 'Client 01', vendedor: 'Vendedor Interno A', representante: 'Representante A' },
-    //     { name: 'Client 02', vendedor: 'Vendedor Interno B', representante: 'Representante B' },
-    //     { name: 'Client 03', vendedor: 'Vendedor Interno C', representante: 'Representante C' },
-    // ];
-    const representatives = [
-        { name: 'Representante 01' },
-        { name: 'Representante 02' },
-        { name: 'Representante 03' },
-    ];
-    const transactions = [
-        { name: 'Transação X' },
-        { name: 'Transação Y' },
-        { name: 'Transação Z' },
-    ];
-    const convenyors = [
-        { name: 'Transportador X' },
-        { name: 'Transportador Y' },
-        { name: 'Transportador Z' },
-    ];
-    const reDispatches = [
-        { name: 'Redespacho X' },
-        { name: 'Redespacho Y' },
-        { name: 'Redespacho Z' },
-    ];
-    const paymentConditions = [
-        { name: 'Condição de Pagamento X' },
-        { name: 'Condição de Pagamento Y' },
-        { name: 'Condição de Pagamento Z' },
-    ];
     const currencies = [
         { name: '1 - Real | R$' },
         { name: '2 - Ufir | Ufir' },
         { name: '3 - Dolar | U$' },
         { name: '4 - Euro | €' },
     ];
-    const paymentTypes = [
-        { name: '1 - Duplicata' },
-        { name: '2 - Depósito' },
-        { name: '3 - Cheque' },
-        { name: '4 - Dinheiro' },
-        { name: '5 - EXP' },
-        { name: '6 - Cartão' },
-        { name: '7 - Deb c/c' },
-        { name: '8 - DDA' },
-        { name: '10 - Dupli' },
-    ];
 
-    let loggedUser = getLoggedUser();
+    let loggedUser = getLoggedUser().then(data => data);
     const [loggedUserName, setLoggedUserName] = useState(loggedUser.rNome);
     const [selectedClient, setSelectedClient] = useState(null);
-    const [selectedTrasaction, setSelectedTransactions] = useState(null);
+    const [selectedTrasaction, setSelectedTransaction] = useState(null);
     const [clients, setClients] = useState([]);
+    const [transactions, setTransactions] = useState([]);
+    const [paymentTypes, setPaymentTypes] = useState([]);
+    const [paymentConditions, setPaymentConditions] = useState([]);
+    const [convenyors, setConvenyors] = useState([]);
+    const [reDispatches, setReDispatches] = useState([]);
     const [selectedConvenyor, setSelectedConvenyor] = useState(null);
     const [selectedReDispatch, setSelectedReDispatch] = useState(null);
     const [selectedPaymentCond, setSelectedPaymentCond] = useState(null);
@@ -104,6 +68,14 @@ export function AddBudgetPage() {
     const [tableTotal, setTableTotal] = useState('0,00');
     const [invalidState, setInvalidState] = useState({});
     const { setRender, globalToast } = useContext(RenderContext);
+
+    // INICIALIZAÇÃO
+    useEffect(() => {
+        getTransacoes('').then(data => setTransactions(data));
+        getCondPagto('').then(data => setPaymentConditions(data));
+        getTiposPagto('').then(data => setPaymentTypes(data));
+        getTransportadoras('').then(data => { setConvenyors(data); setReDispatches(data) })
+    }, [])
 
     useEffect(() => {
         if (products.length > 0) {
@@ -204,8 +176,26 @@ export function AddBudgetPage() {
     }
 
     function listClients(e) {
-        getCliente(e).then((data) => setClients(data))
+        getCliente(e.query).then((data) => setClients(data));
     }
+
+    // Preenchendo campos derivados do cliente.
+    useEffect(() => {
+        let c = selectedClient;
+        setSelectedTransaction(
+            c && c.codTns && c.nomeTns ? { codExterno: c.codTns, nome: c.nomeTns, filtro: `${c.codTns} - ${c.nomeTns}` } : null
+        );
+        setSelectedPaymentCond(
+            c && c.codCpg && c.desCpg ? { desCpg: c.desCpg, codCpg: c.codCpg, filtro: `${c.codCpg} - ${c.desCpg}` } : null
+        );
+        setSelectedPaymentType(
+            c && c.desFpg && c.codFpg ? { codFpg: c.codFpg, desFpg: c.desFpg, filtro: `${c.codFpg} - ${c.desFpg}` } : null
+        );
+        setSelectedConvenyor(
+            c && c.codTra && c.nomTra ? { nome: c.nomTra, codExterno: c.codTra, filtro: `${c.codTra} - ${c.nomTra}` } : null
+        );
+        console.log(convenyors)
+    }, [selectedClient])
 
     return (
         <div>
@@ -226,6 +216,7 @@ export function AddBudgetPage() {
                 setBudgetItems={setProducts}
                 clientName={selectedClient ? selectedClient.name : undefined}
                 deadline={entrega ? entrega : null}
+                transaction={selectedTrasaction}
             />
 
             <div className='grid mb-3 pb-1' style={{ borderBottom: 'solid 1px #ced4da' }}>
@@ -268,16 +259,16 @@ export function AddBudgetPage() {
                     <label htmlFor='cliente'>Cliente:</label>
                 </div>
                 <div className="col-9 md:col-5">
-                    <Dropdown
+                    <AutoComplete
                         id='cliente'
                         className={`w-full p-inputtext-sm ${invalidState.cliente ? 'p-invalid' : ''}`}
-                        filter
+                        inputClassName='w-full'
                         value={selectedClient}
-                        options={clients}
-                        optionLabel={'nome'}
-                        filterBy='nome'
-                        onFilter={e => listClients(e.filter)}
+                        suggestions={clients}
+                        completeMethod={listClients}
+                        field='nome'
                         onChange={(e) => setSelectedClient(e.value)}
+                        onFilter={e => listClients(e.filter)}
                     />
                 </div>
                 <div className='col-3 lg:col-2 text-right bg-label'>
@@ -349,11 +340,16 @@ export function AddBudgetPage() {
                     <Dropdown
                         id='transacao'
                         className={`w-full p-inputtext-sm ${invalidState.transacao ? 'p-invalid' : ''}`}
-                        filter value={selectedTrasaction}
+                        filter
+                        onFilter={async (e) => {
+                            let transacoes = await getTransacoes(e.filter);
+                            setTransactions(transacoes);
+                        }}
+                        value={selectedTrasaction}
                         options={transactions}
-                        optionLabel={'name'}
-                        filterBy='name'
-                        onChange={(e) => setSelectedTransactions(e.value)}
+                        optionLabel={'filtro'}
+                        filterBy='filtro'
+                        onChange={(e) => setSelectedTransaction(e.value)}
                     />
                 </div>
                 <div className='col-3 lg:w-10rem text-right bg-label' style={{ wordBreak: 'break-all' }}>
@@ -368,8 +364,8 @@ export function AddBudgetPage() {
                         }
                         filter value={selectedConvenyor}
                         options={convenyors}
-                        optionLabel={'name'}
-                        filterBy='name'
+                        optionLabel='filtro'
+                        filterBy='filtro'
                         onChange={(e) => setSelectedConvenyor(e.value)}
                     />
                 </div>
@@ -382,8 +378,8 @@ export function AddBudgetPage() {
                         className='w-full p-inputtext-sm'
                         filter value={selectedReDispatch}
                         options={reDispatches}
-                        optionLabel={'name'}
-                        filterBy='name'
+                        optionLabel='filtro'
+                        filterBy='filtro'
                         onChange={(e) => setSelectedReDispatch(e.value)}
                     />
                 </div>
@@ -395,10 +391,11 @@ export function AddBudgetPage() {
                     <Dropdown
                         id='condPagto'
                         className='w-full p-inputtext-sm'
-                        filter value={selectedPaymentCond}
+                        filter
+                        value={selectedPaymentCond}
                         options={paymentConditions}
-                        optionLabel={'name'}
-                        filterBy='name'
+                        optionLabel='filtro'
+                        filterBy='filtro'
                         onChange={(e) => setSelectedPaymentCond(e.value)}
                     />
                 </div>
@@ -426,8 +423,8 @@ export function AddBudgetPage() {
                         className='w-full p-inputtext-sm'
                         value={selectedPaymentType}
                         options={paymentTypes}
-                        optionLabel={'name'}
-                        filterBy='name'
+                        optionLabel='filtro'
+                        filterBy='filtro'
                         onChange={(e) => setSelectedPaymentType(e.value)}
                     />
                 </div>

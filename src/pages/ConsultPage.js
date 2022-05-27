@@ -132,14 +132,12 @@ export function ConsultPage() {
         <>
             <DataTable
                 header={
-                    <>
+                    <div className='pt-2'>
                         <div className='grid'>
-                            <div className='col-12'>
+                            <div className='col-2 flex justify-content-center align-items-center'>
                                 <span className='text-700 w-full'>Orçamentos/Pedidos</span>
                             </div>
-                        </div>
-                        <div className='grid align-items-center justify-content-between'>
-                            <div className='pt-3'>
+                            <div className='col-6 flex justify-content-center align-items-center'>
                                 <SelectButton
                                     options={options}
                                     value={statusFilter}
@@ -152,7 +150,7 @@ export function ConsultPage() {
                                     )}
                                 />
                             </div>
-                            <div className='field w-20rem'>
+                            <div className='col-4'>
                                 <label>Usuário</label>
                                 <Dropdown
                                     className='w-full'
@@ -172,7 +170,7 @@ export function ConsultPage() {
                         {/* <div className='grid flex align-items-center '>
                             <Button icon="pi pi-filter-slash" label="Clear" className="mt-3 p-button-outlined btn-outlined" />
                         </div> */}
-                    </>
+                    </div>
                 }
                 value={orcamentos}
                 paginator

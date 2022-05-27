@@ -1,4 +1,4 @@
-export function getLoggedUser() {
+export async function getLoggedUser() {
     // let dadosUserLogado = parent.dadosUserLogadoPersonalizado();
     let mockData = {
         "cNome": "Industrial Rex",
