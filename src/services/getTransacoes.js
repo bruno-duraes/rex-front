@@ -46,13 +46,14 @@ export default async function getTransacoes(consult) {
         redirect: 'follow'
     };
 
-    mockData.map(data => data.filtro = `${data.codExterno} - ${data.nome}`)
-    return mockData
+    mockData.map(data => data.filtro = `${data.codExterno} - ${data.nome}`);
+    // return mockData;
     try {
-        let request = await fetch("https://rex.clicvenda.com.br/cvIntegradorSenior/rest/Listas/executarRequisicaoExterna", config)
-        let response = await request.json()
-        return response.resultado
+        let response = await fetch("https://rex.clicvenda.com.br/cvIntegradorSenior/rest/Listas/executarRequisicaoExterna", config)
+        let { resultado } = await response.json();
+        resultado.map(data => data.filtro = `${data.codExterno} - ${data.nome}`);
+        return resultado;
     } catch (err) {
-        console.error({ message: 'Erro na requisição!', details: err })
+        console.error({ message: 'Erro na requisição!', details: err });
     }
 }

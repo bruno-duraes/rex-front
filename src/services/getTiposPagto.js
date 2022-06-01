@@ -66,12 +66,13 @@ export default async function getTiposPagto(consult) {
         redirect: 'follow'
     };
 
-    mockData.map(data => data.filtro = `${data.codFpg} - ${data.desFpg}`)
-    return mockData
+    mockData.map(data => data.filtro = `${data.codFpg} - ${data.desFpg}`);
+    // return mockData;
     try {
         let response = await fetch("https://rex.clicvenda.com.br/cvIntegradorSenior/rest/Listas/executarRequisicaoExterna", config)
         let { resultado } = await response.json()
-        return resultado.map(data => data.filtro = `${data.codFpg} - ${data.desFpg}`);
+        resultado.map(data => data.filtro = `${data.codFpg} - ${data.desFpg}`);
+        return resultado
     } catch (err) {
         console.error({ message: 'Erro na requisição!', details: err })
     }

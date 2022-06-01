@@ -33,8 +33,11 @@ export function AddBudgetPage() {
         { name: '4 - Euro | €' },
     ];
 
-    let loggedUser = getLoggedUser().then(data => data);
-    const [loggedUserName, setLoggedUserName] = useState(loggedUser.rNome);
+    function defaultEntrega() {
+        return new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getUTCDate() + 5);
+    }
+
+    const [loggedUserName, setLoggedUserName] = useState(null);
     const [selectedClient, setSelectedClient] = useState(null);
     const [selectedTrasaction, setSelectedTransaction] = useState(null);
     const [clients, setClients] = useState([]);
@@ -59,7 +62,7 @@ export function AddBudgetPage() {
     const [checkAceitaParcial, setCheckAceitaParcial] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [emissao, setEmissao] = useState(new Date());
-    const [entrega, setEntrega] = useState(null);
+    const [entrega, setEntrega] = useState(defaultEntrega());
     const [products, setProducts] = useState([]);
     const [obsCliente, setObsCliente] = useState('');
     const [nPed_OcCli, setNPed_OcCli] = useState(null);
@@ -75,6 +78,7 @@ export function AddBudgetPage() {
         getCondPagto('').then(data => setPaymentConditions(data));
         getTiposPagto('').then(data => setPaymentTypes(data));
         getTransportadoras('').then(data => { setConvenyors(data); setReDispatches(data) })
+        getLoggedUser().then(({ rNome }) => setLoggedUserName(rNome))
     }, [])
 
     useEffect(() => {
@@ -182,19 +186,33 @@ export function AddBudgetPage() {
     // Preenchendo campos derivados do cliente.
     useEffect(() => {
         let c = selectedClient;
-        setSelectedTransaction(
-            c && c.codTns && c.nomeTns ? { codExterno: c.codTns, nome: c.nomeTns, filtro: `${c.codTns} - ${c.nomeTns}` } : null
-        );
-        setSelectedPaymentCond(
-            c && c.codCpg && c.desCpg ? { desCpg: c.desCpg, codCpg: c.codCpg, filtro: `${c.codCpg} - ${c.desCpg}` } : null
-        );
-        setSelectedPaymentType(
-            c && c.desFpg && c.codFpg ? { codFpg: c.codFpg, desFpg: c.desFpg, filtro: `${c.codFpg} - ${c.desFpg}` } : null
-        );
-        setSelectedConvenyor(
-            c && c.codTra && c.nomTra ? { nome: c.nomTra, codExterno: c.codTra, filtro: `${c.codTra} - ${c.nomTra}` } : null
-        );
-        console.log(convenyors)
+        if (c) {
+            setSelectedTransaction(
+                c.codTns ? transactions.filter(({ codExterno }) => codExterno == c.codTns)[0] : null
+            );
+            setSelectedPaymentCond(
+                c.codCpg ? paymentConditions.filter(({ codCpg }) => codCpg == c.codCpg)[0] : null
+            );
+            setSelectedPaymentType(
+                c.codFpg ? paymentTypes.filter(({ codFpg }) => codFpg == c.codFpg)[0] : null
+            );
+            setSelectedConvenyor(
+                c.codTra ? convenyors.filter(({ codExterno }) => codExterno == c.codTra)[0] : null
+            );
+            setCheckAceitaParcial(
+                c.acePar == 'S' ? true : false
+            );
+            setCheckEmiteCert(
+                c.emiCer == 'S' ? true : false
+            );
+            setCheckEmitePPAP(
+                c.emiPPA == 'S' ? true : false
+            );
+            setCheckMantemSaldo(
+                c.manSal == 'S' ? true : false
+            );
+        }
+
     }, [selectedClient])
 
     return (
@@ -206,7 +224,7 @@ export function AddBudgetPage() {
                 setVisible={setEditItemVisible}
                 changeItems={setProducts}
                 budgetItems={products}
-                clientName={selectedClient ? selectedClient.name : undefined}
+                clientName={selectedClient ? selectedClient.nome : undefined}
                 deadline={entrega ? entrega : null}
             />
             <Modal
@@ -279,7 +297,13 @@ export function AddBudgetPage() {
                         id='numPed'
                         className='p-inputtext-sm w-full'
                         readOnly
-                        value={selectedClient && selectedClient.vendedor ? selectedClient.vendedor : undefined}
+                        value={
+                            selectedClient && selectedClient.codVen && selectedClient.nomVen
+                                ?
+                                `${selectedClient.codVen} - ${selectedClient.nomVen}`
+                                :
+                                ''
+                        }
                     />
                 </div>
                 <div className='col-3 lg:w-10rem text-right bg-label'>
@@ -300,7 +324,15 @@ export function AddBudgetPage() {
                 </div>
                 <div className='lg:w-10rem'></div>
                 <div className='col-12 lg:col-10 flex justify-content-between'>
-                    <Button iconPos='right' icon='pi pi-search lg:text-base text-xs' label='Pedidos em Aberto' className='lg:text-base text-xs' />
+                    <Button iconPos='right' icon='pi pi-search lg:text-base text-xs' label='Pedidos em Aberto' className='lg:text-base text-xs'
+                        onClick={() => {
+                            console.log({
+                                transacoes: transactions,
+                                condPagamento: paymentConditions,
+                                tipoPagto: paymentTypes,
+                            })
+                        }}
+                    />
                     <Button iconPos='right' icon='pi pi-search lg:text-base text-xs' label='Titulos em Aberto' className='lg:text-base text-xs' />
                 </div>
                 <div className='col-3 lg:w-10rem text-right bg-label'>
@@ -328,7 +360,13 @@ export function AddBudgetPage() {
                 <div className='col-9 lg:col-4 flex align-items-center'>
                     <InputText
                         readOnly
-                        value={selectedClient && selectedClient.representante ? selectedClient.representante : undefined}
+                        value={
+                            selectedClient && selectedClient.nomRep && selectedClient.codRep
+                                ?
+                                `${selectedClient.codRep} - ${selectedClient.nomRep}`
+                                :
+                                ''
+                        }
                         className='w-full p-inputtext-sm'
                     />
                 </div>
@@ -558,7 +596,6 @@ export function AddBudgetPage() {
             <div className='w-full my-2'>
                 <Button
                     className='w-full p-button-raised'
-                    disabled={!selectedClient || !selectedTrasaction || !selectedConvenyor || !entrega ? true : false}
                     label={<span className='font-semibold'>Adicionar Item</span>}
                     onClick={() => setModalVisible(true)}
                 />

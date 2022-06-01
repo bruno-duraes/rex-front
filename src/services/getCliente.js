@@ -12,10 +12,18 @@ export default async function getCliente(consult) {
             "desCpg": "28",
             "codFpg": "1",
             "desFpg": "Duplicata",
+            "acePar": "S",
+            "emiCer": "N",
+            "emiPPA": "N",
+            "manSal": "N",
+            "codVen": "148",
+            "nomVen": "Joice Witte",
+            "codRep": "96",
+            "nomRep": "Marcos Estefani - Representacoes",
             "codTra": "0",
             "nomTra": "",
             "codTns": "90151",
-            "nomeTns": "Orçamento Comércio"
+            "nomeTns": "Orçamento Comercio"
         },
         {
             "codExterno": "50901",
@@ -25,10 +33,18 @@ export default async function getCliente(consult) {
             "desCpg": "28",
             "codFpg": "1",
             "desFpg": "Duplicata",
+            "acePar": "S",
+            "emiCer": "N",
+            "emiPPA": "N",
+            "manSal": "N",
+            "codVen": "142",
+            "nomVen": "Gabriela Cristina da Silva Costa",
+            "codRep": "191",
+            "nomRep": "Lilia Andreia de Oliveira ME",
             "codTra": "0",
             "nomTra": "",
             "codTns": "90150",
-            "nomeTns": "Orçamento Indústria"
+            "nomeTns": "Orçamento Industria"
         },
         {
             "codExterno": "5623",
@@ -38,10 +54,18 @@ export default async function getCliente(consult) {
             "desCpg": "28",
             "codFpg": "1",
             "desFpg": "Duplicata",
+            "acePar": "S",
+            "emiCer": "N",
+            "emiPPA": "N",
+            "manSal": "N",
+            "codVen": "147",
+            "nomVen": "Jassanan Aparecida Bonetti",
+            "codRep": "197",
+            "nomRep": "Guilherme Rech Bessi",
             "codTra": "0",
             "nomTra": "",
             "codTns": "90151",
-            "nomeTns": "Orçamento Comércio"
+            "nomeTns": "Orçamento Comercio"
         },
         {
             "codExterno": "11149",
@@ -51,10 +75,18 @@ export default async function getCliente(consult) {
             "desCpg": "28",
             "codFpg": "1",
             "desFpg": "Duplicata",
+            "acePar": "S",
+            "emiCer": "N",
+            "emiPPA": "N",
+            "manSal": "N",
+            "codVen": "138",
+            "nomVen": "Eliane Teske",
+            "codRep": "20",
+            "nomRep": "PTL Pecas Tecnicas Ltda",
             "codTra": "0",
             "nomTra": "",
             "codTns": "90150",
-            "nomeTns": "Orçamento Indústria"
+            "nomeTns": "Orçamento Industria"
         },
         {
             "codExterno": "11485",
@@ -64,10 +96,18 @@ export default async function getCliente(consult) {
             "desCpg": "28",
             "codFpg": "1",
             "desFpg": "Duplicata",
+            "acePar": "S",
+            "emiCer": "N",
+            "emiPPA": "N",
+            "manSal": "N",
+            "codVen": "147",
+            "nomVen": "Jassanan Aparecida Bonetti",
+            "codRep": "77",
+            "nomRep": "Claudiomar Gandorfo Representacoes Ltda ME",
             "codTra": "0",
             "nomTra": "",
             "codTns": "90151",
-            "nomeTns": "Orçamento Comércio"
+            "nomeTns": "Orçamento Comercio"
         },
         {
             "codExterno": "4724",
@@ -77,10 +117,18 @@ export default async function getCliente(consult) {
             "desCpg": "A Vista",
             "codFpg": "2",
             "desFpg": "Depósito",
+            "acePar": "N",
+            "emiCer": "N",
+            "emiPPA": "N",
+            "manSal": "N",
+            "codVen": "142",
+            "nomVen": "Gabriela Cristina da Silva Costa",
+            "codRep": "199",
+            "nomRep": "Vendas Diretas R2",
             "codTra": "0",
             "nomTra": "",
             "codTns": "90151",
-            "nomeTns": "Orçamento Comércio"
+            "nomeTns": "Orçamento Comercio"
         },
         {
             "codExterno": "16399",
@@ -90,10 +138,18 @@ export default async function getCliente(consult) {
             "desCpg": "30/60/90",
             "codFpg": "2",
             "desFpg": "Depósito",
+            "acePar": "N",
+            "emiCer": "N",
+            "emiPPA": "N",
+            "manSal": "N",
+            "codVen": "131",
+            "nomVen": "Abel Walzburger",
+            "codRep": "33",
+            "nomRep": "Richter Promocoes Ltda",
             "codTra": "0",
             "nomTra": "",
             "codTns": "90150",
-            "nomeTns": "Orçamento Indústria"
+            "nomeTns": "Orçamento Industria"
         },
         {
             "codExterno": "16517",
@@ -103,10 +159,18 @@ export default async function getCliente(consult) {
             "desCpg": "A Vista",
             "codFpg": "2",
             "desFpg": "Depósito",
+            "acePar": "N",
+            "emiCer": "N",
+            "emiPPA": "N",
+            "manSal": "N",
+            "codVen": "147",
+            "nomVen": "Jassanan Aparecida Bonetti",
+            "codRep": "77",
+            "nomRep": "Claudiomar Gandorfo Representacoes Ltda ME",
             "codTra": "0",
             "nomTra": "",
             "codTns": "90151",
-            "nomeTns": "Orçamento Comércio"
+            "nomeTns": "Orçamento Comercio"
         },
         {
             "codExterno": "17428",
@@ -116,10 +180,18 @@ export default async function getCliente(consult) {
             "desCpg": "30/60/90",
             "codFpg": "1",
             "desFpg": "Duplicata",
+            "acePar": "N",
+            "emiCer": "N",
+            "emiPPA": "N",
+            "manSal": "N",
+            "codVen": "138",
+            "nomVen": "Eliane Teske",
+            "codRep": "16",
+            "nomRep": "AP ZENATO SERVICOS ADMINISTRATIVOS LTDA - ME",
             "codTra": "3",
             "nomTra": "Rexfix Industria de Fixadores Metalicos LTDA",
             "codTns": "90150",
-            "nomeTns": "Orçamento Indústria"
+            "nomeTns": "Orçamento Industria"
         },
         {
             "codExterno": "17516",
@@ -129,10 +201,18 @@ export default async function getCliente(consult) {
             "desCpg": "A Vista",
             "codFpg": "2",
             "desFpg": "Depósito",
+            "acePar": "N",
+            "emiCer": "N",
+            "emiPPA": "N",
+            "manSal": "N",
+            "codVen": "",
+            "nomVen": "",
+            "codRep": "198",
+            "nomRep": "Vendas Direta R1 (RS/SC/PR)",
             "codTra": "0",
             "nomTra": "",
             "codTns": "90151",
-            "nomeTns": "Orçamento Comércio"
+            "nomeTns": "Orçamento Comercio"
         }
     ]
 
@@ -160,12 +240,12 @@ export default async function getCliente(consult) {
         redirect: 'follow'
     };
 
-    return mockData
-    // try {
-    //     let request = await fetch("https://rex.clicvenda.com.br/cvIntegradorSenior/rest/Listas/executarRequisicaoExterna", config)
-    //     let response = await request.json()
-    //     return response.resultado
-    // } catch (err) {
-    //     console.error({ message: 'Erro na requisição!', details: err })
-    // }
+    // return mockData
+    try {
+        let response = await fetch("https://rex.clicvenda.com.br/cvIntegradorSenior/rest/Listas/executarRequisicaoExterna", config);
+        let { resultado } = await response.json();
+        return resultado;
+    } catch (err) {
+        console.error({ message: 'Erro na requisição!', details: err })
+    }
 }

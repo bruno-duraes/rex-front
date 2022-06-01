@@ -1,37 +1,96 @@
 import { getLoggedUser } from "./getLoggedUser";
 
-export default async function getProdutos(consult) {
+export default async function getProdutos(consult, tipoBusca) {
     const loggedUser = await getLoggedUser();
 
     let mockData = [
         {
-            "nome": "Parafuso Sextavado Soberba Grau 2 RP    1/2 pol. X 70",
-            "codExterno": "10160221200030",
+            "nome": "Parafuso Autobrocante C/Arruela de Vedação Ponta N°1 Rosca Autoatarraxante    5,5 X 7/8 pol.",
+            "codExterno": "51040232000011",
+            "codRex": "13519",
             "codVariacao": "03",
+            "desVariacao": "Zincado Branco",
             "unimed": "CT",
-            "datEnt": "27/05/2022",
-            "qtdeEstoque": "30.50",
+            "datEnt": "01/06/2022",
+            "qtdeEstoque": "441.14",
+            "peso": "0.60",
+            "qtdEmbalagem": "2.00",
+            "codEmbalagem": "1",
+            "desEmbalagem": "Caixa(s)",
+            "clasFiscal": "73181400",
+            "curva": "A",
+            "ultimoPreco": "0.00",
             "codTpr": "2018",
             "msgErro": "",
             "tipoErro": "LIBERA",
-            "preco": "235.58",
-            "valorFaixa1": "200.59",
-            "valorFaixa2": "197.58",
-            "valorFaixa3": "194.61",
-            "valorFaixa4": "191.70",
+            "preco": "44.85",
+            "valorFaixa1": "27.50",
+            "valorFaixa2": "27.08",
+            "valorFaixa3": "26.68",
+            "valorFaixa4": "26.28",
             "depositos": [
                 {
-                    "deposito": "[004] - Depósito de Acabados",
-                    "estoque": "30,50",
+                    "codDeposito": "004",
+                    "nomDeposito": "Depósito de Acabados",
+                    "estoque": "441,14",
                     "reserva": "0,00",
                     "prefatura": "0,00",
-                    "disponivel": "30,50"
+                    "disponivel": "441,14"
                 }
             ],
             "acabamento": [
                 {
-                    "codigo": "61400",
-                    "derivacao": "[06] Zincado Preto",
+                    "codigo": "31012",
+                    "codDerivacao": "13",
+                    "desDerivacao": "Organo Metálico Grau A",
+                    "matriz": "48,00",
+                    "mg": "0,00",
+                    "consignado": "0,00",
+                    "resPedidos": "0,00",
+                    "resPreFat": "0,00",
+                    "disponivel": "48,00"
+                }
+            ]
+        },
+        {
+            "nome": "Parafuso Autobrocante C/Arruela de Vedação Ponta N°1 Rosca Autoatarraxante    6,3 X 7/8 pol.",
+            "codExterno": "51040232300011",
+            "codRex": "13520",
+            "codVariacao": "03",
+            "desVariacao": "Zincado Branco",
+            "unimed": "CT",
+            "datEnt": "01/06/2022",
+            "qtdeEstoque": "1426.44",
+            "peso": "0.65",
+            "qtdEmbalagem": "2.00",
+            "codEmbalagem": "1",
+            "desEmbalagem": "Caixa(s)",
+            "clasFiscal": "73181400",
+            "curva": "A",
+            "ultimoPreco": "0.00",
+            "codTpr": "2018",
+            "msgErro": "",
+            "tipoErro": "LIBERA",
+            "preco": "48.68",
+            "valorFaixa1": "29.84",
+            "valorFaixa2": "29.40",
+            "valorFaixa3": "28.96",
+            "valorFaixa4": "28.52",
+            "depositos": [
+                {
+                    "codDeposito": "004",
+                    "nomDeposito": "Depósito de Acabados",
+                    "estoque": "1.426,44",
+                    "reserva": "0,00",
+                    "prefatura": "1.000,00",
+                    "disponivel": "426,44"
+                }
+            ],
+            "acabamento": [
+                {
+                    "codigo": "31002",
+                    "codDerivacao": "13",
+                    "desDerivacao": "Organo Metálico Grau A",
                     "matriz": "0,00",
                     "mg": "0,00",
                     "consignado": "0,00",
@@ -42,275 +101,92 @@ export default async function getProdutos(consult) {
             ]
         },
         {
-            "nome": "Parafuso Sextavado Soberba Grau 2 RP    1/2 pol. X 75",
-            "codExterno": "10160221200031",
+            "nome": "Parafuso Autobrocante C/Arruela de Vedação Ponta N°3 Rosca Autoatarraxante    6,3 X 1.1/2 pol.",
+            "codExterno": "51040132300014",
+            "codRex": "13517",
             "codVariacao": "03",
+            "desVariacao": "Zincado Branco",
             "unimed": "CT",
-            "datEnt": "27/05/2022",
-            "qtdeEstoque": "17.50",
+            "datEnt": "01/07/2022",
+            "qtdeEstoque": "0.00",
+            "peso": "0.95",
+            "qtdEmbalagem": "2.00",
+            "codEmbalagem": "1",
+            "desEmbalagem": "Caixa(s)",
+            "clasFiscal": "73181400",
+            "curva": "A",
+            "ultimoPreco": "0.00",
             "codTpr": "2018",
             "msgErro": "",
             "tipoErro": "LIBERA",
-            "preco": "242.39",
-            "valorFaixa1": "206.39",
-            "valorFaixa2": "203.29",
-            "valorFaixa3": "200.24",
-            "valorFaixa4": "197.24",
+            "preco": "70.95",
+            "valorFaixa1": "43.50",
+            "valorFaixa2": "42.84",
+            "valorFaixa3": "42.20",
+            "valorFaixa4": "41.57",
             "depositos": [
                 {
-                    "deposito": "[004] - Depósito de Acabados",
-                    "estoque": "17,50",
-                    "reserva": "0,00",
-                    "prefatura": "0,00",
-                    "disponivel": "17,50"
-                }
-            ],
-            "acabamento": [
-                {
-                    "codigo": "62801",
-                    "derivacao": "[06] Zincado Preto",
-                    "matriz": "0,00",
-                    "mg": "0,00",
-                    "consignado": "0,00",
-                    "resPedidos": "0,00",
-                    "resPreFat": "0,00",
-                    "disponivel": "0,00"
-                }
-            ]
-        },
-        {
-            "nome": "Parafuso Sextavado Soberba Grau 2 RP    1/2 pol. X 80",
-            "codExterno": "10160221200032",
-            "codVariacao": "03",
-            "unimed": "CT",
-            "datEnt": "27/05/2022",
-            "qtdeEstoque": "10.50",
-            "codTpr": "2018",
-            "msgErro": "",
-            "tipoErro": "LIBERA",
-            "preco": "256.46",
-            "valorFaixa1": "218.37",
-            "valorFaixa2": "215.09",
-            "valorFaixa3": "211.86",
-            "valorFaixa4": "208.69",
-            "depositos": [
-                {
-                    "deposito": "[004] - Depósito de Acabados",
-                    "estoque": "10,50",
-                    "reserva": "0,00",
-                    "prefatura": "0,00",
-                    "disponivel": "10,50"
-                }
-            ],
-            "acabamento": [
-                {
-                    "codigo": "62803",
-                    "derivacao": "[06] Zincado Preto",
-                    "matriz": "0,00",
-                    "mg": "0,00",
-                    "consignado": "0,00",
-                    "resPedidos": "0,00",
-                    "resPreFat": "0,00",
-                    "disponivel": "0,00"
-                }
-            ]
-        },
-        {
-            "nome": "Parafuso Sextavado Metrico Classe 10.9 RP    MA 16 - 2.00 X 130",
-            "codExterno": "10030822413038",
-            "codVariacao": "02",
-            "unimed": "CT",
-            "datEnt": "27/05/2022",
-            "qtdeEstoque": "19.40",
-            "codTpr": "2018",
-            "msgErro": "Item fora de linha, vender somente o estoque",
-            "tipoErro": "AVISA",
-            "preco": "868.54",
-            "valorFaixa1": "771.70",
-            "valorFaixa2": "760.12",
-            "valorFaixa3": "748.72",
-            "valorFaixa4": "737.49",
-            "depositos": [
-                {
-                    "deposito": "[004] - Depósito de Acabados",
-                    "estoque": "19,40",
-                    "reserva": "0,00",
-                    "prefatura": "0,00",
-                    "disponivel": "19,40"
-                }
-            ],
-            "acabamento": [
-                {
-                    "codigo": "12067",
-                    "derivacao": "[25] Organo Metálico Grau A C/Selante Preto",
-                    "matriz": "0,00",
-                    "mg": "0,00",
-                    "consignado": "0,00",
-                    "resPedidos": "0,00",
-                    "resPreFat": "0,00",
-                    "disponivel": "0,00"
-                },
-                {
-                    "codigo": "82887",
-                    "derivacao": "[03] Zincado Branco",
-                    "matriz": "0,07",
-                    "mg": "0,00",
-                    "consignado": "0,00",
-                    "resPedidos": "0,00",
-                    "resPreFat": "0,00",
-                    "disponivel": "0,07"
-                }
-            ]
-        },
-        {
-            "nome": "Parafuso Sextavado Soberba Grau 2 RP    1/2 pol. X 90",
-            "codExterno": "10160221200034",
-            "codVariacao": "03",
-            "unimed": "CT",
-            "datEnt": "27/05/2022",
-            "qtdeEstoque": "19.00",
-            "codTpr": "2018",
-            "msgErro": "",
-            "tipoErro": "LIBERA",
-            "preco": "280.66",
-            "valorFaixa1": "238.97",
-            "valorFaixa2": "235.39",
-            "valorFaixa3": "231.86",
-            "valorFaixa4": "228.38",
-            "depositos": [
-                {
-                    "deposito": "[004] - Depósito de Acabados",
-                    "estoque": "19,00",
-                    "reserva": "0,00",
-                    "prefatura": "0,00",
-                    "disponivel": "19,00"
-                }
-            ],
-            "acabamento": [
-                {
-                    "codigo": "62808",
-                    "derivacao": "[06] Zincado Preto",
-                    "matriz": "0,00",
-                    "mg": "0,00",
-                    "consignado": "0,00",
-                    "resPedidos": "0,00",
-                    "resPreFat": "0,00",
-                    "disponivel": "0,00"
-                }
-            ]
-        },
-        {
-            "nome": "Parafuso Sextavado Soberba Grau 2 RP    1/2 pol. X 100",
-            "codExterno": "10160221200035",
-            "codVariacao": "03",
-            "unimed": "CT",
-            "datEnt": "27/05/2022",
-            "qtdeEstoque": "8.50",
-            "codTpr": "2018",
-            "msgErro": "",
-            "tipoErro": "LIBERA",
-            "preco": "305.99",
-            "valorFaixa1": "260.54",
-            "valorFaixa2": "256.63",
-            "valorFaixa3": "252.78",
-            "valorFaixa4": "248.99",
-            "depositos": [
-                {
-                    "deposito": "[004] - Depósito de Acabados",
-                    "estoque": "8,50",
-                    "reserva": "0,00",
-                    "prefatura": "0,00",
-                    "disponivel": "8,50"
-                }
-            ],
-            "acabamento": [
-                {
-                    "codigo": "62033",
-                    "derivacao": "[06] Zincado Preto",
-                    "matriz": "0,00",
-                    "mg": "0,00",
-                    "consignado": "0,00",
-                    "resPedidos": "0,00",
-                    "resPreFat": "0,00",
-                    "disponivel": "0,00"
-                }
-            ]
-        },
-        {
-            "nome": "Parafuso Sextavado Soberba Grau 2 RP    1/2 pol. X 110",
-            "codExterno": "10160221200036",
-            "codVariacao": "03",
-            "unimed": "CT",
-            "datEnt": "27/05/2022",
-            "qtdeEstoque": "10.00",
-            "codTpr": "2018",
-            "msgErro": "",
-            "tipoErro": "LIBERA",
-            "preco": "344.53",
-            "valorFaixa1": "293.35",
-            "valorFaixa2": "288.95",
-            "valorFaixa3": "284.62",
-            "valorFaixa4": "280.35",
-            "depositos": [
-                {
-                    "deposito": "[004] - Depósito de Acabados",
-                    "estoque": "10,00",
-                    "reserva": "0,00",
+                    "codDeposito": "004",
+                    "nomDeposito": "Depósito de Acabados",
+                    "estoque": "0,00",
+                    "reserva": "10,00",
                     "prefatura": "0,00",
                     "disponivel": "10,00"
                 }
             ],
             "acabamento": [
                 {
-                    "codigo": "62381",
-                    "derivacao": "[06] Zincado Preto",
-                    "matriz": "0,00",
+                    "codigo": "31000",
+                    "codDerivacao": "13",
+                    "desDerivacao": "Organo Metálico Grau A",
+                    "matriz": "254,00",
                     "mg": "0,00",
                     "consignado": "0,00",
                     "resPedidos": "0,00",
                     "resPreFat": "0,00",
-                    "disponivel": "0,00"
+                    "disponivel": "254,00"
                 }
             ]
         },
         {
-            "nome": "Parafuso Sextavado Soberba Grau 2 RP    1/2 pol. X 120",
-            "codExterno": "10160221200037",
+            "nome": "Parafuso Autobrocante C/Arruela de Vedação Ponta N°3 Rosca Autoatarraxante    6,3 X 1 pol.",
+            "codExterno": "51040132300012",
+            "codRex": "13516",
             "codVariacao": "03",
+            "desVariacao": "Zincado Branco",
             "unimed": "CT",
-            "datEnt": "27/05/2022",
-            "qtdeEstoque": "17.00",
+            "datEnt": "01/07/2022",
+            "qtdeEstoque": "404.30",
+            "peso": "0.71",
+            "qtdEmbalagem": "2.00",
+            "codEmbalagem": "1",
+            "desEmbalagem": "Caixa(s)",
+            "clasFiscal": "73181400",
+            "curva": "A",
+            "ultimoPreco": "0.00",
             "codTpr": "2018",
             "msgErro": "",
             "tipoErro": "LIBERA",
-            "preco": "375.31",
-            "valorFaixa1": "319.56",
-            "valorFaixa2": "314.77",
-            "valorFaixa3": "310.05",
-            "valorFaixa4": "305.40",
+            "preco": "53.10",
+            "valorFaixa1": "32.55",
+            "valorFaixa2": "32.07",
+            "valorFaixa3": "31.58",
+            "valorFaixa4": "31.11",
             "depositos": [
                 {
-                    "deposito": "[004] - Depósito de Acabados",
-                    "estoque": "17,00",
+                    "codDeposito": "004",
+                    "nomDeposito": "Depósito de Acabados",
+                    "estoque": "404,30",
                     "reserva": "0,00",
                     "prefatura": "0,00",
-                    "disponivel": "17,00"
+                    "disponivel": "404,30"
                 }
             ],
             "acabamento": [
                 {
-                    "codigo": "72393",
-                    "derivacao": "[07] Zincado a Fogo",
-                    "matriz": "0,00",
-                    "mg": "0,00",
-                    "consignado": "0,00",
-                    "resPedidos": "0,00",
-                    "resPreFat": "0,00",
-                    "disponivel": "0,00"
-                },
-                {
-                    "codigo": "62393",
-                    "derivacao": "[06] Zincado Preto",
+                    "codigo": "30973",
+                    "codDerivacao": "13",
+                    "desDerivacao": "Organo Metálico Grau A",
                     "matriz": "0,00",
                     "mg": "0,00",
                     "consignado": "0,00",
@@ -321,23 +197,273 @@ export default async function getProdutos(consult) {
             ]
         },
         {
-            "nome": "Parafuso Sextavado Metrico Classe 10.9 RP    MA 16 - 2.00 X 140",
-            "codExterno": "10030822413039",
-            "codVariacao": "02",
+            "nome": "Parafuso Autobrocante C/Arruela de Vedação Ponta N°3 Rosca Autoatarraxante    6,3 X 3/4 pol.",
+            "codExterno": "51040132300010",
+            "codRex": "13515",
+            "codVariacao": "03",
+            "desVariacao": "Zincado Branco",
             "unimed": "CT",
-            "datEnt": "26/06/2022",
+            "datEnt": "01/07/2022",
             "qtdeEstoque": "0.00",
+            "peso": "0.60",
+            "qtdEmbalagem": "2.00",
+            "codEmbalagem": "1",
+            "desEmbalagem": "Caixa(s)",
+            "clasFiscal": "73181400",
+            "curva": "A",
+            "ultimoPreco": "0.00",
+            "codTpr": "2018",
+            "msgErro": "",
+            "tipoErro": "LIBERA",
+            "preco": "45.30",
+            "valorFaixa1": "27.77",
+            "valorFaixa2": "27.36",
+            "valorFaixa3": "26.94",
+            "valorFaixa4": "26.54",
+            "depositos": [
+                {
+                    "codDeposito": "004",
+                    "nomDeposito": "Depósito de Acabados",
+                    "estoque": "0,00",
+                    "reserva": "0,00",
+                    "prefatura": "0,00",
+                    "disponivel": "0,00"
+                }
+            ],
+            "acabamento": [
+                {
+                    "codigo": "30971",
+                    "codDerivacao": "13",
+                    "desDerivacao": "Organo Metálico Grau A",
+                    "matriz": "0,00",
+                    "mg": "0,00",
+                    "consignado": "0,00",
+                    "resPedidos": "0,00",
+                    "resPreFat": "0,00",
+                    "disponivel": "0,00"
+                }
+            ]
+        },
+        {
+            "nome": "Parafuso Autobrocante C/Arruela de Vedação Ponta N°3 Rosca Autoatarraxante    5,5 X 2 pol.",
+            "codExterno": "51040132000016",
+            "codRex": "12672",
+            "codVariacao": "03",
+            "desVariacao": "Zincado Branco",
+            "unimed": "CT",
+            "datEnt": "01/07/2022",
+            "qtdeEstoque": "176.00",
+            "peso": "0.88",
+            "qtdEmbalagem": "2.00",
+            "codEmbalagem": "1",
+            "desEmbalagem": "Caixa(s)",
+            "clasFiscal": "73181400",
+            "curva": "A",
+            "ultimoPreco": "0.00",
+            "codTpr": "2018",
+            "msgErro": "",
+            "tipoErro": "LIBERA",
+            "preco": "66.30",
+            "valorFaixa1": "40.65",
+            "valorFaixa2": "40.04",
+            "valorFaixa3": "39.44",
+            "valorFaixa4": "38.84",
+            "depositos": [
+                {
+                    "codDeposito": "004",
+                    "nomDeposito": "Depósito de Acabados",
+                    "estoque": "176,00",
+                    "reserva": "0,00",
+                    "prefatura": "0,00",
+                    "disponivel": "176,00"
+                }
+            ],
+            "acabamento": [
+                {
+                    "codigo": "31011",
+                    "codDerivacao": "13",
+                    "desDerivacao": "Organo Metálico Grau A",
+                    "matriz": "0,00",
+                    "mg": "0,00",
+                    "consignado": "0,00",
+                    "resPedidos": "0,00",
+                    "resPreFat": "0,00",
+                    "disponivel": "0,00"
+                }
+            ]
+        },
+        {
+            "nome": "Parafuso Autobrocante C/Arruela de Vedação Ponta N°3 Rosca Autoatarraxante    5,5 X 1.1/2 pol.",
+            "codExterno": "51040132000014",
+            "codRex": "12671",
+            "codVariacao": "03",
+            "desVariacao": "Zincado Branco",
+            "unimed": "CT",
+            "datEnt": "01/07/2022",
+            "qtdeEstoque": "562.00",
+            "peso": "0.74",
+            "qtdEmbalagem": "2.00",
+            "codEmbalagem": "1",
+            "desEmbalagem": "Caixa(s)",
+            "clasFiscal": "73181400",
+            "curva": "A",
+            "ultimoPreco": "0.00",
+            "codTpr": "2018",
+            "msgErro": "",
+            "tipoErro": "LIBERA",
+            "preco": "55.58",
+            "valorFaixa1": "34.07",
+            "valorFaixa2": "33.56",
+            "valorFaixa3": "33.06",
+            "valorFaixa4": "32.56",
+            "depositos": [
+                {
+                    "codDeposito": "004",
+                    "nomDeposito": "Depósito de Acabados",
+                    "estoque": "562,00",
+                    "reserva": "0,00",
+                    "prefatura": "0,00",
+                    "disponivel": "562,00"
+                }
+            ],
+            "acabamento": [
+                {
+                    "codigo": "31010",
+                    "codDerivacao": "13",
+                    "desDerivacao": "Organo Metálico Grau A",
+                    "matriz": "0,00",
+                    "mg": "0,00",
+                    "consignado": "0,00",
+                    "resPedidos": "0,00",
+                    "resPreFat": "0,00",
+                    "disponivel": "0,00"
+                }
+            ]
+        },
+        {
+            "nome": "Parafuso Autobrocante C/Arruela de Vedação Ponta N°3 Rosca Autoatarraxante    5,5 X 1 pol.",
+            "codExterno": "51040132000012",
+            "codRex": "12670",
+            "codVariacao": "03",
+            "desVariacao": "Zincado Branco",
+            "unimed": "CT",
+            "datEnt": "01/07/2022",
+            "qtdeEstoque": "818.21",
+            "peso": "0.64",
+            "qtdEmbalagem": "2.00",
+            "codEmbalagem": "1",
+            "desEmbalagem": "Caixa(s)",
+            "clasFiscal": "73181400",
+            "curva": "A",
+            "ultimoPreco": "0.00",
+            "codTpr": "2018",
+            "msgErro": "",
+            "tipoErro": "LIBERA",
+            "preco": "44.85",
+            "valorFaixa1": "27.50",
+            "valorFaixa2": "27.08",
+            "valorFaixa3": "26.68",
+            "valorFaixa4": "26.28",
+            "depositos": [
+                {
+                    "codDeposito": "004",
+                    "nomDeposito": "Depósito de Acabados",
+                    "estoque": "818,21",
+                    "reserva": "0,00",
+                    "prefatura": "0,00",
+                    "disponivel": "818,21"
+                }
+            ],
+            "acabamento": [
+                {
+                    "codigo": "31009",
+                    "codDerivacao": "13",
+                    "desDerivacao": "Organo Metálico Grau A",
+                    "matriz": "1,20",
+                    "mg": "0,00",
+                    "consignado": "0,00",
+                    "resPedidos": "0,00",
+                    "resPreFat": "0,00",
+                    "disponivel": "1,20"
+                }
+            ]
+        },
+        {
+            "nome": "Parafuso Autobrocante C/Arruela de Vedação Ponta N°3 Rosca Autoatarraxante    5,5 X 3/4 pol.",
+            "codExterno": "51040132000010",
+            "codRex": "12669",
+            "codVariacao": "03",
+            "desVariacao": "Zincado Branco",
+            "unimed": "CT",
+            "datEnt": "01/07/2022",
+            "qtdeEstoque": "101.76",
+            "peso": "0.52",
+            "qtdEmbalagem": "2.00",
+            "codEmbalagem": "1",
+            "desEmbalagem": "Caixa(s)",
+            "clasFiscal": "73181400",
+            "curva": "A",
+            "ultimoPreco": "0.00",
+            "codTpr": "2018",
+            "msgErro": "",
+            "tipoErro": "LIBERA",
+            "preco": "39.15",
+            "valorFaixa1": "24.00",
+            "valorFaixa2": "23.64",
+            "valorFaixa3": "23.29",
+            "valorFaixa4": "22.94",
+            "depositos": [
+                {
+                    "codDeposito": "004",
+                    "nomDeposito": "Depósito de Acabados",
+                    "estoque": "101,76",
+                    "reserva": "0,00",
+                    "prefatura": "0,00",
+                    "disponivel": "101,76"
+                }
+            ],
+            "acabamento": [
+                {
+                    "codigo": "31008",
+                    "codDerivacao": "13",
+                    "desDerivacao": "Organo Metálico Grau A",
+                    "matriz": "0,00",
+                    "mg": "0,00",
+                    "consignado": "0,00",
+                    "resPedidos": "0,00",
+                    "resPreFat": "0,00",
+                    "disponivel": "0,00"
+                }
+            ]
+        },
+        {
+            "nome": "Parafuso Flangeado Esferico Classe 10.9    MB 14 - 1.50 X 18.5",
+            "codExterno": "11260802311082",
+            "codRex": "88353",
+            "codVariacao": "03",
+            "desVariacao": "Zincado Branco",
+            "unimed": "CT",
+            "datEnt": "01/07/2022",
+            "qtdeEstoque": "0.00",
+            "peso": "6.20",
+            "qtdEmbalagem": "0.50",
+            "codEmbalagem": "1",
+            "desEmbalagem": "Caixa(s)",
+            "clasFiscal": "73181400",
+            "curva": "A",
+            "ultimoPreco": "0.00",
             "codTpr": "2018",
             "msgErro": "Item fora de linha, vender somente o estoque",
             "tipoErro": "AVISA",
-            "preco": "937.49",
-            "valorFaixa1": "832.96",
-            "valorFaixa2": "820.47",
-            "valorFaixa3": "808.16",
-            "valorFaixa4": "796.04",
+            "preco": "527.00",
+            "valorFaixa1": "323.09",
+            "valorFaixa2": "318.24",
+            "valorFaixa3": "313.47",
+            "valorFaixa4": "308.76",
             "depositos": [
                 {
-                    "deposito": "[004] - Depósito de Acabados",
+                    "codDeposito": "004",
+                    "nomDeposito": "Depósito de Acabados",
                     "estoque": "0,00",
                     "reserva": "0,00",
                     "prefatura": "0,00",
@@ -345,53 +471,6 @@ export default async function getProdutos(consult) {
                 }
             ],
             "acabamento": []
-        },
-        {
-            "nome": "Parafuso Sextavado Metrico Classe 10.9 RP    MA 16 - 2.00 X 160",
-            "codExterno": "10030822413041",
-            "codVariacao": "02",
-            "unimed": "CT",
-            "datEnt": "26/06/2022",
-            "qtdeEstoque": "0.00",
-            "codTpr": "2018",
-            "msgErro": "Item fora de linha, vender somente o estoque",
-            "tipoErro": "AVISA",
-            "preco": "1088.33",
-            "valorFaixa1": "966.98",
-            "valorFaixa2": "952.48",
-            "valorFaixa3": "938.19",
-            "valorFaixa4": "924.12",
-            "depositos": [
-                {
-                    "deposito": "[004] - Depósito de Acabados",
-                    "estoque": "0,00",
-                    "reserva": "0,00",
-                    "prefatura": "0,00",
-                    "disponivel": "0,00"
-                }
-            ],
-            "acabamento": [
-                {
-                    "codigo": "12039",
-                    "derivacao": "[25] Organo Metálico Grau A C/Selante Preto",
-                    "matriz": "11,00",
-                    "mg": "0,00",
-                    "consignado": "0,00",
-                    "resPedidos": "0,00",
-                    "resPreFat": "0,00",
-                    "disponivel": "11,00"
-                },
-                {
-                    "codigo": "28955",
-                    "derivacao": "[03] Zincado Branco",
-                    "matriz": "0,00",
-                    "mg": "0,00",
-                    "consignado": "0,00",
-                    "resPedidos": "0,00",
-                    "resPreFat": "0,00",
-                    "disponivel": "0,00"
-                }
-            ]
         }
     ]
 
@@ -406,7 +485,8 @@ export default async function getProdutos(consult) {
             pCodCli: loggedUser.rId,
             pFilter: {
                 filtro: {
-                    filtroProd: consult
+                    filtroProd: consult,
+                    tipoBusca: tipoBusca
                 }
             }
         }
@@ -418,8 +498,7 @@ export default async function getProdutos(consult) {
         body: raw,
         redirect: 'follow'
     };
-
-    return mockData
+    // return mockData
     try {
         let response = await fetch("https://rex.clicvenda.com.br/cvIntegradorSenior/rest/Listas/executarRequisicaoExterna", config)
         let { resultado } = await response.json();

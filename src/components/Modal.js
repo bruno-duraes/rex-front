@@ -27,11 +27,11 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
     const [pedidoOrdem, setPedidoOrdem] = useState('');
     const [sequency, setSequency] = useState('');
     const [codProCli, setCodProCli] = useState('');
-    const [selectedTransaction, setSelectedTransaction] = useState(transaction);
+    const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [transactions, setTransactions] = useState([]);
     const [note, setNote] = useState('');
     const [lastProduct, setLastProduct] = useState('');
-    const [filterCod, setFilterCod] = useState('codigoRex');
+    const [filterCod, setFilterCod] = useState('codRex');
     const [selectedDeposit, setSelectedDeposit] = useState(null);
     const toast = useRef(null);
     const item = useRef(null);
@@ -40,6 +40,8 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
     // Inicialização
     useEffect(() => {
         getTransacoes('').then(data => setTransactions(data));
+        console.log(transaction);
+        setSelectedTransaction(transaction);
     }, [])
 
     useEffect(() => {
@@ -87,9 +89,23 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
         // setVisible(false);
         resetModal();
     }
+
     function searchItem(e) {
-        getProdutos(e.query).then(data => setFilteredItems(data))
+        let tipoBusca = filterCod == 'codRex' ? 'R' : '';
+        getProdutos(e.query, tipoBusca).then(data => {
+            if (data.length > 0) {
+                if (tipoBusca == 'R') {
+                    setFilteredItems(data);
+                } else {
+                    data.map(({ codExterno, codVariacao }) => data.filtro = `${codExterno}-${codVariacao}`);
+                    setFilteredItems(data);
+                }
+            } else {
+                toast.current.show({ severity: 'warn', summary: 'Nenhum Produto Encontrado!', life: 5000 });
+            }
+        });
     }
+
     return (
         <>
             <Toast ref={toast} position='bottom-right' />
@@ -105,17 +121,17 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                         <RadioButton
                             inputId='codigo-rex'
                             name='filter-cod'
-                            value={'codigoRex'}
+                            value={'codRex'}
                             onChange={e => setFilterCod(e.value)}
-                            checked={filterCod == 'codigoRex'}
+                            checked={filterCod == 'codRex'}
                             className='mr-1 cursor-pointer'
                         />
                         <label className='cursor-pointer' htmlFor='codigo-rex'>Código Rex</label>
                         <RadioButton
                             name='filter-code'
-                            value={'codigoCliente'}
+                            value={'codExterno'}
                             onChange={e => setFilterCod(e.value)}
-                            checked={filterCod == 'codigoCliente'}
+                            checked={filterCod == 'codExterno'}
                             inputId='codigo-cliente'
                             className='ml-2 mr-1'
                         />
@@ -143,7 +159,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 value={selectedItem}
                                 suggestions={filteredItems}
                                 completeMethod={searchItem}
-                                field={filterCod == 'codigoRex' ? 'codExterno' : filterCod == 'codigoCliente' ? 'codExterno' : undefined}
+                                field={filterCod == 'codRex' ? 'codRex' : 'filtro'}
                                 onChange={e => setSelectedItem(e.value)}
                                 id='selectItem'
                                 className='w-full'
@@ -325,7 +341,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 readOnly
                                 maxFractionDigits={2}
                                 minFractionDigits={2}
-                                value={selectedItem && selectedItem.peso_bruto && quantity ? quantity * selectedItem.peso_bruto : null}
+                                value={selectedItem && selectedItem.peso && quantity ? quantity * selectedItem.peso : null}
                             />
                         </div>
                         <div className=' col-6 lg:w-5rem px-0'>
@@ -406,7 +422,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     <InputText
                                         readOnly
                                         className='w-full p-inputtext-sm '
-                                        value={selectedItem && selectedItem.codigoRex ? selectedItem.codigoRex : ''}
+                                        value={selectedItem && selectedItem.codRex ? selectedItem.codRex : ''}
                                     />
                                 </div>
                                 <div className='col-3 lg:col-1 text-right'>
@@ -416,7 +432,13 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     <InputText
                                         readOnly
                                         className='w-full p-inputtext-sm'
-                                        value={selectedItem && selectedItem.codExterno ? selectedItem.codExterno : ''}
+                                        value={
+                                            selectedItem && selectedItem.codExterno
+                                                ?
+                                                `${selectedItem.codExterno}-${selectedItem.codVariacao}`
+                                                :
+                                                ''
+                                        }
                                     />
                                 </div>
                                 <div className='col-3 lg:col-1 text-right'>
@@ -431,7 +453,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         suffix='kg'
                                         maxFractionDigits={2}
                                         minFractionDigits={2}
-                                        value={selectedItem && selectedItem.peso_bruto ? selectedItem.peso_bruto : ''}
+                                        value={selectedItem && selectedItem.peso ? selectedItem.peso : ''}
                                     />
                                 </div>
                                 <div className='col-3 lg:col-1 text-right'>
@@ -470,7 +492,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         mode='decimal'
                                         maxFractionDigits={2}
                                         minFractionDigits={2}
-                                        value={selectedItem && selectedItem.qtia_embalada ? selectedItem.qtia_embalada : ''}
+                                        value={selectedItem && selectedItem.qtdEmbalagem ? selectedItem.qtdEmbalagem : ''}
                                     />
                                 </div>
                                 <div className='col-3 lg:col-1 text-right'>
@@ -481,7 +503,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         readOnly
                                         id='itemDerivacao'
                                         className='w-full p-inputtext-sm'
-                                        value={selectedItem && selectedItem.derivacao ? selectedItem.derivacao : ''}
+                                        value={selectedItem && selectedItem.desVariacao ? selectedItem.desVariacao : ''}
                                     />
                                 </div>
                                 <div className='col-3 lg:col-1 text-right'>
@@ -492,7 +514,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         readOnly
                                         id='itemEmbalagem'
                                         className='w-full p-inputtext-sm'
-                                        value={selectedItem && selectedItem.embalagem ? selectedItem.embalagem : ''}
+                                        value={selectedItem && selectedItem.desEmbalagem ? selectedItem.desEmbalagem : ''}
                                     />
                                 </div>
                                 <div className='col-5 lg:col-2 text-right'>
@@ -503,7 +525,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                         readOnly
                                         id='itemClassFiscal'
                                         className='w-full p-inputtext-sm'
-                                        value={selectedItem && selectedItem.class_fiscal ? selectedItem.class_fiscal : ''}
+                                        value={selectedItem && selectedItem.clasFiscal ? selectedItem.clasFiscal : ''}
                                     />
                                 </div>
                             </div>
@@ -528,13 +550,21 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     className='mb-3 tabela'
                     value={selectedItem && selectedItem.depositos ? selectedItem.depositos : null}
                 >
-                    <Column field='dep' headerClassName='text-700 text-sm' header='Dep' />
-                    <Column field='cod' headerClassName='text-700 text-sm' header='Cod' />
+                    <Column field='codDeposito' headerClassName='text-700 text-sm' header='Cod' />
+                    <Column field='nomDeposito' headerClassName='text-700 text-sm' header='Dep' />
                     <Column field='estoque' headerClassName='text-700 text-sm' header='Estoque' />
-                    <Column field='resPedidos' headerClassName='text-700 text-sm' header='Res. Pedidos' />
-                    <Column field='resPreFatura' headerClassName='text-700 text-sm' header='Res. Pré-Fatura' />
-                    <Column field='totalOP' headerClassName='text-700 text-sm' header='Total em OP' />
-                    <Column field='saldo' headerClassName='text-700 text-sm' body={({ saldo }) => <span style={{ color: `${saldo <= 0 ? 'red' : null}` }}>{saldo}</span>} header='Saldo' />
+                    <Column field='reserva' headerClassName='text-700 text-sm' header='Res. Pedidos' />
+                    <Column field='prefatura' headerClassName='text-700 text-sm' header='Res. Pré-Fatura' />
+                    <Column field='disponivel' headerClassName='text-700 text-sm' header='Total em OP' />
+                    <Column headerClassName='text-700 text-sm' header='Saldo' body={({ estoque, reserva, prefatura }) => {
+                        let saldo = parseFloat(estoque.replace(',', '.')) + parseFloat(reserva.replace(',', '.')) + parseFloat(prefatura.replace(',', '.'));
+                        return (
+                            <span style={{ color: `${saldo <= 0 ? 'red' : null}` }}>
+                                {saldo}
+                            </span>
+                        )
+                    }}
+                    />
                 </DataTable>
 
                 <DataTable
@@ -548,13 +578,13 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     value={selectedItem && selectedItem.acabamento ? selectedItem.acabamento : null}
                     responsiveLayout='stack' >
                     <Column headerClassName='text-700 text-sm' field='codigo' header='Ref' />
-                    <Column headerClassName='text-700 text-sm' field='derivacao' header='Acabamento' />
+                    <Column headerClassName='text-700 text-sm' field='desDerivacao' header='Acabamento' />
                     <Column headerClassName='text-700 text-sm' field='disponivel' header='Total Disponível' />
-                    <Column headerClassName='text-700 text-sm' field='' header='Estoque Terceiros' />
+                    <Column headerClassName='text-700 text-sm' field='mg' header='Estoque Terceiros' />
                     <Column headerClassName='text-700 text-sm' field='resPedidos' header='Total Pedidos' />
                     <Column headerClassName='text-700 text-sm' field='resPreFat' header='Total Pré-Faturas' />
-                    <Column headerClassName='text-700 text-sm' field='matriz' header='Total Ordens' />
-                    <Column headerClassName='text-700 text-sm' field='disponivel' header='Estoque SC' />
+                    <Column headerClassName='text-700 text-sm' field='disponivel' header='Total Ordens' />
+                    <Column headerClassName='text-700 text-sm' field='matriz' header='Estoque SC' />
                 </DataTable>
 
                 <DataTable
