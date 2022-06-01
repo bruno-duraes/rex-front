@@ -40,9 +40,8 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
     // Inicialização
     useEffect(() => {
         getTransacoes('').then(data => setTransactions(data));
-        console.log(transaction);
         setSelectedTransaction(transaction);
-    }, [])
+    }, [visible, transaction])
 
     useEffect(() => {
         setDateDelivery(deadline);
@@ -160,7 +159,14 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 suggestions={filteredItems}
                                 completeMethod={searchItem}
                                 field={filterCod == 'codRex' ? 'codRex' : 'filtro'}
-                                onChange={e => setSelectedItem(e.value)}
+                                onChange={(e) => {
+                                    setSelectedItem(e.value)
+                                    if (selectedItem.depositos) {
+                                        setSelectedDeposit(
+                                            selectedItem.depositos.filter(({ codDeposito }) => codDeposito == '004')[0]
+                                        );
+                                    }
+                                }}
                                 id='selectItem'
                                 className='w-full'
                                 inputClassName={`w-full p-inputtext-sm p-1 ${validation.item}`}
@@ -412,7 +418,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     <InputText
                                         readOnly
                                         className='w-full p-inputtext-sm text-base '
-                                        value={selectedItem && selectedItem.nome ? selectedItem.nome : undefined}
+                                        value={selectedItem && selectedItem.nome ? selectedItem.nome : ''}
                                     />
                                 </div>
                                 <div className='col-3 lg:col-1 text-right text-xs'>
@@ -559,7 +565,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     <Column headerClassName='text-700 text-sm' header='Saldo' body={({ estoque, reserva, prefatura }) => {
                         let saldo = parseFloat(estoque.replace(',', '.')) + parseFloat(reserva.replace(',', '.')) + parseFloat(prefatura.replace(',', '.'));
                         return (
-                            <span style={{ color: `${saldo <= 0 ? 'red' : null}` }}>
+                            <span style={{ color: `${saldo <= 0 ? 'red' : ''}` }}>
                                 {saldo}
                             </span>
                         )
@@ -574,7 +580,12 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     selectionMode='single'
                     className='tabela'
                     selection={selectedItemFinish}
-                    onSelectionChange={e => setSelectedItemFinish(e.value)}
+                    onSelectionChange={async (e) => {
+                        setSelectedItemFinish(e.value);
+                        let produtos = await getProdutos(e.value.codigo, 'R');
+                        setSelectedItem(produtos[0])
+                        console.log(produtos, selectedItem)
+                    }}
                     value={selectedItem && selectedItem.acabamento ? selectedItem.acabamento : null}
                     responsiveLayout='stack' >
                     <Column headerClassName='text-700 text-sm' field='codigo' header='Ref' />

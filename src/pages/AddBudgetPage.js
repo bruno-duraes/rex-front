@@ -232,7 +232,7 @@ export function AddBudgetPage() {
                 setVisible={setModalVisible}
                 budgetItems={products}
                 setBudgetItems={setProducts}
-                clientName={selectedClient ? selectedClient.name : undefined}
+                clientName={selectedClient ? selectedClient.nome : undefined}
                 deadline={entrega ? entrega : null}
                 transaction={selectedTrasaction}
             />
