@@ -12,7 +12,6 @@ import { Toast } from 'primereact/toast';
 import { useEffect, useRef, useState } from 'react';
 import getProdutos from '../services/getProdutos';
 import getTransacoes from '../services/getTransacoes';
-import { dateISOLocale } from '../utils/dateISOLocale';
 import { Datepicker } from './Datepicker';
 import { RequiredFlag } from './RequiredFlag';
 
@@ -48,44 +47,40 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
     }, [deadline])
 
     function resetModal() {
-        setFaixa(null);
-        setDepPadrao(false);
-        setDepCliente(false)
-        // setDateDelivery(null);
-        setSelectedItemFinish(null);
         setSelectedItem(null);
+        setFaixa(null);
+        setFaixaSol(null)
         setQuantity(null);
+        // setSelectedItemFinish(null);
     }
 
-    function addItem() {
+    async function addItem() {
         const item = {
-            codigo: selectedItem.codigoRex,
-            descricao: selectedItem.descricacao,
+            codExterno: selectedItem.codExterno,
+            codTpr: selectedItem.codTpr,
+            codVariacao: selectedItem.codVariacao,
+            descricao: selectedItem.nome,
+            estoque: selectedDeposit.disponivel,
+            hashDoc: '',
+            opcaoDescAcresc: note,
+            precoTabela: parseFloat(selectedItem.preco),
+            prevEntregaItem: dateDelivery.toLocaleDateString('pt-BR'),
             quantidade: quantity,
-            un: selectedItem.un,
-            precoBruto: selectedItem.preco_bruto,
-            precoFinal: selectedItem.preco_bruto,
-            totalProduto: (quantity * faixa).toFixed(2),
-            peso: selectedItem.peso_bruto,
-            media: (selectedItem.peso_bruto * quantity).toFixed(2),
-            faixaSelecionada: faixa == 'solicitado' ? faixaSol : faixa,
-            acabamentoSelecionado: selectedItemFinish,
-            data: dateISOLocale(new Date(selectedItem.data.split('/').reverse().join('/'))),
-            entrega: dateDelivery ? dateISOLocale(dateDelivery) : null,
-            pedidoOrdem: pedidoOrdem,
-            sequencia: sequency,
-            codProCli: codProCli,
-            transacao: selectedTransaction.label,
-            observacao: note,
-            deposito: selectedDeposit,
-            itemSelecionado: selectedItem
+            unidMedida: selectedItem.unimed,
+            valorFaixa: faixa == 'solicitado' ? parseFloat(faixaSol) : parseFloat(faixa),
+            valorFaixa1: parseFloat(selectedItem.valorFaixa1),
+            valorFaixa2: parseFloat(selectedItem.valorFaixa2),
+            valorFaixa3: parseFloat(selectedItem.valorFaixa3),
+            valorFaixa4: parseFloat(selectedItem.valorFaixa4),
+            valorNegociado: !faixaSol ? 0 : parseFloat(faixaSol),
+            valorTotalItem: quantity * (faixa == 'solicitado' ? faixaSol : faixa),
+            item: {
+                ...selectedItem
+            }
         };
-        let budgetItemsCopy = Array.from(budgetItems);
-        budgetItemsCopy.push(item);
-        setBudgetItems(budgetItemsCopy);
-        setLastProduct(selectedItem.codigoRex);
-        toast.current.show({ severity: 'success', summary: 'Produto Adicionado!', detail: `Código do Produto N°${selectedItem.codigoRex}`, life: 5000 });
-        // setVisible(false);
+        setBudgetItems((state) => ([...state, item]));
+        setLastProduct(selectedItem.codRex);
+        toast.current.show({ severity: 'success', summary: 'Produto Adicionado!', detail: `Código do Produto N°${selectedItem.codRex}`, life: 5000 });
         resetModal();
     }
 
@@ -102,8 +97,15 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
             } else {
                 toast.current.show({ severity: 'warn', summary: 'Nenhum Produto Encontrado!', life: 5000 });
             }
-        });
+        }).catch((e) => console.error(e));
     }
+
+    useEffect(() => {
+        if (selectedItem && selectedItem.depositos) {
+            let depDefault = selectedItem.depositos.filter(({ codDeposito }) => codDeposito == '004')[0]
+            setSelectedDeposit(depDefault)
+        }
+    }, [selectedItem])
 
     return (
         <>
@@ -159,14 +161,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 suggestions={filteredItems}
                                 completeMethod={searchItem}
                                 field={filterCod == 'codRex' ? 'codRex' : 'filtro'}
-                                onChange={(e) => {
-                                    setSelectedItem(e.value)
-                                    if (selectedItem.depositos) {
-                                        setSelectedDeposit(
-                                            selectedItem.depositos.filter(({ codDeposito }) => codDeposito == '004')[0]
-                                        );
-                                    }
-                                }}
+                                onChange={(e) => setSelectedItem(e.value)}
                                 id='selectItem'
                                 className='w-full'
                                 inputClassName={`w-full p-inputtext-sm p-1 ${validation.item}`}
@@ -606,17 +601,17 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     value={budgetItems}
                 >
                     <Column headerClassName='text-700 text-sm' body={(_, { rowIndex }) => rowIndex + 1} header='Seq'></Column>
-                    <Column headerClassName='text-700 text-sm' field='codigo' header='Cod'></Column>
+                    <Column headerClassName='text-700 text-sm' field='item.codRex' header='Cod'></Column>
                     <Column headerClassName='text-700 text-sm' field='descricao' header='Descrição'></Column>
                     <Column headerClassName='text-700 text-sm' field='quantidade' header='Quantia'></Column>
-                    <Column headerClassName='text-700 text-sm' field='un' header='UN'></Column>
-                    <Column headerClassName='text-700 text-sm' field='precoBruto' header='Preço Bruto' body={({ precoBruto }) => precoBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
-                    <Column headerClassName='text-700 text-sm' field='precoFinal' header='Preço Final' body={({ precoFinal }) => precoFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
-                    <Column headerClassName='text-700 text-sm' field='totalProduto' body={({ totalProduto }) => parseFloat(totalProduto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} header='Tot Produto'></Column>
-                    <Column headerClassName='text-700 text-sm' field='peso' header='Peso'></Column>
-                    <Column headerClassName='text-700 text-sm' field='media' header='Média'></Column>
-                    <Column headerClassName='text-700 text-sm' field='apro_ger' header='Apro. Ger'></Column>
-                    <Column headerClassName='text-700 text-sm' field='apro_dir' header='Apro. Dir'></Column>
+                    <Column headerClassName='text-700 text-sm' field='unidMedida' header='UN'></Column>
+                    <Column headerClassName='text-700 text-sm' field='precoTabela' header='Preço Bruto' body={({ precoTabela }) => precoTabela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
+                    <Column headerClassName='text-700 text-sm' field='valorFaixa' header='Preço Final' body={({ valorFaixa }) => valorFaixa.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
+                    <Column headerClassName='text-700 text-sm' field='valorTotalItem' body={({ valorTotalItem }) => valorTotalItem.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} header='Tot Produto'></Column>
+                    <Column headerClassName='text-700 text-sm' field='item.peso' header='Peso'></Column>
+                    <Column headerClassName='text-700 text-sm' body={({ quantidade, item }) => (quantidade * item.peso).toFixed(2)} header='Média'></Column>
+                    <Column headerClassName='text-700 text-sm' header='Apro. Ger'></Column>
+                    <Column headerClassName='text-700 text-sm' header='Apro. Dir'></Column>
                 </DataTable>
             </Sidebar>
         </>

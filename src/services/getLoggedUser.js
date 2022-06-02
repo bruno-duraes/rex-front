@@ -1,5 +1,5 @@
 export async function getLoggedUser() {
-    // let dadosUserLogado = parent.dadosUserLogadoPersonalizado();
+    let dadosUserLogado = parent.dadosUserLogadoPersonalizado();
     let mockData = {
         "cNome": "Industrial Rex",
         "cTitulo": "Rex",
@@ -207,5 +207,5 @@ export async function getLoggedUser() {
         "cContextIntegracao": "/cvIntegradorSenior",
         "cSubdominio": "rex"
     }
-    return mockData;
+    return dadosUserLogado;
 }

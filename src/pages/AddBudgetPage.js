@@ -22,21 +22,9 @@ import { getLoggedUser } from '../services/getLoggedUser';
 import getTiposPagto from '../services/getTiposPagto';
 import getTransacoes from '../services/getTransacoes';
 import getTransportadoras from '../services/getTransportadoras';
-import { dateISOLocale } from '../utils/dateISOLocale';
 import { ConsultPage } from './ConsultPage';
 
 export function AddBudgetPage() {
-    const currencies = [
-        { name: '1 - Real | R$' },
-        { name: '2 - Ufir | Ufir' },
-        { name: '3 - Dolar | U$' },
-        { name: '4 - Euro | €' },
-    ];
-
-    function defaultEntrega() {
-        return new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getUTCDate() + 5);
-    }
-
     const [loggedUserName, setLoggedUserName] = useState(null);
     const [selectedClient, setSelectedClient] = useState(null);
     const [selectedTrasaction, setSelectedTransaction] = useState(null);
@@ -62,7 +50,8 @@ export function AddBudgetPage() {
     const [checkAceitaParcial, setCheckAceitaParcial] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [emissao, setEmissao] = useState(new Date());
-    const [entrega, setEntrega] = useState(defaultEntrega());
+    let defaultEntrega = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getUTCDate() + 5);
+    const [entrega, setEntrega] = useState(defaultEntrega);
     const [products, setProducts] = useState([]);
     const [obsCliente, setObsCliente] = useState('');
     const [nPed_OcCli, setNPed_OcCli] = useState(null);
@@ -73,19 +62,23 @@ export function AddBudgetPage() {
     const { setRender, globalToast } = useContext(RenderContext);
 
     // INICIALIZAÇÃO
+    let loggedUser;
     useEffect(() => {
         getTransacoes('').then(data => setTransactions(data));
         getCondPagto('').then(data => setPaymentConditions(data));
         getTiposPagto('').then(data => setPaymentTypes(data));
         getTransportadoras('').then(data => { setConvenyors(data); setReDispatches(data) })
-        getLoggedUser().then(({ rNome }) => setLoggedUserName(rNome))
+        getLoggedUser().then(data => {
+            loggedUser = data;
+            setLoggedUserName(data.rNome);
+        })
     }, [])
 
     useEffect(() => {
         if (products.length > 0) {
             let v = 0;
-            for (const [i, { totalProduto }] of products.entries()) {
-                v += parseFloat(totalProduto);
+            for (const [i, { valorTotalItem }] of products.entries()) {
+                v += parseFloat(valorTotalItem);
             }
             setTableTotal(v);
         }
@@ -96,13 +89,15 @@ export function AddBudgetPage() {
             return p ? p.name : ''
         }
 
-        let valorTotal = 0;
-        if (priceFreight > 0) {
-            valorTotal = priceFreight;
-        }
-        for (const [i, { totalProduto }] of products.entries()) {
-            valorTotal = parseFloat(valorTotal) + parseFloat(totalProduto);
-        }
+        // let valorTotal = 0;
+        // if (priceFreight > 0) {
+        //     valorTotal = priceFreight;
+        // }
+        // for (const [i, { totalProduto }] of products.entries()) {
+        //     valorTotal = parseFloat(valorTotal) + parseFloat(totalProduto);
+        // }
+
+        let valorTotal = parseFloat(tableTotal) + priceFreight;
 
         if (
             !selectedClient ||
@@ -141,33 +136,56 @@ export function AddBudgetPage() {
         }
 
         let order = {
-            numero: Math.floor(Math.random() * (9999 - 1000)) + 1000,
-            emissao: emissao ? dateISOLocale(emissao) : null,
-            usuario: loggedUserName,
-            cliente: validProp(selectedClient),
-            obsCliente: obsCliente,
-            nPed_OcCli: nPed_OcCli,
-            entrega: entrega ? dateISOLocale(entrega) : null,
-            representante: selectedClient.representante,
-            transacao: validProp(selectedTrasaction),
-            transportador: validProp(selectedConvenyor),
-            redespacho: validProp(selectedReDispatch),
-            condPagamento: validProp(selectedPaymentCond),
-            moeda: validProp(selectedCurrency),
-            tipoPagto: validProp(selectedPaymentType),
-            frete: freight,
-            valorFrete: priceFreight,
-            valorMin: minValue,
-            valorMinDuplicata: minValueDup,
-            validadeOrcamento: budgetValidity,
+            tipoVenda: {
+                codExterno: selectedPaymentType.codFpg,
+                nome: selectedPaymentType.desFpg
+            },
+            redespacho: {
+                codExterno: selectedReDispatch.codExterno,
+                nome: selectedReDispatch.nome
+            },
+            pedMoeda: selectedCurrency.name,
+            predDatEmi: emissao.toLocaleDateString('pt-br'),
+            transportadora: {
+                codExterno: selectedConvenyor.codExterno,
+                nome: selectedConvenyor.nome
+            },
+            valMinfat: minValue.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }),
+            valMinDup: minValueDup.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }),
+            validade: `${budgetValidity} dias`,
+            valFrete: priceFreight.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }),
+            obsPed: obsCliente,
             emiteCertificado: checkEmiteCert,
             emitePAPP: checkEmitePPAP,
             mantemSaldo: checkMantemSaldo,
             aceitaParcial: checkAceitaParcial,
-            valorTotal: valorTotal,
-            itens: products
+            tipoFrete: {
+                id: freight == 'Cif' ? 'C' : 'F',
+                nome: freight
+            },
+            condPagamento: {
+                codCpg: selectedPaymentCond.codCpg,
+                desCpg: selectedPaymentCond.desCpg
+            },
+            formaPagamento: {
+                codFpg: selectedTrasaction.codExterno,
+                nome: selectedTrasaction.nome
+            },
+            endEntrega: selectedClient.endCli,
+            prevEntrega: entrega.toLocaleDateString('pt-br'),
+            sincronizado: 'DOCUMENTO_NAO_SINCRONIZADO',
+            representante: {
+                rId: loggedUser.rId,
+                nome: selectedClient.nomRep
+            },
+            produtos: products,
+            valorTotal,
+            cliente: {
+                codExterno: selectedClient.codExterno,
+                nome: selectedClient.nome
+            }
         }
-
+        console.log(`Pedido: ${order}`)
         let orders = JSON.parse(localStorage.getItem('orders'));
         if (!orders) {
             localStorage.setItem('orders', JSON.stringify([order]));
@@ -446,7 +464,12 @@ export function AddBudgetPage() {
                         id='moeda'
                         className='w-full p-inputtext-sm'
                         value={selectedCurrency}
-                        options={currencies}
+                        options={[
+                            { name: '1 - Real | R$' },
+                            { name: '2 - Ufir | Ufir' },
+                            { name: '3 - Dolar | U$' },
+                            { name: '4 - Euro | €' },
+                        ]}
                         optionLabel={'name'}
                         filterBy='name'
                         onChange={(e) => setSelectedCurrency(e.value)}
@@ -613,17 +636,17 @@ export function AddBudgetPage() {
                     showGridlines
                 >
                     <Column headerClassName='text-700 text-sm' body={(_, { rowIndex }) => rowIndex + 1} header='Seq'></Column>
-                    <Column headerClassName='text-700 text-sm' field='codigo' header='Cod'></Column>
+                    <Column headerClassName='text-700 text-sm' field='item.codRex' header='Cod'></Column>
                     <Column headerClassName='text-700 text-sm' field='descricao' header='Descrição'></Column>
                     <Column headerClassName='text-700 text-sm' field='quantidade' header='Quantia'></Column>
-                    <Column headerClassName='text-700 text-sm' field='un' header='UN'></Column>
-                    <Column headerClassName='text-700 text-sm' field='precoBruto' header='Preço Bruto' body={({ precoBruto }) => precoBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
-                    <Column headerClassName='text-700 text-sm' field='precoFinal' header='Preço Final' body={({ precoFinal }) => precoFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
-                    <Column headerClassName='text-700 text-sm' field='totalProduto' body={({ totalProduto }) => parseFloat(totalProduto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} header='Tot Produto'></Column>
-                    <Column headerClassName='text-700 text-sm' field='peso' header='Peso'></Column>
-                    <Column headerClassName='text-700 text-sm' field='media' header='Média'></Column>
-                    <Column headerClassName='text-700 text-sm' field='apro_ger' header='Apro. Ger'></Column>
-                    <Column headerClassName='text-700 text-sm' field='apro_dir' header='Apro. Dir'></Column>
+                    <Column headerClassName='text-700 text-sm' field='unidMedida' header='UN'></Column>
+                    <Column headerClassName='text-700 text-sm' field='precoTabela' header='Preço Bruto' body={({ precoTabela }) => parseFloat(precoTabela).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
+                    <Column headerClassName='text-700 text-sm' field='valorFaixa' header='Preço Final' body={({ valorFaixa }) => valorFaixa.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
+                    <Column headerClassName='text-700 text-sm' field='valorTotalItem' body={({ valorTotalItem }) => valorTotalItem.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} header='Tot Produto'></Column>
+                    <Column headerClassName='text-700 text-sm' field='item.peso' header='Peso'></Column>
+                    <Column headerClassName='text-700 text-sm' body={({ quantidade, item }) => (quantidade * item.peso).toFixed(2)} header='Média'></Column>
+                    <Column headerClassName='text-700 text-sm' header='Apro. Ger'></Column>
+                    <Column headerClassName='text-700 text-sm' header='Apro. Dir'></Column>
                     <Column
                         headerClassName='text-700 text-sm'
                         header='Operações'
