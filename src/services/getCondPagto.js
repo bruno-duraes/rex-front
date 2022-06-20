@@ -863,7 +863,7 @@ export default async function getCondPagto(consult) {
     };
 
     mockData.map(data => data.filtro = `${data.codCpg} - ${data.desCpg}`);
-    // return mockData;;;;;;
+    // return mockData;
     try {
         let response = await fetch("https://rex.clicvenda.com.br/cvIntegradorSenior/rest/Listas/executarRequisicaoExterna", config)
         let { resultado } = await response.json();

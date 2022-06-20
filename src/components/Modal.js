@@ -1,4 +1,3 @@
-import { AutoComplete } from 'primereact/autocomplete';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
@@ -15,31 +14,41 @@ import getTransacoes from '../services/getTransacoes';
 import { Datepicker } from './Datepicker';
 import { RequiredFlag } from './RequiredFlag';
 
-export function Modal({ budgetItems, setBudgetItems, visible, setVisible, clientName, deadline, transaction }) {
-    const [selectedItem, setSelectedItem] = useState(null);
-    const [filteredItems, setFilteredItems] = useState(null);
-    const [quantity, setQuantity] = useState(null);
-    const [faixa, setFaixa] = useState(null);
-    const [faixaSol, setFaixaSol] = useState(null);
-    const [selectedItemFinish, setSelectedItemFinish] = useState(null);
+export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client, deadline, transaction, item, setItem }) {
+    const [selectedItem, setSelectedItem] = useState(item ? item.itemSelecionado : null);
+    const [searchItemQuery, setSearchItemQuery] = useState(item ? item.itemSelecionado.codRex : null);
+    const [searchItemLoading, setSearchItemLoading] = useState(false);
+    const [quantity, setQuantity] = useState(item ? item.quantidade : null);
+    const [faixa, setFaixa] = useState(item ? item.faixa : null);
+    const [faixaSol, setFaixaSol] = useState(item ? item.valorNegociado : 0);
     const [dateDelivery, setDateDelivery] = useState(deadline);
     const [pedidoOrdem, setPedidoOrdem] = useState('');
     const [sequency, setSequency] = useState('');
     const [codProCli, setCodProCli] = useState('');
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [transactions, setTransactions] = useState([]);
-    const [note, setNote] = useState('');
+    const [note, setNote] = useState(item ? item.opcaoDescAcresc : null);
     const [lastProduct, setLastProduct] = useState('');
     const [filterCod, setFilterCod] = useState('codRex');
     const [selectedDeposit, setSelectedDeposit] = useState(null);
     const toast = useRef(null);
-    const item = useRef(null);
     const [validation, setValidation] = useState({ item: '', quantia: '' });
 
     // Inicialização
     useEffect(() => {
         getTransacoes('').then(data => setTransactions(data));
         setSelectedTransaction(transaction);
+
+        if (item) {
+            setFaixa(item.valorFaixa.toFixed(2))
+            setSelectedItem(item.itemSelecionado)
+            setSearchItemQuery(item.itemSelecionado.codRex)
+            setQuantity(item.quantidade)
+        }
+        if (visible == false) {
+            resetModal();
+            setItem(null);
+        }
     }, [visible, transaction])
 
     useEffect(() => {
@@ -51,11 +60,11 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
         setFaixa(null);
         setFaixaSol(null)
         setQuantity(null);
-        // setSelectedItemFinish(null);
+        setSearchItemQuery('');
     }
 
-    async function addItem() {
-        const item = {
+    async function changeItem() {
+        const _item = {
             codExterno: selectedItem.codExterno,
             codTpr: selectedItem.codTpr,
             codVariacao: selectedItem.codVariacao,
@@ -74,42 +83,54 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
             valorFaixa4: parseFloat(selectedItem.valorFaixa4),
             valorNegociado: !faixaSol ? 0 : parseFloat(faixaSol),
             valorTotalItem: quantity * (faixa == 'solicitado' ? faixaSol : faixa),
-            item: {
+            itemSelecionado: {
                 ...selectedItem
             }
         };
-        setBudgetItems((state) => ([...state, item]));
-        setLastProduct(selectedItem.codRex);
-        toast.current.show({ severity: 'success', summary: 'Produto Adicionado!', detail: `Código do Produto N°${selectedItem.codRex}`, life: 5000 });
-        resetModal();
+        if (item) {
+            let budgetItemsCopy = Array.from(budgetItems);
+            budgetItemsCopy.splice(item.index, 1, _item);
+            setBudgetItems(budgetItemsCopy);
+            setVisible(false);
+            toast.current.show({ severity: 'success', summary: 'Alterações Salvas!', detail: `Código do Produto N°${selectedItem.codRex}`, life: 5000 });
+        } else {
+            setBudgetItems((state) => ([...state, _item]));
+            setLastProduct(selectedItem.codRex);
+            toast.current.show({ severity: 'success', summary: 'Produto Adicionado!', detail: `Código do Produto N°${selectedItem.codRex}`, life: 5000 });
+            resetModal();
+        }
     }
 
-    function searchItem(e) {
+    function searchItem(cod = searchItemQuery) {
         let tipoBusca = filterCod == 'codRex' ? 'R' : '';
-        getProdutos(e.query, tipoBusca).then(data => {
-            if (data.length > 0) {
-                if (tipoBusca == 'R') {
-                    setFilteredItems(data);
+        if (searchItemQuery || cod) {
+            setSearchItemLoading(true);
+            getProdutos(cod, tipoBusca, client?.codExterno, selectedTransaction.codExterno).then(data => {
+                if (data.length > 0) {
+                    setSelectedItem(data[0]);
                 } else {
-                    data.map(({ codExterno, codVariacao }) => data.filtro = `${codExterno}-${codVariacao}`);
-                    setFilteredItems(data);
+                    toast.current.show({ severity: 'warn', summary: 'Nenhum Produto Encontrado!', life: 5000 });
                 }
-            } else {
-                toast.current.show({ severity: 'warn', summary: 'Nenhum Produto Encontrado!', life: 5000 });
-            }
-        }).catch((e) => console.error(e));
+            }).catch((err) => {
+                console.error(err)
+            }).finally(() => {
+                setSearchItemLoading(false);
+            });
+        }
     }
-
     useEffect(() => {
-        if (selectedItem && selectedItem.depositos) {
+        if (selectedItem?.depositos?.length == 1) {
             let depDefault = selectedItem.depositos.filter(({ codDeposito }) => codDeposito == '004')[0]
+            setSelectedDeposit(depDefault)
+        } else if (selectedItem?.depositos?.length > 1) {
+            let depDefault = selectedItem.depositos.filter(({ codDeposito }) => codDeposito != '004')[0]
             setSelectedDeposit(depDefault)
         }
     }, [selectedItem])
 
     return (
         <>
-            <Toast ref={toast} position='bottom-right' />
+            <Toast ref={toast} position='top-right' />
             <Sidebar
                 fullScreen
                 blockScroll
@@ -117,45 +138,80 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                 showCloseIcon={false}
                 visible={visible}
             >
-                <div className='grid my-1'>
-                    <div className='col-12 lg:col-3 flex justify-content-center align-items-center'>
-                        <RadioButton
-                            inputId='codigo-rex'
-                            name='filter-cod'
-                            value={'codRex'}
-                            onChange={e => setFilterCod(e.value)}
-                            checked={filterCod == 'codRex'}
-                            className='mr-1 cursor-pointer'
-                        />
-                        <label className='cursor-pointer' htmlFor='codigo-rex'>Código Rex</label>
-                        <RadioButton
-                            name='filter-code'
-                            value={'codExterno'}
-                            onChange={e => setFilterCod(e.value)}
-                            checked={filterCod == 'codExterno'}
-                            inputId='codigo-cliente'
-                            className='ml-2 mr-1'
-                        />
-                        <label className='cursor-pointer' htmlFor='codigo-cliente'>Cliente</label>
-                    </div>
+                <div className='grid my-1 flex justify-content-between'>
+                    {
+                        !item &&
+                        <div className='col-12 lg:col-3 flex justify-content-center align-items-center'>
+                            <RadioButton
+                                inputId='codigo-rex'
+                                name='filter-cod'
+                                value={'codRex'}
+                                onChange={e => setFilterCod(e.value)}
+                                checked={filterCod == 'codRex'}
+                                className='mr-1 cursor-pointer'
+                            />
+                            <label className='cursor-pointer' htmlFor='codigo-rex'>Código Rex</label>
+                            <RadioButton
+                                name='filter-code'
+                                value={'codExterno'}
+                                onChange={e => setFilterCod(e.value)}
+                                checked={filterCod == 'codExterno'}
+                                inputId='codigo-cliente'
+                                className='ml-2 mr-1'
+                            />
+                            <label className='cursor-pointer' htmlFor='codigo-cliente'>Cliente</label>
+                        </div>
+                    }
                     <div className='col-12 lg:col-5 flex align-items-center'>
                         <div className='flex flex-column'>
-                            <span className='font-medium mb-1 text-sm'>Cliente: {clientName}</span>
-                            <span className='font-semibold text-xs'>Ultimo Produto Incluído: {lastProduct}</span>
+                            <span className='font-medium mb-1 text-sm'>
+                                <span className='font-semibold text-xs'>Cliente: </span>{client?.nome}
+                            </span>
+                            {
+                                !item &&
+                                <span className='font-semibold text-xs'>Ultimo Produto Incluído: {lastProduct}</span>
+                            }
                         </div>
                     </div>
-                    <div className='col-6 lg:col-2'>
-                        <Button label='Adicionar Item' onClick={() => addItem()} className='w-full h-2rem p-button-raised  font-semibold' />
-                    </div>
-                    <div className='col-6 lg:w-9rem'>
-                        <Button label='Cancelar' onClick={() => setVisible(false)} className='w-full h-2rem p-button-raised p-button-secondary font-semibold' />
+                    <div className='col-6 lg:w-17rem flex justify-content-end'>
+                        {
+                            item
+                                ?
+                                <Button label='Salvar Alterações' onClick={() => changeItem()} className=' h-2rem p-button-raised font-semibold' />
+                                :
+                                <Button label='Adicionar Item' onClick={() => changeItem()} className=' h-2rem p-button-raised  font-semibold' />
+                        }
+                        <Button label='Cancelar' onClick={() => setVisible(false)} className='ml-1 h-2rem p-button-raised p-button-secondary font-semibold' />
                     </div>
                 </div>
                 <div style={{ border: 'solid 1px #9E9E9E', borderRadius: '3px' }} className='px-3 py-2 bg-white'>
                     <div className='grid flex align-items-end'>
                         <div className=' col-6 lg:w-5rem'>
                             <label htmlFor='selectItem'>Código</label>
-                            <AutoComplete
+                            <span className='p-input-icon-right'>
+                                {
+                                    searchItemLoading &&
+                                    <i className="pi pi-spin pi-spinner" />
+                                }
+                                <InputText
+                                    value={searchItemQuery}
+                                    inputMode='numeric'
+                                    className='w-full p-inputtext-sm p-1 text-xs'
+                                    onChange={e => setSearchItemQuery(e.target.value)}
+                                    onBlur={() => !selectedItem ? searchItem() : null}
+                                    onKeyDown={({ key }) => {
+                                        if (key == 'Enter') {
+                                            document.querySelector('#itemQuantia').focus()
+                                        }
+                                    }}
+                                    onFocus={() => {
+                                        if (selectedItem) {
+                                            resetModal();
+                                        }
+                                    }}
+                                />
+                            </span>
+                            {/* <AutoComplete
                                 ref={item}
                                 value={selectedItem}
                                 suggestions={filteredItems}
@@ -165,7 +221,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 id='selectItem'
                                 className='w-full'
                                 inputClassName={`w-full p-inputtext-sm p-1 ${validation.item}`}
-                            />
+                            /> */}
                         </div>
                         <div className=' col-6 lg:w-5rem'>
                             <label htmlFor='itemQuantia'>Quantia</label>
@@ -185,7 +241,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                             <label htmlFor='itemNn'>UN</label>
                             <InputText
                                 id='itemUn'
-                                value={selectedItem && selectedItem.unimed ? selectedItem.unimed : undefined}
+                                value={selectedItem && selectedItem.unimed ? selectedItem.unimed : ''}
                                 readOnly
                                 className='w-full p-inputtext-sm'
                             />
@@ -302,7 +358,12 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     name='faixa'
                                     id='solicitado'
                                     value={faixaSol}
-                                    onChange={e => setFaixa('solicitado')}
+                                    onChange={e => {
+                                        setFaixa('solicitado')
+                                        setTimeout(() => {
+                                            document.querySelector('#valorSolicitado').focus()
+                                        });
+                                    }}
                                     checked={faixa == 'solicitado'}
                                 />
                                 <InputNumber
@@ -310,6 +371,7 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                     inputClassName='w-full cursor-pointer p-inputtext-sm px-1'
                                     value={faixaSol}
                                     max={99999.99}
+                                    inputId='valorSolicitado'
                                     onChange={e => setFaixaSol(e.value)}
                                     htmlFor='solicitado'
                                     mode='decimal'
@@ -342,7 +404,13 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                                 readOnly
                                 maxFractionDigits={2}
                                 minFractionDigits={2}
-                                value={selectedItem && selectedItem.peso && quantity ? quantity * selectedItem.peso : null}
+                                value={
+                                    selectedItem && selectedItem.peso && quantity && (faixa == 'solicitado' ? faixaSol > 0 : faixa)
+                                        ?
+                                        quantity * selectedItem.peso / (faixa == 'solicitado' ? parseFloat(faixaSol) : faixa)
+                                        :
+                                        null
+                                }
                             />
                         </div>
                         <div className=' col-6 lg:w-5rem px-0'>
@@ -574,23 +642,22 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     showGridlines
                     selectionMode='single'
                     className='tabela'
-                    selection={selectedItemFinish}
-                    onSelectionChange={async (e) => {
-                        setSelectedItemFinish(e.value);
-                        let produtos = await getProdutos(e.value.codigo, 'R');
-                        setSelectedItem(produtos[0])
-                        console.log(produtos, selectedItem)
+                    loading={searchItemLoading}
+                    onSelectionChange={(e) => {
+                        setSearchItemQuery(e.value.codigo);
+                        searchItem(e.value.codigo);
+                        document.querySelector('#itemQuantia').focus();
                     }}
                     value={selectedItem && selectedItem.acabamento ? selectedItem.acabamento : null}
                     responsiveLayout='stack' >
                     <Column headerClassName='text-700 text-sm' field='codigo' header='Ref' />
                     <Column headerClassName='text-700 text-sm' field='desDerivacao' header='Acabamento' />
-                    <Column headerClassName='text-700 text-sm' field='disponivel' header='Total Disponível' />
+                    <Column headerClassName='text-700 text-sm' field='matriz' header='Estoque SC' />
                     <Column headerClassName='text-700 text-sm' field='mg' header='Estoque Terceiros' />
                     <Column headerClassName='text-700 text-sm' field='resPedidos' header='Total Pedidos' />
                     <Column headerClassName='text-700 text-sm' field='resPreFat' header='Total Pré-Faturas' />
                     <Column headerClassName='text-700 text-sm' field='disponivel' header='Total Ordens' />
-                    <Column headerClassName='text-700 text-sm' field='matriz' header='Estoque SC' />
+                    <Column headerClassName='text-700 text-sm' field='disponivel' header='Total Disponível' />
                 </DataTable>
 
                 <DataTable
@@ -599,17 +666,18 @@ export function Modal({ budgetItems, setBudgetItems, visible, setVisible, client
                     className='mt-3'
                     showGridlines
                     value={budgetItems}
+                    loading={searchItemLoading}
                 >
                     <Column headerClassName='text-700 text-sm' body={(_, { rowIndex }) => rowIndex + 1} header='Seq'></Column>
-                    <Column headerClassName='text-700 text-sm' field='item.codRex' header='Cod'></Column>
+                    <Column headerClassName='text-700 text-sm' field='itemSelecionado.codRex' header='Cod'></Column>
                     <Column headerClassName='text-700 text-sm' field='descricao' header='Descrição'></Column>
                     <Column headerClassName='text-700 text-sm' field='quantidade' header='Quantia'></Column>
                     <Column headerClassName='text-700 text-sm' field='unidMedida' header='UN'></Column>
                     <Column headerClassName='text-700 text-sm' field='precoTabela' header='Preço Bruto' body={({ precoTabela }) => precoTabela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
                     <Column headerClassName='text-700 text-sm' field='valorFaixa' header='Preço Final' body={({ valorFaixa }) => valorFaixa.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
                     <Column headerClassName='text-700 text-sm' field='valorTotalItem' body={({ valorTotalItem }) => valorTotalItem.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} header='Tot Produto'></Column>
-                    <Column headerClassName='text-700 text-sm' field='item.peso' header='Peso'></Column>
-                    <Column headerClassName='text-700 text-sm' body={({ quantidade, item }) => (quantidade * item.peso).toFixed(2)} header='Média'></Column>
+                    <Column headerClassName='text-700 text-sm' field='itemSelecionado.peso' header='Peso'></Column>
+                    <Column headerClassName='text-700 text-sm' body={({ quantidade, itemSelecionado }) => (quantidade * itemSelecionado.peso).toFixed(2)} header='Média'></Column>
                     <Column headerClassName='text-700 text-sm' header='Apro. Ger'></Column>
                     <Column headerClassName='text-700 text-sm' header='Apro. Dir'></Column>
                 </DataTable>

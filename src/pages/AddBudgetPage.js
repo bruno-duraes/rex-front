@@ -13,7 +13,6 @@ import { useContext, useEffect, useState } from 'react';
 import { Datepicker } from '../components/Datepicker';
 import { Divider } from '../components/Divider';
 import { Modal } from '../components/Modal';
-import { ModalEditItem } from '../components/ModalEditItem';
 import { RequiredFlag } from '../components/RequiredFlag';
 import { RenderContext } from '../providers/renderContext';
 import getCliente from '../services/getCliente';
@@ -206,16 +205,16 @@ export function AddBudgetPage() {
         let c = selectedClient;
         if (c) {
             setSelectedTransaction(
-                c.codTns ? transactions.filter(({ codExterno }) => codExterno == c.codTns)[0] : null
+                c.codTns ? transactions?.filter(({ codExterno }) => codExterno == c.codTns)[0] : null
             );
             setSelectedPaymentCond(
-                c.codCpg ? paymentConditions.filter(({ codCpg }) => codCpg == c.codCpg)[0] : null
+                c.codCpg ? paymentConditions?.filter(({ codCpg }) => codCpg == c.codCpg)[0] : null
             );
             setSelectedPaymentType(
-                c.codFpg ? paymentTypes.filter(({ codFpg }) => codFpg == c.codFpg)[0] : null
+                c.codFpg ? paymentTypes?.filter(({ codFpg }) => codFpg == c.codFpg)[0] : null
             );
             setSelectedConvenyor(
-                c.codTra ? convenyors.filter(({ codExterno }) => codExterno == c.codTra)[0] : null
+                c.codTra ? convenyors?.filter(({ codExterno }) => codExterno == c.codTra)[0] : null
             );
             setCheckAceitaParcial(
                 c.acePar == 'S' ? true : false
@@ -235,7 +234,7 @@ export function AddBudgetPage() {
 
     return (
         <div>
-            <ModalEditItem
+            {/* <ModalEditItem
                 index={editItem && editItem.index ? editItem.index : null}
                 item={editItem && editItem.item ? editItem.item : null}
                 visible={editItemVisible}
@@ -244,15 +243,17 @@ export function AddBudgetPage() {
                 budgetItems={products}
                 clientName={selectedClient ? selectedClient.nome : undefined}
                 deadline={entrega ? entrega : null}
-            />
+            /> */}
             <Modal
                 visible={modalVisible}
                 setVisible={setModalVisible}
                 budgetItems={products}
                 setBudgetItems={setProducts}
-                clientName={selectedClient ? selectedClient.nome : undefined}
+                client={selectedClient ? selectedClient : undefined}
                 deadline={entrega ? entrega : null}
                 transaction={selectedTrasaction}
+                item={editItem}
+                setItem={setEditItem}
             />
 
             <div className='grid mb-3 pb-1' style={{ borderBottom: 'solid 1px #ced4da' }}>
@@ -636,15 +637,15 @@ export function AddBudgetPage() {
                     showGridlines
                 >
                     <Column headerClassName='text-700 text-sm' body={(_, { rowIndex }) => rowIndex + 1} header='Seq'></Column>
-                    <Column headerClassName='text-700 text-sm' field='item.codRex' header='Cod'></Column>
+                    <Column headerClassName='text-700 text-sm' field='itemSelecionado.codRex' header='Cod'></Column>
                     <Column headerClassName='text-700 text-sm' field='descricao' header='Descrição'></Column>
                     <Column headerClassName='text-700 text-sm' field='quantidade' header='Quantia'></Column>
                     <Column headerClassName='text-700 text-sm' field='unidMedida' header='UN'></Column>
                     <Column headerClassName='text-700 text-sm' field='precoTabela' header='Preço Bruto' body={({ precoTabela }) => parseFloat(precoTabela).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
                     <Column headerClassName='text-700 text-sm' field='valorFaixa' header='Preço Final' body={({ valorFaixa }) => valorFaixa.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}></Column>
                     <Column headerClassName='text-700 text-sm' field='valorTotalItem' body={({ valorTotalItem }) => valorTotalItem.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} header='Tot Produto'></Column>
-                    <Column headerClassName='text-700 text-sm' field='item.peso' header='Peso'></Column>
-                    <Column headerClassName='text-700 text-sm' body={({ quantidade, item }) => (quantidade * item.peso).toFixed(2)} header='Média'></Column>
+                    <Column headerClassName='text-700 text-sm' field='itemSelecionado.peso' header='Peso'></Column>
+                    <Column headerClassName='text-700 text-sm' body={({ quantidade, itemSelecionado }) => (quantidade * itemSelecionado.peso).toFixed(2)} header='Média'></Column>
                     <Column headerClassName='text-700 text-sm' header='Apro. Ger'></Column>
                     <Column headerClassName='text-700 text-sm' header='Apro. Dir'></Column>
                     <Column
@@ -677,8 +678,9 @@ export function AddBudgetPage() {
                                             id={`remove-item-${r.rowIndex}`}
                                             className='fa-solid fa-pen-to-square mr-2 font-bold cursor-pointer text-xl'
                                             onClick={() => {
-                                                setEditItem({ item: item, index: r.rowIndex });
-                                                setEditItemVisible(true);
+                                                item.index = r.rowIndex;
+                                                setEditItem(item);
+                                                setModalVisible(true);
                                             }}
                                             style={{ color: '#006991' }}
                                         ></i>

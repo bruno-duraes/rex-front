@@ -1,6 +1,6 @@
 import { getLoggedUser } from "./getLoggedUser";
 
-export default async function getProdutos(consult, tipoBusca) {
+export default async function getProdutos(consult, tipoBusca, idCliente, codTransacao) {
     const loggedUser = await getLoggedUser();
 
     let mockData = [
@@ -482,7 +482,8 @@ export default async function getProdutos(consult, tipoBusca) {
             idCvtccnpj: loggedUser.cId,
             numreg: 750,
             pRotina: "filtrarProduto",
-            pCodCli: loggedUser.rId,
+            pCliente: idCliente,
+            pCodTns: codTransacao,
             pFilter: {
                 filtro: {
                     filtroProd: consult,
@@ -498,7 +499,7 @@ export default async function getProdutos(consult, tipoBusca) {
         body: raw,
         redirect: 'follow'
     };
-    // return mockData
+    // return mockData;
     try {
         let response = await fetch("https://rex.clicvenda.com.br/cvIntegradorSenior/rest/Listas/executarRequisicaoExterna", config)
         let { resultado } = await response.json();
